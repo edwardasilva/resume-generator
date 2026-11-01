@@ -86,8 +86,46 @@ def esc(text):
 
 
 def esc_url(url):
-    """Escape the characters in a URL that would break a hyperlink."""
-    return re.sub(r"([\\{}%#~])", r"\\\1", url)
+    """Escape a URL for a LaTeX link, adding https:// when it has no scheme.
+
+    Only web, mailto: and tel: links are allowed. Spaces and characters that
+    can't appear in a URL are percent-encoded first. Then %, #, &, _ and ~ get
+    a backslash, which the link command turns back into the plain character
+    even inside another command's argument.
+    """
+    url = str(url).strip()
+    scheme = re.match(r"^([a-zA-Z][a-zA-Z0-9+.-]*):", url)
+    if not scheme:
+        url = "https://" + url
+    elif scheme.group(1).lower() not in ("http", "https", "mailto", "tel"):
+        raise ResumeError(
+            f'Links must use https://, http://, mailto: or tel:, not "{url}"'
+        )
+    url = re.sub(r'[\s"<>\\^`{|}$]', lambda m: f"%{ord(m.group()):02X}", url)
+    return re.sub(r"([%#&_~])", r"\\\1", url)
+
+
+def short_url(url):
+    """Return a URL as people read it: no scheme, no www. and no trailing slash."""
+    return re.sub(r"^(https?://)?(www\.)?", "", str(url).strip()).rstrip("/")
+
+
+def link(url, text):
+    """Wrap LaTeX text in a hyperlink to url, or return the text if url is blank."""
+    return rf"\href{{{esc_url(url)}}}{{{text}}}" if url else text
+
+
+# A Markdown-style inline link in bullet text: [text](url).
+INLINE_LINK = re.compile(r"\[([^\[\]]+)\]\(([^()\s]+)\)")
+
+
+def rich(text):
+    """Escape bullet text, turning each [text](url) into a hyperlink."""
+    text, out, last = str(text or ""), [], 0
+    for m in INLINE_LINK.finditer(text):
+        out += [esc(text[last : m.start()]), link(m.group(2), esc(m.group(1)))]
+        last = m.end()
+    return "".join(out) + esc(text[last:])
 
 
 def present(items):
@@ -100,9 +138,16 @@ def shown(entries):
     return [e for e in entries or [] if not e.get("hide")]
 
 
+def item(x):
+    """Escape a list item: a string, or {"name": ..., "url": ...} for a link."""
+    if isinstance(x, dict):
+        return link(x.get("url"), esc(x.get("name")))
+    return esc(x)
+
+
 def joined(items):
     """Escape the non-empty items and join them with commas."""
-    return ", ".join(esc(x) for x in present(items))
+    return ", ".join(item(x) for x in present(items))
 
 
 def check_date(value, style, where):
@@ -172,17 +217,14 @@ def header(h):
     contact = []
     if h.get("phone"):
         digits = re.sub(r"[^\d+]", "", h["phone"])
-        contact.append(rf"\href{{tel:{esc_url(digits)}}}{{{esc(h['phone'])}}}")
+        contact.append(link(f"tel:{digits}", esc(h["phone"])))
     if h.get("email"):
-        contact.append(rf"\href{{mailto:{esc_url(h['email'])}}}{{{esc(h['email'])}}}")
-    for key in ("linkedin", "github"):
+        contact.append(link(f"mailto:{h['email']}", esc(h["email"])))
+    for key in ("linkedin", "github", "website"):
         if h.get(key):
-            shown_url = re.sub(r"^(https?://)?(www\.)?", "", h[key])
-            contact.append(
-                rf"\href{{https://{esc_url(shown_url)}}}{{{esc(shown_url)}}}"
-            )
+            contact.append(link(h[key], esc(short_url(h[key]))))
     if contact:
-        out.append("  " + r" \textbar{} ".join(contact) + r"\par")
+        out.append("  " + r"\headersep{}".join(contact) + r"\par")
     status = [
         esc(h.get("location")),
         esc(h.get("workStatus")),
@@ -191,7 +233,7 @@ def header(h):
     ]
     status = [s for s in status if s]
     if status:
-        out.append("  " + r" \textbar{} ".join(status) + r"\par")
+        out.append("  " + r"\headersep{}".join(status) + r"\par")
     out.append(r"\end{resumeheader}")
     return out
 
@@ -203,7 +245,7 @@ def bullets(items):
         return []
     return (
         [r"\begin{itemize}"]
-        + [rf"  \item {esc(b)}" for b in items]
+        + [rf"  \item {rich(b)}" for b in items]
         + [r"\end{itemize}"]
     )
 
@@ -217,7 +259,7 @@ def education(data):
             title += f", GPA {esc(e['gpa'])}"
         out.append(rf"\entry{{{title}}}{{{esc(e.get('gradDate'))}}}")
         if e.get("school"):
-            out.append(esc(e["school"]) + r"\par")
+            out.append(link(e.get("url"), esc(e["school"])) + r"\par")
         for label, key in (
             ("Relevant coursework", "coursework"),
             ("Activities", "activities"),
@@ -232,7 +274,7 @@ def projects(data):
     """Return LaTeX lines for the projects: title and dates, tools, then bullets."""
     out = []
     for p in shown(data.get("projects")):
-        title = rf"\textbf{{{esc(p.get('title'))}}}"
+        title = rf"\textbf{{{link(p.get('url'), esc(p.get('title')))}}}"
         dates = date_range(p.get("start"), p.get("end"))
         out.append(rf"\entry{{{title}}}{{{dates}}}")
         if present(p.get("tools")):
@@ -246,9 +288,10 @@ def experience(data):
     """Return LaTeX lines for experience, with bullets only for engineering jobs."""
     out = []
     for x in shown(data.get("experience")):
-        name = esc(x.get("title"))
         if x.get("company"):
-            name += ", " + esc(x["company"])
+            name = esc(x.get("title")) + ", " + link(x.get("url"), esc(x["company"]))
+        else:
+            name = link(x.get("url"), esc(x.get("title")))
         place = f", {esc(x['location'])}" if x.get("location") else ""
         dates = date_range(x.get("start"), x.get("end"))
         if x.get("engineering"):

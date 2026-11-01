@@ -30,6 +30,12 @@ Each example in `examples/` is a made-up resume and the PDF built from it, from 
 
 JSON doesn't allow comments, so this section explains each field. A blank field (`""`) or an empty list (`[]`) is left out of the PDF.
 
+The phone, email, LinkedIn, GitHub and website in the header are links. The email opens a new message and the phone number dials. Any entry can also have a link:
+
+| Field | What to put | Example |
+| --- | --- | --- |
+| `url` | Optional on any education, project or experience entry. The school, project title or employer becomes a link, shown in the normal text color. To link a skill, coursework or activity item, write it as `{"name": "...", "url": "..."}`. Inside a bullet, `[text](url)` links the text. Links must be web addresses (`https://` is added if missing), `mailto:` or `tel:`. | `github.com/alex-doe-example/cubesat-buck-converter` |
+
 ### `settings`
 
 | Field | What to put | Example |
@@ -57,6 +63,7 @@ Acceptable fonts for `settings.font`:
 | `email` | An address they check every day. A school address is fine. | `alex.doe@example.com` |
 | `linkedin` | Their profile URL without `https://`. | `linkedin.com/in/alex-doe-example` |
 | `github` | Only if it holds work they're proud of. | `github.com/alex-doe-example` |
+| `website` | A personal site or portfolio, if they have one. | `example.com/~sam-doe` |
 | `location` | City and state. | `Springfield, ST` |
 | `workStatus` | Their work authorization, only if it helps them with an employer. Always be truthful. Leave it blank otherwise. | `""` |
 | `relocate` | `true` adds "Willing to relocate". | `true` |

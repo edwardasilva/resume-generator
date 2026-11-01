@@ -50,6 +50,7 @@
     {
       "title": "Hardware Engineering Intern",
       "company": "Example Avionics",
+      "url": "example.com/avionics",
       "location": "Northgate, ST",
       "start": "May 2025",
       "end": "Aug 2025",
@@ -116,6 +117,7 @@
     },
     {
       "title": "Software-Defined Radio FM Receiver",
+      "url": "github.com/casey-doe-example/sdr_fm_receiver#readme",
       "tools": [
         "Python",
         "GNU Radio",

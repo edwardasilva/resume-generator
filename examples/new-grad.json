@@ -29,6 +29,7 @@
       "degree": "B.S. Electrical Engineering",
       "gpa": "3.71/4.00",
       "school": "Example State University",
+      "url": "example.com",
       "gradDate": "Spring 2026",
       "coursework": [
         "Embedded Systems",
@@ -120,7 +121,10 @@
     ],
     "certifications": [
       "Engineer in Training (EIT)",
-      "IPC-A-610 Certified IPC Specialist"
+      {
+        "name": "IPC-A-610 Certified IPC Specialist",
+        "url": "example.com/verify?id=IPC-610_042&name=Taylor%20Doe"
+      }
     ]
   }
 }
