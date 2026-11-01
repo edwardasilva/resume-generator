@@ -6,6 +6,8 @@ It was built for engineering students, and the layout follows the advice on [eep
 
 See a sample resume: [docs/sample.pdf](docs/sample.pdf)
 
+This project is a companion to [eeprep.com](https://eeprep.com). See its [resume page](https://eeprep.com/get-hired/resume/) for the advice behind this layout.
+
 ## Quick start
 
 1. **Get the code.**
@@ -25,7 +27,7 @@ See a sample resume: [docs/sample.pdf](docs/sample.pdf)
 
    This writes `resume.pdf`. It needs Python 3 and LuaLaTeX. If either is missing, the script says what it will install and asks before it uses `sudo`. It supports Fedora (dnf), Debian, Ubuntu and WSL (apt), and macOS (Homebrew). Run `./run --yes` to skip the question. `./run` checks the tools and then calls `build.py`, which does the layout and fitting.
 
-   To build a different file, pass it as an argument: `./run examples/new-grad.json` writes `new-grad.pdf`.
+   To build a different file, pass it as an argument: `./run examples/new-grad.json` writes `examples/new-grad.pdf` next to it.
 
 ## Examples
 
@@ -33,10 +35,10 @@ The `examples/` folder has four more made-up resumes in the same format, from ne
 
 | File | Who it describes | PDF |
 | --- | --- | --- |
-| `examples/first-year.json` | A first-year student with one class project, a one-line retail job and a few skills. The page has room left at the bottom. | [first-year.pdf](docs/examples/first-year.pdf) |
-| `examples/sophomore.json` | A second-year student with two projects, club activities and one non-engineering job. | [sophomore.pdf](docs/examples/sophomore.pdf) |
-| `examples/new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience. | [new-grad.pdf](docs/examples/new-grad.pdf) |
-| `examples/packed.json` | A graduating student with three engineering roles, three projects and long skill lists. It fits only at 10 pt with 0.4 in margins. | [packed.pdf](docs/examples/packed.pdf) |
+| `examples/first-year.json` | A first-year student with one class project, a one-line retail job and a few skills. The page has room left at the bottom. | [first-year.pdf](examples/first-year.pdf) |
+| `examples/sophomore.json` | A second-year student with two projects, club activities and one non-engineering job. | [sophomore.pdf](examples/sophomore.pdf) |
+| `examples/new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience. | [new-grad.pdf](examples/new-grad.pdf) |
+| `examples/packed.json` | A graduating student with three engineering roles, three projects and long skill lists. It fits only at 10 pt with 0.4 in margins. | [packed.pdf](examples/packed.pdf) |
 
 ## Field guide
 
@@ -132,6 +134,22 @@ Start with a past-tense verb, say what they built or changed, and end with a res
 ## Before applying
 
 A good resume helps, but a referral helps more. The owner should ask someone who knows their work for a referral before applying. [eeprep's resume page](https://eeprep.com/get-hired/resume/) covers each section in more detail.
+
+## Contributing
+
+`build.py` is formatted and linted with [ruff](https://docs.astral.sh/ruff/), configured in `pyproject.toml`. Before opening a pull request, run:
+
+```sh
+pip install ruff
+ruff format
+ruff check
+```
+
+CI runs the same checks, builds `resume.json` and every file in `examples/`, and fails if any of them isn't exactly one page.
+
+## More from eeprep
+
+For more on resumes, referrals and applying for engineering jobs, see [eeprep.com](https://eeprep.com) and its [resume page](https://eeprep.com/get-hired/resume/).
 
 ## License
 
