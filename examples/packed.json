@@ -1,5 +1,6 @@
 {
   "settings": {
+    "font": "arial",
     "dateStyle": {
       "education": "semester",
       "projects": "semester",

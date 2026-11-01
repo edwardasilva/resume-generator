@@ -8,7 +8,7 @@ This project is a companion to [eeprep.com](https://eeprep.com). It was built fo
 
 Get the latest zip from the [releases page](https://github.com/edwardasilva/resume-generator/releases/latest), unzip it, edit `resume.json` (see the field guide below) and run `./run`. It writes `resume.pdf`.
 
-`./run` needs Python 3 and LuaLaTeX. If either is missing, it says what it will install and asks before it uses `sudo`. It supports Fedora (dnf), Debian, Ubuntu and WSL (apt), and macOS (Homebrew). Run `./run --yes` to skip the question. The resume is set in Libertinus Serif. On Debian and Ubuntu that font only comes in `texlive-fonts-extra`, a download of about 600 MB.
+`./run` needs Python 3 and LuaLaTeX. If either is missing, it says what it will install and asks before it uses `sudo`. It supports Fedora (dnf), Debian, Ubuntu and WSL (apt), and macOS (Homebrew). Run `./run --yes` to skip the question. The default font, Libertinus Serif, comes in `texlive-fonts-extra` on Debian and Ubuntu, a download of about 600 MB.
 
 To work from the repository instead, clone it and run `./run`. The first run copies `examples/alex.json` to `resume.json`, which is ignored by git along with `resume.pdf`, so personal details stay out of the repository.
 
@@ -23,8 +23,8 @@ Each example in `examples/` is a made-up resume and the PDF built from it, from 
 | `alex.json` | The starting point: a student graduating in 2027 with three projects, a CubeSat team role and a one-line job. | [alex.pdf](examples/alex.pdf) |
 | `first-year.json` | A first-year student with one class project, a one-line retail job and a few skills. The page has room left at the bottom. | [first-year.pdf](examples/first-year.pdf) |
 | `sophomore.json` | A second-year student with two projects, an electrical lead role in a robotics club and a one-line job. | [sophomore.pdf](examples/sophomore.pdf) |
-| `new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience. | [new-grad.pdf](examples/new-grad.pdf) |
-| `packed.json` | A graduating student with three engineering roles, a one-line job, three projects and long skill lists. The script tightens it to 10 pt with 0.45 in margins to fit. | [packed.pdf](examples/packed.pdf) |
+| `new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience and use the `times` font. | [new-grad.pdf](examples/new-grad.pdf) |
+| `packed.json` | A graduating student with three engineering roles, a one-line job, three projects and long skill lists, in the `arial` font. The script tightens it to fit. | [packed.pdf](examples/packed.pdf) |
 
 ## Field guide
 
@@ -35,9 +35,18 @@ JSON doesn't allow comments, so this section explains each field. A blank field 
 | Field | What to put | Example |
 | --- | --- | --- |
 | `sectionOrder` | Order of the sections. Lead with the owner's strongest one. | `["education", "projects", "experience", "skills"]` |
+| `font` | One of the three fonts below. Leave it out to use `libertinus`. | `"libertinus"` |
 | `dateStyle` | The date style for each section: `semester` (Fall 2025) or `month` (Sep 2025). Every date in a section must use that section's style. The build stops if one doesn't. A section left out uses `semester`. | `{"education": "semester", "projects": "semester", "experience": "month"}` |
 
 Common orders: students with no engineering job usually go education, projects, experience, skills. Once they have an engineering internship, try experience first. School terms suit education and projects. Jobs usually use months.
+
+Acceptable fonts for `settings.font`:
+
+| Value | Font | Looks like |
+| --- | --- | --- |
+| `libertinus` | Libertinus Serif (default) | A classic book serif |
+| `times` | TeX Gyre Termes | A free version of Times New Roman |
+| `arial` | TeX Gyre Heros | A free version of Arial and Helvetica |
 
 ### `header`
 

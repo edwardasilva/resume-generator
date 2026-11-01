@@ -44,6 +44,14 @@ ENTRY_GAP = 6.3
 # instead of large gaps.
 MAX_EXTRA_GAP = 3.0
 
+# Fonts allowed in settings.font: font files in the TeX installation, loaded
+# by file name. The first one is the default.
+FONTS = {
+    "libertinus": ("LibertinusSerif", "*-Regular", "*-Bold"),
+    "times": ("texgyretermes", "*-regular", "*-bold"),
+    "arial": ("texgyreheros", "*-regular", "*-bold"),
+}
+
 # Sections in their default order, and the date patterns for each style.
 SECTIONS = ("education", "projects", "experience", "skills")
 SEMESTER = re.compile(r"^(Expected )?(Spring|Summer|Fall|Winter) \d{4}$")
@@ -135,8 +143,18 @@ def date_styles(data):
     return styles
 
 
+def font_name(data):
+    """Return the chosen font, checking that it is one of the allowed fonts."""
+    font = (data.get("settings") or {}).get("font") or next(iter(FONTS))
+    if font not in FONTS:
+        allowed = ", ".join(f'"{name}"' for name in FONTS)
+        raise ResumeError(f'settings.font must be one of {allowed}, not "{font}"')
+    return font
+
+
 def validate(data):
-    """Check every visible date against its section's date style."""
+    """Check the font and every visible date against its section's style."""
+    font_name(data)
     styles = date_styles(data)
     for section in ("education", "projects", "experience"):
         style = styles.get(section, "semester")
@@ -286,12 +304,15 @@ def body(data):
     return "\n".join(out) + "\n"
 
 
-def settings(font, margin, extra=0.0):
-    """Return LaTeX definitions for the font size, margins and gaps of a layout."""
+def settings(typeface, font, margin, extra=0.0):
+    """Return LaTeX definitions for the font, size, margins and gaps of a layout."""
     line = font * 1.2 * LINE_SPACING
     name, name_line = font * 1.9, font * 2.2
+    base, upright, bold = FONTS[typeface]
     return "\n".join(
         [
+            rf"\newcommand{{\resumemainfont}}{{\setmainfont{{{base}}}"
+            rf"[Extension=.otf, UprightFont={upright}, BoldFont={bold}]}}",
             rf"\newcommand{{\resumemargin}}{{{margin}in}}",
             rf"\newcommand{{\resumefont}}"
             rf"{{\fontsize{{{font}pt}}{{{line:.2f}pt}}\selectfont}}",
@@ -304,9 +325,11 @@ def settings(font, margin, extra=0.0):
     )
 
 
-def compile_once(font, margin, extra=0.0):
+def compile_once(typeface, font, margin, extra=0.0):
     """Build the PDF at one layout and return the page count and the log text."""
-    (BUILD / "settings.tex").write_text(settings(font, margin, extra), encoding="utf-8")
+    (BUILD / "settings.tex").write_text(
+        settings(typeface, font, margin, extra), encoding="utf-8"
+    )
     env = dict(os.environ, SOURCE_DATE_EPOCH="0", FORCE_SOURCE_DATE="1")
     result = subprocess.run(
         [
@@ -368,19 +391,20 @@ def main():
         sys.exit(f"{source.name} isn't valid JSON: {e}")
     try:
         validate(data)
+        typeface = font_name(data)
         BUILD.mkdir(exist_ok=True)
         tex = body(data)
         (BUILD / "body.tex").write_text(tex, encoding="utf-8")
         for font, margin in LAYOUTS:
-            pages, log = compile_once(font, margin)
+            pages, log = compile_once(typeface, font, margin)
             if pages == 1:
                 extra = spread(tex, measure(log, "END"))
-                if extra and compile_once(font, margin, extra)[0] != 1:
+                if extra and compile_once(typeface, font, margin, extra)[0] != 1:
                     extra = 0.0
-                    compile_once(font, margin)
+                    compile_once(typeface, font, margin)
                 shutil.copy(BUILD / "resume.pdf", output)
                 print(
-                    f"Wrote {output.name} (1 page, {font:g} pt text, "
+                    f"Wrote {output.name} (1 page, {typeface}, {font:g} pt text, "
                     f"{margin:g} in margins, gaps +{extra:.1f} pt)."
                 )
                 return

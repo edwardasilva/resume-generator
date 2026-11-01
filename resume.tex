@@ -1,17 +1,13 @@
 % One-page resume. Run ./run to build resume.pdf.
-% build.py writes build/settings.tex (font size, margins and spacing) and
+% build.py writes build/settings.tex (font, size, margins and spacing) and
 % build/body.tex (the content from the JSON file) before each run.
 \documentclass[letterpaper]{article}
 
 % ---------- Packages ----------
 \usepackage{fontspec}
-% Libertinus Serif, loaded by file name so it comes from the TeX installation.
-\setmainfont{LibertinusSerif}[
-  Extension = .otf,
-  UprightFont = *-Regular,
-  BoldFont = *-Bold]
 \usepackage{enumitem}
 \input{build/settings}
+\resumemainfont
 \usepackage[margin=\resumemargin]{geometry}
 \usepackage[hidelinks]{hyperref}
 
