@@ -45,7 +45,7 @@ install_tools() {
       elif command -v apt-get >/dev/null; then
         local pkgs=""
         [[ $need_py -eq 1 ]] && pkgs+=" python3"
-        [[ $need_tex -eq 1 ]] && pkgs+=" texlive-luatex texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra lmodern"
+        [[ $need_tex -eq 1 ]] && pkgs+=" texlive-luatex texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra fonts-texgyre lmodern"
         cmd="sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends$pkgs"
       fi ;;
     Darwin)
