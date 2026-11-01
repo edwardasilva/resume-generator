@@ -33,7 +33,8 @@
         "Power Electronics",
         "Embedded Systems",
         "Digital Design",
-        "Signals and Systems"
+        "Signals and Systems",
+        "Control Systems"
       ],
       "activities": [
         "IEEE student branch",
@@ -83,9 +84,10 @@
       ],
       "start": "Fall 2024",
       "end": "Fall 2024",
-      "hide": true,
       "bullets": [
-        "Tracked four Li-ion cells within 10 mV each with an ESP32 monitor that streams readings to a Python dashboard"
+        "Tracked four Li-ion cells to within 10 mV each with an ESP32 monitor that streams readings over Bluetooth to a Python dashboard",
+        "Measured pack current within 1% of a bench multimeter by calibrating an INA219 sensor across a 0.1 A to 3 A load sweep",
+        "Extended field-test runtime by 18% by adding a low-voltage cutoff in C++ that sheds non-critical loads at 3.3 V per cell"
       ]
     }
   ],
@@ -99,7 +101,8 @@
       "engineering": true,
       "bullets": [
         "Cut power board mass by 40 g by replacing three linear regulators with one buck converter board",
-        "Found two battery protection faults before launch review by writing a Python script that runs overnight charge and discharge cycles and flags cell drift"
+        "Found two battery protection faults before launch review by writing a Python script that runs overnight charge and discharge cycles and flags cell drift",
+        "Led weekly design reviews for a four-person power team and kept board revisions on schedule for two launch-readiness milestones"
       ]
     },
     {
@@ -128,8 +131,11 @@
       "Electronic load",
       "STM32",
       "ESP32",
-      "FPGA"
+      "FPGA",
+      "Soldering"
     ],
-    "certifications": []
+    "certifications": [
+      "IPC J-STD-001 Soldering"
+    ]
   }
 }
