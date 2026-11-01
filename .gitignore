@@ -1,5 +1,3 @@
 build/
-/*.pdf
-*.aux
-*.log
-*.out
+/resume.json
+/resume.pdf

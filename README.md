@@ -2,11 +2,7 @@
 
 Turn one JSON file into a clean, one-page PDF resume. The owner writes the content in `resume.json`; the script handles the layout and fits it onto a single page.
 
-It was built for engineering students, and the layout follows the advice on [eeprep's resume page](https://eeprep.com/get-hired/resume/). It works for any field.
-
-See a sample resume: [docs/sample.pdf](docs/sample.pdf)
-
-This project is a companion to [eeprep.com](https://eeprep.com). See its [resume page](https://eeprep.com/get-hired/resume/) for the advice behind this layout.
+This project is a companion to [eeprep.com](https://eeprep.com). It was built for engineering students and follows the advice on [eeprep's resume page](https://eeprep.com/get-hired/resume/), but it works for any field. See a sample: [examples/jane.pdf](examples/jane.pdf).
 
 ## Quick start
 
@@ -17,28 +13,29 @@ This project is a companion to [eeprep.com](https://eeprep.com). See its [resume
    cd resume-generator
    ```
 
-2. **Edit `resume.json`.** The sample belongs to Jane Doe, a made-up electrical engineering student. Replace Jane's details with the resume owner's. The field guide below says what goes where.
-
-3. **Build it.**
+2. **Build it.**
 
    ```sh
    ./run
    ```
 
-   This writes `resume.pdf`. It needs Python 3 and LuaLaTeX. If either is missing, the script says what it will install and asks before it uses `sudo`. It supports Fedora (dnf), Debian, Ubuntu and WSL (apt), and macOS (Homebrew). Run `./run --yes` to skip the question. `./run` checks the tools and then calls `build.py`, which does the layout and fitting.
+   The first run copies `examples/jane.json` to `resume.json`, then writes `resume.pdf`. It needs Python 3 and LuaLaTeX. If either is missing, the script says what it will install and asks before it uses `sudo`. It supports Fedora (dnf), Debian, Ubuntu and WSL (apt), and macOS (Homebrew). Run `./run --yes` to skip the question.
 
-   To build a different file, pass it as an argument: `./run examples/new-grad.json` writes `examples/new-grad.pdf` next to it.
+3. **Edit `resume.json`.** It starts as Jane Doe, a made-up electrical engineering student. Replace Jane's details with the resume owner's, using the field guide below, and run `./run` again. `resume.json` and `resume.pdf` are listed in `.gitignore` so personal details stay out of the repository.
+
+To build any other file, pass it as an argument: `./run examples/new-grad.json` writes `examples/new-grad.pdf` next to it.
 
 ## Examples
 
-The `examples/` folder has four more made-up resumes in the same format, from nearly empty to completely full. Each one shows how the script fits a different amount of content onto one page.
+Each example in `examples/` is a made-up resume and the PDF built from it, from nearly empty to completely full.
 
 | File | Who it describes | PDF |
 | --- | --- | --- |
-| `examples/first-year.json` | A first-year student with one class project, a one-line retail job and a few skills. The page has room left at the bottom. | [first-year.pdf](examples/first-year.pdf) |
-| `examples/sophomore.json` | A second-year student with two projects, club activities and one non-engineering job. | [sophomore.pdf](examples/sophomore.pdf) |
-| `examples/new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience. | [new-grad.pdf](examples/new-grad.pdf) |
-| `examples/packed.json` | A graduating student with three engineering roles, three projects and long skill lists. It fits only at 10 pt with 0.4 in margins. | [packed.pdf](examples/packed.pdf) |
+| `jane.json` | The starting point: a student graduating in 2027 with two projects, a CubeSat team role and a one-line job. | [jane.pdf](examples/jane.pdf) |
+| `first-year.json` | A first-year student with one class project, a one-line retail job and a few skills. The page has room left at the bottom. | [first-year.pdf](examples/first-year.pdf) |
+| `sophomore.json` | A second-year student with two projects, club activities and one non-engineering job. | [sophomore.pdf](examples/sophomore.pdf) |
+| `new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience. | [new-grad.pdf](examples/new-grad.pdf) |
+| `packed.json` | A graduating student with three engineering roles, three projects and long skill lists. It fits only at 10 pt with 0.4 in margins. | [packed.pdf](examples/packed.pdf) |
 
 ## Field guide
 
@@ -133,7 +130,7 @@ Start with a past-tense verb, say what they built or changed, and end with a res
 
 ## Before applying
 
-A good resume helps, but a referral helps more. The owner should ask someone who knows their work for a referral before applying. [eeprep's resume page](https://eeprep.com/get-hired/resume/) covers each section in more detail.
+A good resume helps, but a referral helps more. The owner should ask someone who knows their work for a referral before applying. For more on resumes, referrals and applying for engineering jobs, see [eeprep.com](https://eeprep.com) and its [resume page](https://eeprep.com/get-hired/resume/).
 
 ## Contributing
 
@@ -145,11 +142,7 @@ ruff format
 ruff check
 ```
 
-CI runs the same checks, builds `resume.json` and every file in `examples/`, and fails if any of them isn't exactly one page.
-
-## More from eeprep
-
-For more on resumes, referrals and applying for engineering jobs, see [eeprep.com](https://eeprep.com) and its [resume page](https://eeprep.com/get-hired/resume/).
+CI runs the same checks, builds every file in `examples/` with `./run`, and fails if any PDF isn't exactly one page.
 
 ## License
 
