@@ -18,13 +18,19 @@ ROOT = Path(__file__).resolve().parent
 BUILD = ROOT / "build"
 
 # Layouts to try, roomiest first: (font size in pt, margin in inches).
-# Whatever space is left on the page is spread evenly between sections,
-# entries and lines, so the page always looks full.
+# The first one that fits on one page is kept.
 LAYOUTS = [
     (11.0, 0.5), (10.75, 0.5), (10.5, 0.5), (10.25, 0.5), (10.0, 0.5),
     (10.0, 0.45), (10.0, 0.4),
 ]
-LINE_SPACING = 1.07  # minimum; extra space is added on top when there's room
+LINE_SPACING = 1.07
+# Compact spacing in points: before each section title and between entries.
+SECTION_GAP = 7.0
+ENTRY_GAP = 6.3
+# When a page has room left, section and entry gaps grow by at most this
+# many points each, so a short resume keeps a little room at the bottom
+# instead of large gaps.
+MAX_EXTRA_GAP = 3.0
 
 SECTIONS = ("education", "projects", "experience", "skills")
 SEMESTER = re.compile(r"^(Expected )?(Spring|Summer|Fall|Winter) \d{4}$")
@@ -104,7 +110,7 @@ def validate(data):
 
 
 def header(h):
-    out = [r"\begin{center}", rf"  {{\resumename {esc(h.get('name'))}}}\par"]
+    out = [r"\begin{resumeheader}", rf"  {{\resumename {esc(h.get('name'))}}}\par\vspace{{3pt}}"]
     contact = []
     if h.get("phone"):
         digits = re.sub(r"[^\d+]", "", h["phone"])
@@ -122,7 +128,7 @@ def header(h):
     status = [s for s in status if s]
     if status:
         out.append("  " + r" \textbar{} ".join(status) + r"\par")
-    out.append(r"\end{center}")
+    out.append(r"\end{resumeheader}")
     return out
 
 
@@ -201,20 +207,21 @@ def body(data):
     return "\n".join(out) + "\n"
 
 
-def settings(font, margin):
+def settings(font, margin, extra=0.0):
     line = font * 1.2 * LINE_SPACING
     return "\n".join([
         rf"\newcommand{{\resumemargin}}{{{margin}in}}",
-        rf"\newcommand{{\resumefont}}{{\fontsize{{{font}pt}}{{{line:.2f}pt}}\selectfont"
-        rf"\setlength{{\baselineskip}}{{{line:.2f}pt plus {font * 0.1:.2f}pt}}}}",
-        rf"\newcommand{{\resumename}}{{\fontsize{{{font * 1.9:.1f}pt}}{{{font * 2.2:.1f}pt}}\selectfont\bfseries}}",
+        rf"\newcommand{{\resumefont}}{{\fontsize{{{font}pt}}{{{line:.2f}pt}}\selectfont}}",
+        rf"\newcommand{{\resumename}}{{\fontsize{{{font * 1.9:.1f}pt}}{{{font * 2.2:.1f}pt}}\selectfont}}",
+        rf"\newcommand{{\sectiongap}}{{{SECTION_GAP + extra:.2f}pt}}",
+        rf"\newcommand{{\entryspace}}{{{ENTRY_GAP + extra * 0.75:.2f}pt}}",
         "",
     ])
 
 
-def compile_once(font, margin):
+def compile_once(font, margin, extra=0.0):
     """Build at one layout. Return (pages, log text)."""
-    (BUILD / "settings.tex").write_text(settings(font, margin), encoding="utf-8")
+    (BUILD / "settings.tex").write_text(settings(font, margin, extra), encoding="utf-8")
     env = dict(os.environ, SOURCE_DATE_EPOCH="0", FORCE_SOURCE_DATE="1")
     result = subprocess.run(
         ["lualatex", "-interaction=nonstopmode", "-halt-on-error", "-output-directory=build", "resume.tex"],
@@ -233,6 +240,17 @@ def measure(log, key):
     return (int(m.group(1)), *map(float, m.groups()[1:])) if m else None
 
 
+def spread(tex, end):
+    """Extra points for each gap, using about half the free space, capped."""
+    if not end:
+        return 0.0
+    _, used, goal, _ = end
+    gaps = tex.count(r"\resumesection") + 0.75 * tex.count(r"\entrygap")
+    if gaps == 0:
+        return 0.0
+    return min(MAX_EXTRA_GAP, 0.5 * (goal - used) / gaps)
+
+
 def main():
     try:
         data = json.loads((ROOT / "resume.json").read_text(encoding="utf-8"))
@@ -241,14 +259,18 @@ def main():
     try:
         validate(data)
         BUILD.mkdir(exist_ok=True)
-        (BUILD / "body.tex").write_text(body(data), encoding="utf-8")
+        tex = body(data)
+        (BUILD / "body.tex").write_text(tex, encoding="utf-8")
         for font, margin in LAYOUTS:
             pages, log = compile_once(font, margin)
             if pages == 1:
+                extra = spread(tex, measure(log, "END"))
+                if extra and compile_once(font, margin, extra)[0] != 1:
+                    extra = 0.0
+                    compile_once(font, margin)
                 shutil.copy(BUILD / "resume.pdf", ROOT / "resume.pdf")
-                end = measure(log, "END")
-                fill = f", content fills {100 * end[1] / end[2]:.0f}% before spacing" if end else ""
-                print(f"Wrote resume.pdf (1 page, {font:g} pt text, {margin:g} in margins{fill}).")
+                print(f"Wrote resume.pdf (1 page, {font:g} pt text, {margin:g} in margins, "
+                      f"gaps +{extra:.1f} pt).")
                 return
     except ResumeError as e:
         sys.exit(str(e))

@@ -1,5 +1,5 @@
 % One-page resume. Run ./run to build resume.pdf.
-% build.py writes build/settings.tex (font size and margins) and
+% build.py writes build/settings.tex (font size, margins and spacing) and
 % build/body.tex (the content from resume.json) before each run.
 \documentclass[letterpaper]{article}
 
@@ -11,19 +11,24 @@
 \usepackage[hidelinks]{hyperref}
 
 % ---------- Page layout ----------
-% Fill the page: leftover space goes into the gaps below, not the bottom.
-\flushbottom
+\raggedbottom
 \pagestyle{empty}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0pt}
+\raggedright
+
+% ---------- Header ----------
+% Name and contact lines, centered, with a small gap before the first section.
+\newenvironment{resumeheader}{\par\centering}{\par\vspace{6.7pt}}
 
 % ---------- Section style ----------
+% Title, a full-width rule, then a clear gap before the first entry.
 \newcommand{\resumesection}[1]{%
-  \par\vspace{6pt plus 8pt}%
+  \par\vspace{\sectiongap}%
   {\large\bfseries #1}\par
-  \vspace{1pt}%
+  \vspace{2pt}%
   \hrule height 0.6pt
-  \vspace{5pt plus 3pt}}
+  \vspace{0.45\baselineskip}}
 
 % ---------- Entry macros ----------
 \newlength{\datewidth}
@@ -35,9 +40,9 @@
 % Tools used for a project, on their own line under the title.
 \newcommand{\tools}[1]{{\itshape #1}\par}
 % Space between entries in a section.
-\newcommand{\entrygap}{\par\vspace{4pt plus 6pt}}
-\setlist[itemize]{leftmargin=1.2em, label=\textbullet, topsep=1pt plus 1pt,
-  partopsep=0pt, itemsep=0pt plus 1pt, parsep=0pt}
+\newcommand{\entrygap}{\par\vspace{\entryspace}}
+\setlist[itemize]{leftmargin=12pt, label={$\vcenter{\hbox{\small$\bullet$}}$},
+  topsep=2.5pt, partopsep=0pt, itemsep=1.7pt, parsep=0pt}
 
 % ---------- Measurements for the fitting script ----------
 \newcommand{\measure}[1]{%
@@ -48,6 +53,4 @@
 \resumefont
 \input{build/body}
 \par\measure{END}
-% Cancel the fill that ends the page so the gaps above stretch instead.
-\vspace{0pt plus -1fil}
 \end{document}
