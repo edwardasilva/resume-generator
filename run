@@ -1,18 +1,22 @@
 #!/usr/bin/env bash
-# Build resume.pdf from resume.json, fitted to exactly one page.
-# Usage: ./run [--yes]   (--yes, or CI=true, installs Python and TeX without asking)
+# Build a one-page PDF resume from a JSON file (default: resume.json).
+# Usage: ./run [--yes] [file.json]   (--yes, or CI=true, installs Python and TeX without asking)
 set -euo pipefail
-cd "$(dirname "$0")"
 
 assume_yes=0
+input="resume.json"
 [[ "${CI:-}" == "true" ]] && assume_yes=1
 for arg in "$@"; do
   case "$arg" in
     -y|--yes) assume_yes=1 ;;
     -h|--help) sed -n '2,3p' "$0" | sed 's/^# //'; exit 0 ;;
-    *) echo "Unknown option: $arg" >&2; exit 2 ;;
+    -*) echo "Unknown option: $arg" >&2; exit 2 ;;
+    *) input="$arg" ;;
   esac
 done
+[[ -f "$input" ]] || { echo "No such file: $input" >&2; exit 1; }
+input="$(cd "$(dirname "$input")" && pwd)/$(basename "$input")"
+cd "$(dirname "$0")"
 
 missing=()
 command -v python3 >/dev/null || missing+=(python3)
@@ -62,4 +66,4 @@ install_tools() {
 
 [[ ${#missing[@]} -eq 0 ]] || install_tools
 
-exec python3 build.py
+exec python3 build.py "$input"

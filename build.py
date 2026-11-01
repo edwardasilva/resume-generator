@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""Build resume.pdf from resume.json and fit it onto exactly one page.
+"""Build a one-page PDF resume from a JSON file.
 
-Reads resume.json, writes the LaTeX body and layout settings into build/,
+Usage: build.py [file.json]   (default resume.json; writes <name>.pdf here)
+
+Reads the JSON file, writes the LaTeX body and layout settings into build/,
 runs LuaLaTeX, and tries layouts from roomiest to tightest until one fits.
 Standard library only. Run it through ./run, which installs TeX if needed.
 """
@@ -252,10 +254,14 @@ def spread(tex, end):
 
 
 def main():
+    source = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "resume.json"
+    output = ROOT / f"{source.stem}.pdf"
     try:
-        data = json.loads((ROOT / "resume.json").read_text(encoding="utf-8"))
+        data = json.loads(source.read_text(encoding="utf-8"))
+    except OSError as e:
+        sys.exit(f"Can't read {source.name}: {e.strerror}")
     except json.JSONDecodeError as e:
-        sys.exit(f"resume.json isn't valid JSON: {e}")
+        sys.exit(f"{source.name} isn't valid JSON: {e}")
     try:
         validate(data)
         BUILD.mkdir(exist_ok=True)
@@ -268,8 +274,8 @@ def main():
                 if extra and compile_once(font, margin, extra)[0] != 1:
                     extra = 0.0
                     compile_once(font, margin)
-                shutil.copy(BUILD / "resume.pdf", ROOT / "resume.pdf")
-                print(f"Wrote resume.pdf (1 page, {font:g} pt text, {margin:g} in margins, "
+                shutil.copy(BUILD / "resume.pdf", output)
+                print(f"Wrote {output.name} (1 page, {font:g} pt text, {margin:g} in margins, "
                       f"gaps +{extra:.1f} pt).")
                 return
     except ResumeError as e:
@@ -280,7 +286,7 @@ def main():
         page, used, goal, line = end
         lines = max(1, round(((page - 2) * goal + used) / line + 0.5))
     sys.exit(
-        f"The resume doesn't fit on one page, even at {LAYOUTS[-1][0]:g} pt with {LAYOUTS[-1][1]:g} in margins.\n"
+        f"{source.name} doesn't fit on one page, even at {LAYOUTS[-1][0]:g} pt with {LAYOUTS[-1][1]:g} in margins.\n"
         f"Cut about {lines} line(s). Try dropping a coursework item first, then a bullet."
     )
 

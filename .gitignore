@@ -1,5 +1,5 @@
 build/
-resume.pdf
+/*.pdf
 *.aux
 *.log
 *.out
