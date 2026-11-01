@@ -5,6 +5,17 @@ on:
   pull_request:
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ruff
+        run: pip install ruff
+      - name: Check formatting
+        run: ruff format --check
+      - name: Lint
+        run: ruff check
+
   build:
     runs-on: ubuntu-latest
     steps:
@@ -13,9 +24,19 @@ jobs:
         run: ./run --yes
         env:
           CI: "true"
-      - name: Check that each example fits on one page
+      - name: Build each example
         run: for f in examples/*.json; do ./run --yes "$f"; done
+      - name: Check that every PDF is exactly one page
+        run: |
+          sudo apt-get install -y --no-install-recommends poppler-utils
+          for pdf in resume.pdf examples/*.pdf; do
+            pages="$(pdfinfo "$pdf" | awk '/^Pages:/ {print $2}')"
+            echo "$pdf: $pages page(s)"
+            [ "$pages" = "1" ] || { echo "$pdf is not one page" >&2; exit 1; }
+          done
       - uses: actions/upload-artifact@v4
         with:
-          name: resume
-          path: "*.pdf"
+          name: resumes
+          path: |
+            resume.pdf
+            examples/*.pdf
