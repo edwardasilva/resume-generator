@@ -4,24 +4,13 @@ Turn one JSON file into a clean, one-page PDF resume. The owner writes the conte
 
 This project is a companion to [eeprep.com](https://eeprep.com). It was built for engineering students and follows the advice on [eeprep's resume page](https://eeprep.com/get-hired/resume/), but it works for any field. See a sample: [examples/jane.pdf](examples/jane.pdf).
 
-## Quick start
+## Download
 
-1. **Get the code.**
+Get the latest zip from the [releases page](https://github.com/edwardasilva/resume-generator/releases/latest), unzip it, edit `resume.json` (see the field guide below) and run `./run`. It writes `resume.pdf`.
 
-   ```sh
-   git clone https://github.com/edwardasilva/resume-generator.git
-   cd resume-generator
-   ```
+`./run` needs Python 3 and LuaLaTeX. If either is missing, it says what it will install and asks before it uses `sudo`. It supports Fedora (dnf), Debian, Ubuntu and WSL (apt), and macOS (Homebrew). Run `./run --yes` to skip the question.
 
-2. **Build it.**
-
-   ```sh
-   ./run
-   ```
-
-   The first run copies `examples/jane.json` to `resume.json`, then writes `resume.pdf`. It needs Python 3 and LuaLaTeX. If either is missing, the script says what it will install and asks before it uses `sudo`. It supports Fedora (dnf), Debian, Ubuntu and WSL (apt), and macOS (Homebrew). Run `./run --yes` to skip the question.
-
-3. **Edit `resume.json`.** It starts as Jane Doe, a made-up electrical engineering student. Replace Jane's details with the resume owner's, using the field guide below, and run `./run` again. `resume.json` and `resume.pdf` are listed in `.gitignore` so personal details stay out of the repository.
+To work from the repository instead, clone it and run `./run`. The first run copies `examples/jane.json` to `resume.json`, which is ignored by git along with `resume.pdf`, so personal details stay out of the repository.
 
 To build any other file, pass it as an argument: `./run examples/new-grad.json` writes `examples/new-grad.pdf` next to it.
 
@@ -133,6 +122,8 @@ Start with a past-tense verb, say what they built or changed, and end with a res
 A good resume helps, but a referral helps more. The owner should ask someone who knows their work for a referral before applying. For more on resumes, referrals and applying for engineering jobs, see [eeprep.com](https://eeprep.com) and its [resume page](https://eeprep.com/get-hired/resume/).
 
 ## Contributing
+
+Releases are made by pushing a tag such as `v0.1.0`. CI then builds and checks every resume and attaches the zip and a sample PDF to a GitHub release.
 
 `build.py` is formatted and linted with [ruff](https://docs.astral.sh/ruff/), configured in `pyproject.toml`. Before opening a pull request, run:
 
