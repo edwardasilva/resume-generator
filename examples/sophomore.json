@@ -18,6 +18,7 @@
     "email": "sam.doe@example.com",
     "linkedin": "linkedin.com/in/sam-doe-example",
     "github": "github.com/sam-doe-example",
+    "website": "example.com/~sam-doe",
     "location": "Riverton, ST",
     "workStatus": "",
     "relocate": true,
@@ -42,6 +43,7 @@
   "projects": [
     {
       "title": "Weather Station with Wireless Logging",
+      "url": "github.com/sam-doe-example/weather-station",
       "tools": [
         "ESP32",
         "C",
