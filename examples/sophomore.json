@@ -13,30 +13,28 @@
     ]
   },
   "header": {
-    "name": "Alex Kim",
+    "name": "Sam Doe",
     "phone": "(555) 555-0123",
-    "email": "alex.kim@example.com",
-    "linkedin": "linkedin.com/in/alex-kim-example",
-    "github": "github.com/alex-kim-example",
+    "email": "sam.doe@example.com",
+    "linkedin": "linkedin.com/in/sam-doe-example",
+    "github": "github.com/sam-doe-example",
     "location": "Riverton, ST",
-    "workStatus": "US Citizen",
+    "workStatus": "",
     "relocate": true,
     "clearance": ""
   },
   "education": [
     {
-      "degree": "B.S. Computer Engineering",
+      "degree": "B.S. Electrical Engineering",
       "gpa": "3.45/4.00",
       "school": "Example State University",
       "gradDate": "Expected Spring 2029",
       "coursework": [
+        "Electrical Circuits",
         "Digital Logic",
-        "Circuits I",
-        "Programming in C",
-        "Discrete Math"
+        "Foundational Programming Concepts and Design"
       ],
       "activities": [
-        "Robotics Club, electrical lead",
         "IEEE student branch"
       ]
     }
@@ -50,12 +48,12 @@
         "BME280",
         "Python"
       ],
-      "start": "Spring 2027",
-      "end": "Spring 2027",
+      "start": "Spring 2026",
+      "end": "Spring 2026",
       "bullets": [
-        "Logged temperature, humidity and pressure every 60 s for 30 days with an ESP32 and BME280 sensor, losing under 1% of readings over Wi-Fi",
-        "Matched a reference thermometer within 0.5 °C by calibrating the sensor in C against 20 readings taken across a 15 °C range",
-        "Wrote a Python script that plots each day's data and flags gaps, checked against the raw CSV logs"
+        "Logged BME280 data every minute for 30 days over Wi-Fi and lost under 1% of samples",
+        "Calibrated temperature in C against a reference thermometer at 20 points, to within 0.5 °C",
+        "Wrote a Python plotting script that flagged gaps over 5 minutes and found 3 Wi-Fi outages"
       ]
     },
     {
@@ -67,12 +65,24 @@
       "start": "Fall 2026",
       "end": "Fall 2026",
       "bullets": [
-        "Built a 4-bit ALU from 14 74HC-series chips that adds, subtracts and runs three logic operations, verified against all 256 input pairs in Logisim",
-        "Found and fixed two carry-chain wiring faults by probing each stage with a logic analyzer"
+        "Built a 4-bit ALU out of 14 74HC-series chips that can add, subtract, AND, OR and XOR, and checked it against a Logisim model for all 256 input pairs of each operation with DIP switches and LEDs",
+        "Found 2 wiring faults in the carry chain by probing each stage with a logic analyzer"
       ]
     }
   ],
   "experience": [
+    {
+      "title": "Electrical Lead",
+      "company": "Example State Robotics Club",
+      "location": "Riverton, ST",
+      "start": "Aug 2026",
+      "end": "Present",
+      "engineering": true,
+      "bullets": [
+        "Designed and soldered a 2-layer power distribution board in KiCad with 6 fused outputs to replace the old hand-wired harness, so wiring before a match takes 45 minutes instead of 3 hours",
+        "Traced controller resets on hard turns to a 1.2 V dip on the 5 V rail with an oscilloscope and gave the controller its own 5 V regulator, with no resets in the 12 matches since"
+      ]
+    },
     {
       "title": "Barista",
       "company": "Example Coffee Co.",
@@ -87,9 +97,8 @@
     "software": [
       "C",
       "Python",
-      "Logisim",
       "KiCad",
-      "Git"
+      "Logisim"
     ],
     "hardwareLab": [
       "Oscilloscope",

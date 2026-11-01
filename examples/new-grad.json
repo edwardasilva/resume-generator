@@ -13,13 +13,13 @@
     ]
   },
   "header": {
-    "name": "Priya Shah",
+    "name": "Taylor Doe",
     "phone": "(555) 555-0158",
-    "email": "priya.shah@example.com",
-    "linkedin": "linkedin.com/in/priya-shah-example",
-    "github": "github.com/priya-shah-example",
+    "email": "taylor.doe@example.com",
+    "linkedin": "linkedin.com/in/taylor-doe-example",
+    "github": "github.com/taylor-doe-example",
     "location": "Brookfield, ST",
-    "workStatus": "US Citizen",
+    "workStatus": "",
     "relocate": true,
     "clearance": ""
   },
@@ -31,9 +31,8 @@
       "gradDate": "Spring 2026",
       "coursework": [
         "Embedded Systems",
-        "Power Electronics",
-        "Control Systems",
-        "Analog Circuit Design"
+        "Introduction to High Power Electronics",
+        "Modern Control Design"
       ],
       "activities": [
         "Eta Kappa Nu"
@@ -49,9 +48,9 @@
       "end": "Aug 2025",
       "engineering": true,
       "bullets": [
-        "Cut motor startup current spikes by 35% by adding a soft-start ramp to STM32 firmware in C, measured with a current probe over 50 starts",
-        "Reduced board bring-up time from 2 days to 4 hours by writing a Python test script that checks 40 analog and digital channels over UART",
-        "Fixed a CAN bus timeout that dropped 1 in 200 messages by correcting the bit-timing settings, confirmed over a 12-hour soak test"
+        "Added a 200 ms soft-start ramp to the STM32 PWM firmware for a 24 V brushless drive, which lowered startup current spikes by 35% across 50 starts measured with a current probe",
+        "Cut bring-up from 2 days to 4 hours with a Python script that tests 40 channels over UART",
+        "Fixed a CAN bus bug that dropped 1 message in 200 by measuring bit timing on an oscilloscope and moving the sample point to 87.5%, then ran a 12-hour soak test with no dropped messages"
       ]
     },
     {
@@ -62,8 +61,8 @@
       "end": "Aug 2024",
       "engineering": true,
       "bullets": [
-        "Automated efficiency testing of a 500 W power supply with LabVIEW and a programmable load, cutting each test run from 3 hours to 25 minutes",
-        "Found a thermal derating error in a 12 V module by logging 8 thermocouples for 48 hours, and the design team changed the heatsink"
+        "Automated a 20-point load sweep in LabVIEW with a programmable load and a power analyzer, so an efficiency test on the 500 W supply took 25 minutes instead of the 3 hours it took by hand",
+        "Found a 15 °C hot spot that the derating curve missed on a 12 V module by logging 8 thermocouples through a 48-hour full-load test, and the design team enlarged the heatsink on the next revision"
       ]
     }
   ],
@@ -79,8 +78,9 @@
       "start": "Fall 2025",
       "end": "Spring 2026",
       "bullets": [
-        "Raised harvested energy 18% over a fixed-voltage controller by running perturb-and-observe MPPT on an STM32, measured on a solar simulator",
-        "Designed a 2-layer KiCad board for a 100 W buck stage that passed a 4-hour full-load burn-in below 70 °C"
+        "Wrote perturb-and-observe MPPT firmware in C for an STM32 that updates every 10 ms and harvested 18% more energy than a fixed-voltage controller in tests on a solar array simulator",
+        "Laid out a 100 W buck stage on a 2-layer KiCad board that stays under 70 °C at full load",
+        "Sized the output filter in LTspice and measured 42 mV of ripple on the oscilloscope"
       ]
     },
     {
@@ -88,12 +88,13 @@
       "tools": [
         "Verilog",
         "Vivado",
-        "MATLAB"
+        "MATLAB",
+        "Basys 3"
       ],
       "start": "Spring 2025",
       "end": "Spring 2025",
       "bullets": [
-        "Ran a 32-tap FIR low-pass filter at 48 kHz on a Basys 3 board, matching the MATLAB design within 0.3 dB across the passband"
+        "Built a 32-tap FIR low-pass filter in Verilog on a Basys 3 board running at 48 kHz, with 16-bit fixed-point coefficients that matched the MATLAB design within 0.3 dB in Vivado simulation"
       ]
     }
   ],
@@ -105,13 +106,13 @@
       "Verilog",
       "KiCad",
       "LTspice",
-      "LabVIEW",
-      "Git"
+      "LabVIEW"
     ],
     "hardwareLab": [
       "Oscilloscope",
       "Current probe",
       "Programmable load",
+      "Power analyzer",
       "STM32",
       "FPGA",
       "CAN bus"

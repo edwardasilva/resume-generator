@@ -1,8 +1,8 @@
 # resume-generator
 
-Turn one JSON file into a clean, one-page PDF resume. The owner writes the content in `resume.json`; the script handles the layout and fits it onto a single page.
+Turn one JSON file into a clean, one-page PDF resume. The owner writes the content in `resume.json`, and the script handles the layout and fits it onto a single page.
 
-This project is a companion to [eeprep.com](https://eeprep.com). It was built for engineering students and follows the advice on [eeprep's resume page](https://eeprep.com/get-hired/resume/), but it works for any field. See a sample: [examples/jane.pdf](examples/jane.pdf).
+This project is a companion to [eeprep.com](https://eeprep.com). It was built for engineering students and follows the advice on [eeprep's resume page](https://eeprep.com/get-hired/resume/), but it works for any field. See a sample: [examples/alex.pdf](examples/alex.pdf).
 
 ## Download
 
@@ -10,7 +10,7 @@ Get the latest zip from the [releases page](https://github.com/edwardasilva/resu
 
 `./run` needs Python 3 and LuaLaTeX. If either is missing, it says what it will install and asks before it uses `sudo`. It supports Fedora (dnf), Debian, Ubuntu and WSL (apt), and macOS (Homebrew). Run `./run --yes` to skip the question.
 
-To work from the repository instead, clone it and run `./run`. The first run copies `examples/jane.json` to `resume.json`, which is ignored by git along with `resume.pdf`, so personal details stay out of the repository.
+To work from the repository instead, clone it and run `./run`. The first run copies `examples/alex.json` to `resume.json`, which is ignored by git along with `resume.pdf`, so personal details stay out of the repository.
 
 To build any other file, pass it as an argument: `./run examples/new-grad.json` writes `examples/new-grad.pdf` next to it.
 
@@ -20,11 +20,11 @@ Each example in `examples/` is a made-up resume and the PDF built from it, from 
 
 | File | Who it describes | PDF |
 | --- | --- | --- |
-| `jane.json` | The starting point: a student graduating in 2027 with two projects, a CubeSat team role and a one-line job. | [jane.pdf](examples/jane.pdf) |
+| `alex.json` | The starting point: a student graduating in 2027 with three projects, a CubeSat team role and a one-line job. | [alex.pdf](examples/alex.pdf) |
 | `first-year.json` | A first-year student with one class project, a one-line retail job and a few skills. The page has room left at the bottom. | [first-year.pdf](examples/first-year.pdf) |
-| `sophomore.json` | A second-year student with two projects, club activities and one non-engineering job. | [sophomore.pdf](examples/sophomore.pdf) |
+| `sophomore.json` | A second-year student with two projects, an electrical lead role in a robotics club and a one-line job. | [sophomore.pdf](examples/sophomore.pdf) |
 | `new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience. | [new-grad.pdf](examples/new-grad.pdf) |
-| `packed.json` | A graduating student with three engineering roles, three projects and long skill lists. It fits only at 10 pt with 0.4 in margins. | [packed.pdf](examples/packed.pdf) |
+| `packed.json` | A graduating student with three engineering roles, a one-line job, three projects and long skill lists. The script tightens it to 10 pt with 0.45 in margins to fit. | [packed.pdf](examples/packed.pdf) |
 
 ## Field guide
 
@@ -35,21 +35,21 @@ JSON doesn't allow comments, so this section explains each field. A blank field 
 | Field | What to put | Example |
 | --- | --- | --- |
 | `sectionOrder` | Order of the sections. Lead with the owner's strongest one. | `["education", "projects", "experience", "skills"]` |
-| `dateStyle` | The date style for each section: `semester` (Fall 2025) or `month` (Sep 2025). Every date in a section must use that section's style; the build stops if one doesn't. A section left out uses `semester`. | `{"education": "semester", "projects": "semester", "experience": "month"}` |
+| `dateStyle` | The date style for each section: `semester` (Fall 2025) or `month` (Sep 2025). Every date in a section must use that section's style. The build stops if one doesn't. A section left out uses `semester`. | `{"education": "semester", "projects": "semester", "experience": "month"}` |
 
-Common orders: students with no engineering job usually go education, projects, experience, skills. Once they have an engineering internship, try experience first. School terms suit education and projects; jobs usually use months.
+Common orders: students with no engineering job usually go education, projects, experience, skills. Once they have an engineering internship, try experience first. School terms suit education and projects. Jobs usually use months.
 
 ### `header`
 
 | Field | What to put | Example |
 | --- | --- | --- |
-| `name` | The name they want recruiters to use. | `Jane Doe` |
+| `name` | The name they want recruiters to use. | `Alex Doe` |
 | `phone` | Their phone number. No label such as "Cell:". | `(555) 555-0142` |
-| `email` | An address they check every day. A school address is fine. | `jane.doe@example.com` |
-| `linkedin` | Their profile URL without `https://`. | `linkedin.com/in/jane-doe-example` |
-| `github` | Only if it holds work they're proud of. | `github.com/jane-doe-example` |
+| `email` | An address they check every day. A school address is fine. | `alex.doe@example.com` |
+| `linkedin` | Their profile URL without `https://`. | `linkedin.com/in/alex-doe-example` |
+| `github` | Only if it holds work they're proud of. | `github.com/alex-doe-example` |
 | `location` | City and state. | `Springfield, ST` |
-| `workStatus` | Their work authorization, if it helps them. Always be truthful. | `US Citizen` |
+| `workStatus` | Their work authorization, only if it helps them with an employer. Always be truthful. Leave it blank otherwise. | `""` |
 | `relocate` | `true` adds "Willing to relocate". | `true` |
 | `clearance` | An active security clearance, if they hold one. | `""` |
 
@@ -115,7 +115,7 @@ Start with a past-tense verb, say what they built or changed, and end with a res
 
 ## Fitting on one page
 
-`build.py` tries layouts from roomiest to tightest: 11 pt text with 0.5 in margins, then the font in steps down to 10 pt, then the margins down to 0.4 in. It keeps the roomiest layout that fits on one page. The spacing stays compact; if there is room left, the gaps between sections and entries grow by at most 3 pt each, so a short resume keeps some room at the bottom instead of large gaps. Line spacing never goes below 1.07. If the resume still doesn't fit at 10 pt and 0.4 in, it stops and says about how many lines to cut. Drop a coursework item first, then the weakest bullet, or add `"hide": true` to an older project.
+`build.py` tries layouts from roomiest to tightest: 11 pt text with 0.5 in margins, then the font in steps down to 10 pt, then the margins down to 0.4 in. It keeps the roomiest layout that fits on one page. The spacing stays compact. If there is room left, the gaps between sections and entries grow by at most 3 pt each, so a short resume keeps some room at the bottom instead of large gaps. Line spacing never goes below 1.07. If the resume still doesn't fit at 10 pt and 0.4 in, it stops and says about how many lines to cut. Drop a coursework item first, then the weakest bullet, or add `"hide": true` to an older project.
 
 ## Before applying
 

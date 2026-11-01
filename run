@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build a one-page PDF resume from a JSON file (default: resume.json, which
-# is created from examples/jane.json on the first run).
+# is created from examples/alex.json on the first run).
 # Usage: ./run [--yes] [file.json]   (--yes, or CI=true, installs Python and TeX without asking)
 set -euo pipefail
 
@@ -18,8 +18,8 @@ done
 if [[ -z "$input" ]]; then
   input="$(dirname "$0")/resume.json"
   if [[ ! -f "$input" ]]; then
-    cp "$(dirname "$0")/examples/jane.json" "$input"
-    echo "Created resume.json from examples/jane.json. Edit it to make it the owner's."
+    cp "$(dirname "$0")/examples/alex.json" "$input"
+    echo "Created resume.json from examples/alex.json. Edit it to make it the owner's."
   fi
 fi
 [[ -f "$input" ]] || { echo "No such file: $input" >&2; exit 1; }

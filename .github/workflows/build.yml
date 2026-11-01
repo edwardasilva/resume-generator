@@ -68,6 +68,6 @@ jobs:
           --title "$GITHUB_REF_NAME"
           --generate-notes
           "resume-generator-${GITHUB_REF_NAME}.zip"
-          "examples/jane.pdf#Sample resume (jane.pdf)"
+          "examples/alex.pdf#Sample resume (alex.pdf)"
         env:
           GH_TOKEN: ${{ github.token }}

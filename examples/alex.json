@@ -13,13 +13,13 @@
     ]
   },
   "header": {
-    "name": "Jane Doe",
+    "name": "Alex Doe",
     "phone": "(555) 555-0142",
-    "email": "jane.doe@example.com",
-    "linkedin": "linkedin.com/in/jane-doe-example",
-    "github": "github.com/jane-doe-example",
+    "email": "alex.doe@example.com",
+    "linkedin": "linkedin.com/in/alex-doe-example",
+    "github": "github.com/alex-doe-example",
     "location": "Springfield, ST",
-    "workStatus": "US Citizen",
+    "workStatus": "",
     "relocate": true,
     "clearance": ""
   },
@@ -30,11 +30,9 @@
       "school": "Example State University",
       "gradDate": "Expected Spring 2027",
       "coursework": [
-        "Power Electronics",
         "Embedded Systems",
-        "Digital Design",
-        "Signals and Systems",
-        "Control Systems"
+        "Introduction to High Power Electronics",
+        "Advanced Digital Design"
       ],
       "activities": [
         "IEEE student branch",
@@ -54,9 +52,9 @@
       "start": "Fall 2025",
       "end": "Spring 2026",
       "bullets": [
-        "Reached 92% peak efficiency at a 2 A load, measured on an electronic load, by replacing the catch diode with a synchronous MOSFET stage and tuning dead time with an STM32 timer",
-        "Cut output ripple from 80 mV to 25 mV peak to peak, measured on an oscilloscope, by redesigning the 4-layer PCB in KiCad with a solid ground plane and a tighter switching loop",
-        "Wrote STM32 firmware in C that shuts the rail down within 50 µs of an overcurrent fault, verified over 20 deliberate short-circuit tests"
+        "Raised peak efficiency from 85% to 92% at 2 A on an electronic load by replacing the catch diode with a synchronous MOSFET and tuning dead time in 10 ns steps on an STM32 timer",
+        "Brought output ripple down from 80 mV to 25 mV peak to peak on the oscilloscope by moving to a 4-layer KiCad layout with a solid ground plane and a smaller switching loop, simulated in LTspice",
+        "Wrote overcurrent shutdown firmware in C that trips in under 50 µs, tested on 20 shorts"
       ]
     },
     {
@@ -70,8 +68,8 @@
       "start": "Spring 2025",
       "end": "Spring 2025",
       "bullets": [
-        "Processed 48 kHz stereo audio at under 2 ms latency by pipelining five 64-tap FIR filters in Verilog",
-        "Matched the MATLAB reference response within 0.5 dB from 20 Hz to 20 kHz by testing fixed-point coefficients in Vivado simulation"
+        "Built a 5-band equalizer in Verilog for 48 kHz stereo audio with under 2 ms of latency",
+        "Kept the response within 0.5 dB of the MATLAB reference from 20 Hz to 20 kHz by testing 16-bit fixed-point coefficients in Vivado simulation before loading the design onto a Basys 3 board"
       ]
     },
     {
@@ -85,9 +83,9 @@
       "start": "Fall 2024",
       "end": "Fall 2024",
       "bullets": [
-        "Tracked four Li-ion cells to within 10 mV each with an ESP32 monitor that streams readings over Bluetooth to a Python dashboard",
-        "Measured pack current within 1% of a bench multimeter by calibrating an INA219 sensor across a 0.1 A to 3 A load sweep",
-        "Extended field-test runtime by 18% by adding a low-voltage cutoff in C++ that sheds non-critical loads at 3.3 V per cell"
+        "Built an ESP32 monitor that streams 4 cell voltages to a Python dashboard over Bluetooth",
+        "Calibrated an INA219 current sensor to within 1% of a bench meter from 0.1 A to 3 A",
+        "Stretched field-test runtime 18% with a C++ cutoff that drops extra loads at 3.3 V per cell"
       ]
     }
   ],
@@ -100,9 +98,9 @@
       "end": "Present",
       "engineering": true,
       "bullets": [
-        "Cut power board mass by 40 g by replacing three linear regulators with one buck converter board",
-        "Found two battery protection faults before launch review by writing a Python script that runs overnight charge and discharge cycles and flags cell drift",
-        "Led weekly design reviews for a four-person power team and kept board revisions on schedule for two launch-readiness milestones"
+        "Saved 40 g on the power board by swapping 3 linear regulators for 1 buck converter",
+        "Caught 2 battery protection faults before launch review with a Python script that ran overnight charge and discharge cycles on a bench supply and flagged any cell that drifted more than 20 mV",
+        "Run weekly design reviews for the 4-person power team"
       ]
     },
     {
@@ -129,10 +127,10 @@
     "hardwareLab": [
       "Oscilloscope",
       "Electronic load",
+      "Bench supply",
       "STM32",
       "ESP32",
-      "FPGA",
-      "Soldering"
+      "FPGA"
     ],
     "certifications": [
       "IPC J-STD-001 Soldering"

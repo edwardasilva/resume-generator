@@ -13,13 +13,13 @@
     ]
   },
   "header": {
-    "name": "Sam Rivera",
+    "name": "Jordan Doe",
     "phone": "(555) 555-0107",
-    "email": "sam.rivera@example.com",
-    "linkedin": "linkedin.com/in/sam-rivera-example",
+    "email": "jordan.doe@example.com",
+    "linkedin": "linkedin.com/in/jordan-doe-example",
     "github": "",
     "location": "Lakeside, ST",
-    "workStatus": "US Citizen",
+    "workStatus": "",
     "relocate": false,
     "clearance": ""
   },
@@ -30,8 +30,9 @@
       "school": "Example State University",
       "gradDate": "Expected Spring 2030",
       "coursework": [
-        "Intro to Engineering Design",
-        "Calculus I"
+        "Cornerstone Design I",
+        "Physics I: Mechanics",
+        "Computer Science for STEM"
       ],
       "activities": [
         "IEEE student branch"
@@ -43,13 +44,15 @@
       "title": "Line-Following Robot",
       "tools": [
         "Arduino",
-        "C++"
+        "C++",
+        "IR sensors"
       ],
       "start": "Fall 2026",
       "end": "Fall 2026",
       "bullets": [
-        "Built a line-following robot with an Arduino Uno and two IR sensors in C++, finishing the 10 m class track in 41 s, second of 12 teams",
-        "Cut wheel wobble on turns by tuning a proportional steering gain over 15 timed runs, measured with a stopwatch and video"
+        "Finished 2nd of 12 teams in the class line-following race, 41 s on a 10 m track",
+        "Got lap time down from 52 s to 41 s by tuning the steering gain in C++ over 15 test runs",
+        "Traced motor dropouts to 2 cold solder joints with a multimeter and resoldered them"
       ]
     }
   ],
@@ -67,12 +70,10 @@
   "skills": {
     "software": [
       "Arduino",
-      "C++",
-      "Excel"
+      "C++"
     ],
     "hardwareLab": [
       "Multimeter",
-      "Breadboarding",
       "Soldering"
     ],
     "certifications": []
