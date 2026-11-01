@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build resume.pdf from resume.json, fitted to exactly one page.
-# Usage: ./run [--yes]   (--yes, or CI=true, installs TeX without asking)
+# Usage: ./run [--yes]   (--yes, or CI=true, installs Python and TeX without asking)
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -14,30 +14,44 @@ for arg in "$@"; do
   esac
 done
 
-install_tex() {
-  local what cmd
+missing=()
+command -v python3 >/dev/null || missing+=(python3)
+command -v lualatex >/dev/null || missing+=(lualatex)
+
+install_tools() {
+  local what="${missing[*]}" cmd=""
+  local need_py=0 need_tex=0
+  [[ " $what " == *" python3 "* ]] && need_py=1
+  [[ " $what " == *" lualatex "* ]] && need_tex=1
   case "$(uname -s)" in
     Linux)
       if command -v dnf >/dev/null; then
-        what="TeX Live basic scheme with LuaLaTeX and a few LaTeX packages (dnf)"
-        cmd="sudo dnf install -y texlive-scheme-basic texlive-luatex texlive-luaotfload texlive-fontspec texlive-geometry texlive-enumitem texlive-hyperref texlive-lm"
+        local pkgs=""
+        [[ $need_py -eq 1 ]] && pkgs+=" python3"
+        [[ $need_tex -eq 1 ]] && pkgs+=" texlive-scheme-basic texlive-luatex texlive-luaotfload texlive-fontspec texlive-geometry texlive-enumitem texlive-hyperref texlive-lm"
+        cmd="sudo dnf install -y$pkgs"
       elif command -v apt-get >/dev/null; then
-        what="TeX Live with LuaLaTeX and a few LaTeX packages (apt)"
-        cmd="sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends texlive-luatex texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern"
+        local pkgs=""
+        [[ $need_py -eq 1 ]] && pkgs+=" python3"
+        [[ $need_tex -eq 1 ]] && pkgs+=" texlive-luatex texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern"
+        cmd="sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends$pkgs"
       fi ;;
     Darwin)
       if command -v brew >/dev/null; then
-        what="BasicTeX from Homebrew, plus the enumitem package through tlmgr"
-        cmd="brew install --cask basictex && export PATH=\"/Library/TeX/texbin:\$PATH\" && sudo tlmgr update --self && sudo tlmgr install enumitem"
+        [[ $need_py -eq 1 ]] && cmd="brew install python"
+        if [[ $need_tex -eq 1 ]]; then
+          [[ -n "$cmd" ]] && cmd+=" && "
+          cmd+="brew install --cask basictex && export PATH=\"/Library/TeX/texbin:\$PATH\" && sudo tlmgr update --self && sudo tlmgr install enumitem"
+        fi
       fi ;;
   esac
-  if [[ -z "${cmd:-}" ]]; then
-    echo "LuaLaTeX is not installed and this system isn't supported by the installer." >&2
-    echo "Install TeX Live (https://tug.org/texlive/) with LuaLaTeX, fontspec, geometry, enumitem and hyperref, then run ./run again." >&2
+  if [[ -z "$cmd" ]]; then
+    echo "Missing: $what. This system isn't supported by the installer." >&2
+    echo "Install Python 3 and TeX Live (https://tug.org/texlive/) with LuaLaTeX, fontspec, geometry, enumitem and hyperref, then run ./run again." >&2
     exit 1
   fi
-  echo "LuaLaTeX is not installed. This will install: $what"
-  echo "Command: $cmd"
+  echo "Missing: $what. This will run:"
+  echo "  $cmd"
   if [[ $assume_yes -ne 1 ]]; then
     read -r -p "Install now? It uses sudo. [y/N] " answer
     [[ "$answer" =~ ^[Yy]$ ]] || { echo "Not installed. Nothing was changed."; exit 1; }
@@ -46,38 +60,6 @@ install_tex() {
   export PATH="/Library/TeX/texbin:$PATH"
 }
 
-command -v lualatex >/dev/null || install_tex
+[[ ${#missing[@]} -eq 0 ]] || install_tools
 
-export SOURCE_DATE_EPOCH=0 FORCE_SOURCE_DATE=1
-mkdir -p build
-
-# Compile at tightness $1 and set $pages to the page count.
-compile() {
-  if ! RESUME_T="$1" lualatex -interaction=nonstopmode -halt-on-error \
-      -output-directory=build resume.tex >/dev/null 2>&1; then
-    echo "LaTeX failed. Last lines of build/resume.log:" >&2
-    tail -n 20 build/resume.log >&2
-    exit 1
-  fi
-  pages="$(sed -n 's/.*Output written on .* (\([0-9]*\) page.*/\1/p' build/resume.log)"
-}
-
-# Try from loosest to tightest and keep the first setting that fits on one page.
-for t in 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1; do
-  compile "$t"
-  if [[ "$pages" == "1" ]]; then
-    cp build/resume.pdf resume.pdf
-    settings="$(grep -o 'RESUME-SETTINGS.*' build/resume.log | head -n1 | cut -d' ' -f2-)"
-    echo "Wrote resume.pdf (1 page, $settings)."
-    exit 0
-  fi
-done
-
-# Still too long at the tightest setting: estimate how many lines to cut.
-read -r page used text line < <(grep -o 'RESUME-OVERFLOW.*' build/resume.log | head -n1 |
-  sed 's/[a-z]*=//g; s/pt//g; s/RESUME-OVERFLOW //')
-lines="$(awk -v p="$page" -v u="$used" -v t="$text" -v l="$line" \
-  'BEGIN { n = ((p - 2) * t + u) / l; printf "%d", (n < 1 ? 1 : n + 0.999) }')"
-echo "The resume doesn't fit on one page, even at 10 pt with 0.4 in margins." >&2
-echo "Cut about $lines line(s). Try dropping a coursework item first, then a bullet." >&2
-exit 1
+exec python3 build.py

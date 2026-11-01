@@ -1,32 +1,53 @@
-% One-page resume built from resume.json. Run ./run to build resume.pdf.
+% One-page resume. Run ./run to build resume.pdf.
+% build.py writes build/settings.tex (font size and margins) and
+% build/body.tex (the content from resume.json) before each run.
 \documentclass[letterpaper]{article}
-\directlua{resume = dofile("resume.lua") resume.preamble()}
+
+% ---------- Packages ----------
 \usepackage{fontspec}
-\usepackage[margin=\ResumeMargin]{geometry}
 \usepackage{enumitem}
+\input{build/settings}
+\usepackage[margin=\resumemargin]{geometry}
 \usepackage[hidelinks]{hyperref}
 
+% ---------- Page layout ----------
+% Fill the page: leftover space goes into the gaps below, not the bottom.
+\flushbottom
 \pagestyle{empty}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0pt}
-\newlength{\secgap}
-\newlength{\itemgap}
+
+% ---------- Section style ----------
+\newcommand{\resumesection}[1]{%
+  \par\vspace{6pt plus 8pt}%
+  {\large\bfseries #1}\par
+  \vspace{1pt}%
+  \hrule height 0.6pt
+  \vspace{5pt plus 3pt}}
+
+% ---------- Entry macros ----------
 \newlength{\datewidth}
-% An entry line: text on the left (wraps if long), date at the right margin.
+% Title on the left (wraps if long), date at the right margin.
 \newcommand{\entry}[2]{%
   \settowidth{\datewidth}{#2}%
-  \parbox[t]{\dimexpr\linewidth-\datewidth-1em\relax}{\raggedright #1}\hfill #2\par}
-\setlist[itemize]{leftmargin=1.2em, label=\textbullet, topsep=1pt, partopsep=0pt, itemsep=0pt, parsep=0pt}
+  \parbox[t]{\dimexpr\linewidth-\datewidth-1em\relax}{\raggedright #1}%
+  \hfill #2\par}
+% Tools used for a project, on their own line under the title.
+\newcommand{\tools}[1]{{\itshape #1}\par}
+% Space between entries in a section.
+\newcommand{\entrygap}{\par\vspace{4pt plus 6pt}}
+\setlist[itemize]{leftmargin=1.2em, label=\textbullet, topsep=1pt plus 1pt,
+  partopsep=0pt, itemsep=0pt plus 1pt, parsep=0pt}
 
-\newcommand{\resumesection}[1]{%
-  \par\vspace{\secgap}%
-  {\bfseries\large #1}\par\vspace{1pt}%
-  \hrule height 0.6pt\relax\vspace{3pt}}
-
-% Report how much ran onto later pages, so the run script can say how much to cut.
-\AtEndDocument{\par\typeout{RESUME-OVERFLOW page=\thepage\space used=\the\pagetotal\space text=\the\textheight\space line=\the\baselineskip}}
+% ---------- Measurements for the fitting script ----------
+\newcommand{\measure}[1]{%
+  \typeout{RESUME-#1 page=\thepage\space used=\the\pagetotal\space
+    goal=\the\pagegoal\space line=\the\baselineskip}}
 
 \begin{document}
-\directlua{resume.setup()}
-\directlua{resume.body()}
+\resumefont
+\input{build/body}
+\par\measure{END}
+% Cancel the fill that ends the page so the gaps above stretch instead.
+\vspace{0pt plus -1fil}
 \end{document}

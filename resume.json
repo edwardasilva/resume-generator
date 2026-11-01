@@ -1,6 +1,10 @@
 {
   "settings": {
-    "dateStyle": "semester",
+    "dateStyle": {
+      "education": "semester",
+      "projects": "semester",
+      "experience": "month"
+    },
     "sectionOrder": [
       "education",
       "projects",
@@ -90,7 +94,7 @@
       "title": "Power Subsystem Lead",
       "company": "Example State CubeSat Team",
       "location": "Springfield, ST",
-      "start": "Fall 2024",
+      "start": "Sep 2024",
       "end": "Present",
       "engineering": true,
       "bullets": [
@@ -102,8 +106,8 @@
       "title": "Sales Associate",
       "company": "Example Hardware Store",
       "location": "",
-      "start": "Summer 2023",
-      "end": "Summer 2024",
+      "start": "May 2023",
+      "end": "Aug 2024",
       "engineering": false,
       "bullets": []
     }
