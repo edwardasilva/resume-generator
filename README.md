@@ -4,6 +4,8 @@ Turn one JSON file into a clean, one-page PDF resume. You write the content in `
 
 It was built for engineering students, and the layout follows the advice on [eeprep's resume page](https://eeprep.com/get-hired/resume/). It works for any field.
 
+![Sample one-page resume built from resume.json](docs/sample.png)
+
 ## Quick start
 
 1. **Get the code.**
