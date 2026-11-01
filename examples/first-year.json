@@ -42,6 +42,7 @@
   "projects": [
     {
       "title": "Line-Following Robot",
+      "url": "github.com/jordan-doe-example/line-follower",
       "tools": [
         "Arduino",
         "C++",

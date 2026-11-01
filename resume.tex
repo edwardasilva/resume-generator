@@ -21,6 +21,9 @@
 % ---------- Header ----------
 % Name and contact lines, centered, with a small gap before the first section.
 \newenvironment{resumeheader}{\par\centering}{\par\vspace{6.7pt}}
+% A separator between header items. If the line wraps there, the bar is
+% dropped so no line starts or ends with one.
+\newcommand{\headersep}{\discretionary{}{}{\hbox{\ \textbar\ }}}
 
 % ---------- Section style ----------
 % Title, a full-width rule, then a clear gap before the first entry.
