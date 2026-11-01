@@ -8,7 +8,7 @@ This project is a companion to [eeprep.com](https://eeprep.com). It was built fo
 
 Get the latest zip from the [releases page](https://github.com/edwardasilva/resume-generator/releases/latest), unzip it, edit `resume.json` (see the field guide below) and run `./run`. It writes `resume.pdf`.
 
-`./run` needs Python 3 and LuaLaTeX. If either is missing, it says what it will install and asks before it uses `sudo`. It supports Fedora (dnf), Debian, Ubuntu and WSL (apt), and macOS (Homebrew). Run `./run --yes` to skip the question.
+`./run` needs Python 3 and LuaLaTeX. If either is missing, it says what it will install and asks before it uses `sudo`. It supports Fedora (dnf), Debian, Ubuntu and WSL (apt), and macOS (Homebrew). Run `./run --yes` to skip the question. The resume is set in Libertinus Serif. On Debian and Ubuntu that font only comes in `texlive-fonts-extra`, a download of about 600 MB.
 
 To work from the repository instead, clone it and run `./run`. The first run copies `examples/alex.json` to `resume.json`, which is ignored by git along with `resume.pdf`, so personal details stay out of the repository.
 

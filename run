@@ -40,12 +40,12 @@ install_tools() {
       if command -v dnf >/dev/null; then
         local pkgs=""
         [[ $need_py -eq 1 ]] && pkgs+=" python3"
-        [[ $need_tex -eq 1 ]] && pkgs+=" texlive-scheme-basic texlive-luatex texlive-luaotfload texlive-fontspec texlive-geometry texlive-enumitem texlive-hyperref texlive-lm"
+        [[ $need_tex -eq 1 ]] && pkgs+=" texlive-scheme-basic texlive-luatex texlive-luaotfload texlive-fontspec texlive-geometry texlive-enumitem texlive-hyperref texlive-lm texlive-libertinus-fonts"
         cmd="sudo dnf install -y$pkgs"
       elif command -v apt-get >/dev/null; then
         local pkgs=""
         [[ $need_py -eq 1 ]] && pkgs+=" python3"
-        [[ $need_tex -eq 1 ]] && pkgs+=" texlive-luatex texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern"
+        [[ $need_tex -eq 1 ]] && pkgs+=" texlive-luatex texlive-latex-recommended texlive-latex-extra texlive-fonts-extra lmodern"
         cmd="sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends$pkgs"
       fi ;;
     Darwin)
@@ -53,13 +53,13 @@ install_tools() {
         [[ $need_py -eq 1 ]] && cmd="brew install python"
         if [[ $need_tex -eq 1 ]]; then
           [[ -n "$cmd" ]] && cmd+=" && "
-          cmd+="brew install --cask basictex && export PATH=\"/Library/TeX/texbin:\$PATH\" && sudo tlmgr update --self && sudo tlmgr install enumitem"
+          cmd+="brew install --cask basictex && export PATH=\"/Library/TeX/texbin:\$PATH\" && sudo tlmgr update --self && sudo tlmgr install enumitem libertinus-fonts"
         fi
       fi ;;
   esac
   if [[ -z "$cmd" ]]; then
     echo "Missing: $what. This system isn't supported by the installer." >&2
-    echo "Install Python 3 and TeX Live (https://tug.org/texlive/) with LuaLaTeX, fontspec, geometry, enumitem and hyperref, then run ./run again." >&2
+    echo "Install Python 3 and TeX Live (https://tug.org/texlive/) with LuaLaTeX, fontspec, geometry, enumitem, hyperref and the Libertinus fonts, then run ./run again." >&2
     exit 1
   fi
   echo "Missing: $what. This will run:"

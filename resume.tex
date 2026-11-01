@@ -5,6 +5,11 @@
 
 % ---------- Packages ----------
 \usepackage{fontspec}
+% Libertinus Serif, loaded by file name so it comes from the TeX installation.
+\setmainfont{LibertinusSerif}[
+  Extension = .otf,
+  UprightFont = *-Regular,
+  BoldFont = *-Bold]
 \usepackage{enumitem}
 \input{build/settings}
 \usepackage[margin=\resumemargin]{geometry}
@@ -38,10 +43,10 @@
   \parbox[t]{\dimexpr\linewidth-\datewidth-1em\relax}{\raggedright #1}%
   \hfill #2\par}
 % Tools used for a project, on their own line under the title.
-\newcommand{\tools}[1]{{\itshape #1}\par}
+\newcommand{\tools}[1]{#1\par}
 % Space between entries in a section.
 \newcommand{\entrygap}{\par\vspace{\entryspace}}
-\setlist[itemize]{leftmargin=12pt, label={$\vcenter{\hbox{\small$\bullet$}}$},
+\setlist[itemize]{leftmargin=12pt, label=\textbullet,
   topsep=2.5pt, partopsep=0pt, itemsep=1.7pt, parsep=0pt}
 
 % ---------- Measurements for the fitting script ----------
