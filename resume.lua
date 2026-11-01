@@ -141,7 +141,7 @@ function render.education(d)
   for _, e in ipairs(list) do
     local head = "\\textbf{" .. esc(e.degree) .. "}"
     if not blank(e.gpa) then head = head .. ", GPA " .. esc(e.gpa) end
-    emit(head .. "\\hfill " .. esc(e.gradDate) .. "\\par")
+    emit("\\entry{" .. head .. "}{" .. esc(e.gradDate) .. "}")
     if not blank(e.school) then emit(esc(e.school) .. "\\par") end
     local cw, ac = joinesc(e.coursework), joinesc(e.activities)
     if cw ~= "" then emit("\\textbf{Relevant coursework:} " .. cw .. "\\par") end
@@ -158,7 +158,7 @@ function render.projects(d)
     local tools = joinesc(p.tools)
     local head = "\\textbf{" .. esc(p.title) .. "}"
     if tools ~= "" then head = head .. " (" .. tools .. ")" end
-    emit(head .. "\\hfill " .. dates(p.start, p["end"]) .. "\\par")
+    emit("\\entry{" .. head .. "}{" .. dates(p.start, p["end"]) .. "}")
     bullets(p.bullets)
     emit("\\vspace{\\itemgap}")
   end
@@ -173,10 +173,10 @@ function render.experience(d)
     if not blank(x.company) then name = name .. ", " .. esc(x.company) end
     local loc = blank(x.location) and "" or (", " .. esc(x.location))
     if x.engineering then
-      emit("\\textbf{" .. name .. "}" .. loc .. "\\hfill " .. dates(x.start, x["end"]) .. "\\par")
+      emit("\\entry{\\textbf{" .. name .. "}" .. loc .. "}{" .. dates(x.start, x["end"]) .. "}")
       bullets(x.bullets)
     else
-      emit(name .. loc .. "\\hfill " .. dates(x.start, x["end"]) .. "\\par")
+      emit("\\entry{" .. name .. loc .. "}{" .. dates(x.start, x["end"]) .. "}")
     end
     emit("\\vspace{\\itemgap}")
   end

@@ -51,7 +51,7 @@ command -v lualatex >/dev/null || install_tex
 export SOURCE_DATE_EPOCH=0 FORCE_SOURCE_DATE=1
 mkdir -p build
 
-# Compile at tightness $1 and print the page count.
+# Compile at tightness $1 and set $pages to the page count.
 compile() {
   if ! RESUME_T="$1" lualatex -interaction=nonstopmode -halt-on-error \
       -output-directory=build resume.tex >/dev/null 2>&1; then
@@ -59,12 +59,13 @@ compile() {
     tail -n 20 build/resume.log >&2
     exit 1
   fi
-  sed -n 's/.*Output written on .* (\([0-9]*\) page.*/\1/p' build/resume.log
+  pages="$(sed -n 's/.*Output written on .* (\([0-9]*\) page.*/\1/p' build/resume.log)"
 }
 
 # Try from loosest to tightest and keep the first setting that fits on one page.
 for t in 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1; do
-  if [[ "$(compile "$t")" == "1" ]]; then
+  compile "$t"
+  if [[ "$pages" == "1" ]]; then
     cp build/resume.pdf resume.pdf
     settings="$(grep -o 'RESUME-SETTINGS.*' build/resume.log | head -n1 | cut -d' ' -f2-)"
     echo "Wrote resume.pdf (1 page, $settings)."

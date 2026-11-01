@@ -11,6 +11,11 @@
 \setlength{\parskip}{0pt}
 \newlength{\secgap}
 \newlength{\itemgap}
+\newlength{\datewidth}
+% An entry line: text on the left (wraps if long), date at the right margin.
+\newcommand{\entry}[2]{%
+  \settowidth{\datewidth}{#2}%
+  \parbox[t]{\dimexpr\linewidth-\datewidth-1em\relax}{\raggedright #1}\hfill #2\par}
 \setlist[itemize]{leftmargin=1.2em, label=\textbullet, topsep=1pt, partopsep=0pt, itemsep=0pt, parsep=0pt}
 
 \newcommand{\resumesection}[1]{%
