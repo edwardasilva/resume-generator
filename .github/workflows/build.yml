@@ -56,9 +56,8 @@ jobs:
       - name: Install TeX Live with scheme-basic
         run: |
           curl -sSL https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz | tar xz
-          printf '%s\n' "selected_scheme scheme-basic" "TEXDIR $RUNNER_TEMP/texlive" \
-            "tlpdbopt_install_docfiles 0" "tlpdbopt_install_srcfiles 0" > texlive.profile
-          install-tl-*/install-tl --profile texlive.profile > /dev/null
+          install-tl-*/install-tl --no-interaction --scheme scheme-basic \
+            --texdir "$RUNNER_TEMP/texlive" --no-doc-install --no-src-install > /dev/null
           echo "$RUNNER_TEMP/texlive/bin/x86_64-linux" >> "$GITHUB_PATH"
       - name: Build each example
         run: for f in examples/*.json; do ./run --yes "$f"; done
