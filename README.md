@@ -8,7 +8,7 @@ This project is a companion to [eeprep.com](https://eeprep.com). It was built fo
 
 Get the latest zip from the [releases page](https://github.com/edwardasilva/resume-generator/releases/latest), unzip it, edit `resume.json` (see the field guide below) and run `./run`. It writes `resume.pdf`.
 
-`./run` needs Python 3 and LuaLaTeX. If either is missing, it says what it will install and asks before it uses `sudo`. It supports Fedora (dnf), Debian, Ubuntu and WSL (apt), and macOS (Homebrew). Run `./run --yes` to skip the question. The default font, Libertinus Serif, comes in `texlive-fonts-extra` on Debian and Ubuntu, a download of about 600 MB.
+`./run` needs Python 3 and LuaLaTeX. If either is missing, it says what it will install and asks before it uses `sudo`. It supports Fedora (dnf), Debian, Ubuntu and WSL (apt), and macOS (Homebrew). Run `./run --yes` to skip the question. The fonts come with the project in `fonts/`, so no font packages are needed, and the PDF looks the same on every system.
 
 To work from the repository instead, clone it and run `./run`. The first run copies `examples/alex.json` to `resume.json`, which is ignored by git along with `resume.pdf`, so personal details stay out of the repository.
 
@@ -149,8 +149,10 @@ ruff format
 ruff check
 ```
 
-CI runs the same checks, builds every file in `examples/` with `./run`, and fails if any PDF isn't exactly one page.
+CI runs the same checks, builds every file in `examples/` with `./run`, and fails if any PDF isn't exactly one page or uses a font that isn't in `fonts/`. It also builds them on a bare TeX Live with no font packages and on macOS with BasicTeX.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+The code is MIT. See [LICENSE](LICENSE).
+
+The fonts in `fonts/` keep their own licenses: Libertinus Serif is under the SIL Open Font License 1.1 ([fonts/OFL.txt](fonts/OFL.txt)), and TeX Gyre Termes and TeX Gyre Heros are under the GUST Font License ([fonts/GUST-FONT-LICENSE.txt](fonts/GUST-FONT-LICENSE.txt)). See [fonts/README.md](fonts/README.md) for where each file comes from.

@@ -44,8 +44,9 @@ ENTRY_GAP = 6.3
 # instead of large gaps.
 MAX_EXTRA_GAP = 3.0
 
-# Fonts allowed in settings.font: font files in the TeX installation, loaded
-# by file name. The first one is the default.
+# Fonts allowed in settings.font: font files in fonts/, loaded by path so the
+# build doesn't depend on the fonts installed on the system. The first one is
+# the default.
 FONTS = {
     "libertinus": ("LibertinusSerif", "*-Regular", "*-Bold"),
     "times": ("texgyretermes", "*-regular", "*-bold"),
@@ -355,7 +356,8 @@ def settings(typeface, font, margin, extra=0.0):
     return "\n".join(
         [
             rf"\newcommand{{\resumemainfont}}{{\setmainfont{{{base}}}"
-            rf"[Extension=.otf, UprightFont={upright}, BoldFont={bold}]}}",
+            rf"[Path=./fonts/, Extension=.otf, UprightFont={upright}, "
+            rf"BoldFont={bold}]}}",
             rf"\newcommand{{\resumemargin}}{{{margin}in}}",
             rf"\newcommand{{\resumefont}}"
             rf"{{\fontsize{{{font}pt}}{{{line:.2f}pt}}\selectfont}}",
@@ -389,10 +391,28 @@ def compile_once(typeface, font, margin, extra=0.0):
     )
     log = (BUILD / "resume.log").read_text(encoding="utf-8", errors="replace")
     if result.returncode != 0:
-        tail = "\n".join(log.splitlines()[-20:])
-        raise ResumeError(f"LaTeX failed. Last lines of build/resume.log:\n{tail}")
+        raise ResumeError(latex_error(log))
     pages = re.search(r"Output written on .*?\((\d+) pages?", log, re.S)
     return int(pages.group(1)) if pages else 0, log
+
+
+def latex_error(log):
+    """Return a short message about a failed LaTeX run, from its first error."""
+    lines = log.splitlines()
+    first = next((i for i, x in enumerate(lines) if x.startswith("!")), None)
+    if first is None:
+        error = "LaTeX stopped without an error message."
+    else:
+        error = " ".join(lines[first : first + 2])
+        error = " ".join(re.sub(r"^! |\(\w+\)", " ", error).split())
+    hint = "Update TeX Live with: tlmgr update --all, then run ./run again."
+    if "fontspec" in log and "cannot be found" in log:
+        hint = "A font file in fonts/ is missing. Download the project again."
+    elif "File `" in error and "not found" in error:
+        package = re.search(r"File `([^']+)\.sty'", error)
+        name = package.group(1) if package else "the missing package"
+        hint = f"Install {name}, for example with: tlmgr install {name}"
+    return f"LaTeX failed: {error}\n{hint}\nThe full log is in {BUILD / 'resume.log'}"
 
 
 def measure(log, key):
