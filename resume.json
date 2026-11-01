@@ -1,0 +1,131 @@
+{
+  "settings": {
+    "dateStyle": "semester",
+    "sectionOrder": [
+      "education",
+      "projects",
+      "experience",
+      "skills"
+    ]
+  },
+  "header": {
+    "name": "Jane Doe",
+    "phone": "(555) 555-0142",
+    "email": "jane.doe@example.com",
+    "linkedin": "linkedin.com/in/jane-doe-example",
+    "github": "github.com/jane-doe-example",
+    "location": "Springfield, ST",
+    "workStatus": "US Citizen",
+    "relocate": true,
+    "clearance": ""
+  },
+  "education": [
+    {
+      "degree": "B.S. Electrical Engineering",
+      "gpa": "3.62/4.00",
+      "school": "Example State University",
+      "gradDate": "Expected Spring 2027",
+      "coursework": [
+        "Power Electronics",
+        "Embedded Systems",
+        "Digital Design",
+        "Signals and Systems"
+      ],
+      "activities": [
+        "IEEE student branch",
+        "Tau Beta Pi"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "title": "Synchronous Buck Converter for a CubeSat Power Board",
+      "tools": [
+        "KiCad",
+        "LTspice",
+        "STM32",
+        "C"
+      ],
+      "start": "Fall 2025",
+      "end": "Spring 2026",
+      "bullets": [
+        "Reached 92% peak efficiency at a 2 A load, measured on an electronic load, by replacing the catch diode with a synchronous MOSFET stage and tuning dead time with an STM32 timer",
+        "Cut output ripple from 80 mV to 25 mV peak to peak, measured on an oscilloscope, by redesigning the 4-layer PCB in KiCad with a solid ground plane and a tighter switching loop",
+        "Wrote STM32 firmware in C that shuts the rail down within 50 µs of an overcurrent fault, verified over 20 deliberate short-circuit tests"
+      ]
+    },
+    {
+      "title": "FPGA Audio Equalizer",
+      "tools": [
+        "Verilog",
+        "Vivado",
+        "MATLAB",
+        "Basys 3"
+      ],
+      "start": "Spring 2025",
+      "end": "Spring 2025",
+      "bullets": [
+        "Processed 48 kHz stereo audio at under 2 ms latency by pipelining five 64-tap FIR filters in Verilog",
+        "Matched the MATLAB reference response within 0.5 dB from 20 Hz to 20 kHz by testing fixed-point coefficients in Vivado simulation"
+      ]
+    },
+    {
+      "title": "Bluetooth Battery Monitor",
+      "tools": [
+        "ESP32",
+        "C++",
+        "Python",
+        "INA219"
+      ],
+      "start": "Fall 2024",
+      "end": "Fall 2024",
+      "hide": true,
+      "bullets": [
+        "Tracked four Li-ion cells within 10 mV each with an ESP32 monitor that streams readings to a Python dashboard"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "title": "Power Subsystem Lead",
+      "company": "Example State CubeSat Team",
+      "location": "Springfield, ST",
+      "start": "Fall 2024",
+      "end": "Present",
+      "engineering": true,
+      "bullets": [
+        "Cut power board mass by 40 g by replacing three linear regulators with one buck converter board",
+        "Found two battery protection faults before launch review by writing a Python script that runs overnight charge and discharge cycles and flags cell drift"
+      ]
+    },
+    {
+      "title": "Sales Associate",
+      "company": "Example Hardware Store",
+      "location": "",
+      "start": "Summer 2023",
+      "end": "Summer 2024",
+      "engineering": false,
+      "bullets": []
+    }
+  ],
+  "skills": {
+    "software": [
+      "KiCad",
+      "LTspice",
+      "MATLAB",
+      "Vivado",
+      "Python",
+      "C",
+      "C++",
+      "Verilog"
+    ],
+    "hardwareLab": [
+      "Oscilloscope",
+      "Electronic load",
+      "STM32",
+      "ESP32",
+      "FPGA"
+    ],
+    "certifications": []
+  }
+}

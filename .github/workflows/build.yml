@@ -1,0 +1,19 @@
+name: Build resume
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build resume.pdf
+        run: ./run --yes
+        env:
+          CI: "true"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: resume
+          path: resume.pdf

@@ -1,0 +1,27 @@
+% One-page resume built from resume.json. Run ./run to build resume.pdf.
+\documentclass[letterpaper]{article}
+\directlua{resume = dofile("resume.lua") resume.preamble()}
+\usepackage{fontspec}
+\usepackage[margin=\ResumeMargin]{geometry}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\newlength{\secgap}
+\newlength{\itemgap}
+\setlist[itemize]{leftmargin=1.2em, label=\textbullet, topsep=1pt, partopsep=0pt, itemsep=0pt, parsep=0pt}
+
+\newcommand{\resumesection}[1]{%
+  \par\vspace{\secgap}%
+  {\bfseries\large #1}\par\vspace{1pt}%
+  \hrule height 0.6pt\relax\vspace{3pt}}
+
+% Report how much ran onto later pages, so the run script can say how much to cut.
+\AtEndDocument{\par\typeout{RESUME-OVERFLOW page=\thepage\space used=\the\pagetotal\space text=\the\textheight\space line=\the\baselineskip}}
+
+\begin{document}
+\directlua{resume.setup()}
+\directlua{resume.body()}
+\end{document}

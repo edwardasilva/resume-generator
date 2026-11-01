@@ -1,0 +1,5 @@
+build/
+resume.pdf
+*.aux
+*.log
+*.out
