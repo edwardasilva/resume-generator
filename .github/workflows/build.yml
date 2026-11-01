@@ -13,7 +13,9 @@ jobs:
         run: ./run --yes
         env:
           CI: "true"
+      - name: Check that each example fits on one page
+        run: for f in examples/*.json; do ./run --yes "$f"; done
       - uses: actions/upload-artifact@v4
         with:
           name: resume
-          path: resume.pdf
+          path: "*.pdf"

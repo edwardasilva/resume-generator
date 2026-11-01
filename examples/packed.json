@@ -1,0 +1,178 @@
+{
+  "settings": {
+    "dateStyle": {
+      "education": "semester",
+      "projects": "semester",
+      "experience": "month"
+    },
+    "sectionOrder": [
+      "experience",
+      "projects",
+      "education",
+      "skills"
+    ]
+  },
+  "header": {
+    "name": "Jordan Lee",
+    "phone": "(555) 555-0191",
+    "email": "jordan.lee@example.com",
+    "linkedin": "linkedin.com/in/jordan-lee-example",
+    "github": "github.com/jordan-lee-example",
+    "location": "Hillcrest, ST",
+    "workStatus": "US Citizen",
+    "relocate": true,
+    "clearance": ""
+  },
+  "education": [
+    {
+      "degree": "B.S. Electrical Engineering, Minor in Computer Science",
+      "gpa": "3.88/4.00",
+      "school": "Example State University",
+      "gradDate": "Spring 2026",
+      "coursework": [
+        "Embedded Systems",
+        "Digital Signal Processing",
+        "Power Electronics",
+        "Control Systems",
+        "RF Circuit Design",
+        "Computer Architecture",
+        "Estimation Theory"
+      ],
+      "activities": [
+        "IEEE student branch, treasurer",
+        "Tau Beta Pi",
+        "Formula SAE electrical team"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "title": "Hardware Engineering Intern",
+      "company": "Example Avionics",
+      "location": "Northgate, ST",
+      "start": "May 2025",
+      "end": "Aug 2025",
+      "engineering": true,
+      "bullets": [
+        "Cut noise on a 16-bit ADC front end from 12 LSB to 3 LSB by redesigning the anti-aliasing filter and grounding in Altium, measured with an FFT on 1 million samples",
+        "Brought up 3 revisions of a sensor interface board, finding 7 layout faults with an oscilloscope and thermal camera before the design review",
+        "Wrote a Python test harness that checks 64 board signals over SPI in 90 seconds, adopted for production testing of 200 units",
+        "Reduced a power rail's ripple by 60% by adding an LC post-filter sized in LTspice and confirmed on the bench"
+      ]
+    },
+    {
+      "title": "Embedded Software Intern",
+      "company": "Example Robotics",
+      "location": "Hillcrest, ST",
+      "start": "May 2024",
+      "end": "Aug 2024",
+      "engineering": true,
+      "bullets": [
+        "Ported motor-control firmware from bare-metal C to FreeRTOS on an STM32, keeping the 10 kHz control loop jitter under 2 µs on a logic analyzer",
+        "Added a bootloader that updates firmware over CAN in 40 seconds, tested across 100 update cycles with no failures",
+        "Fixed an encoder overflow bug that caused a 1-in-500 position error, confirmed by a 24-hour run with logged positions"
+      ]
+    },
+    {
+      "title": "Undergraduate Research Assistant",
+      "company": "Example State Power Lab",
+      "location": "",
+      "start": "Sep 2023",
+      "end": "Apr 2024",
+      "engineering": true,
+      "bullets": [
+        "Characterized 12 GaN transistors on a double-pulse tester, measuring switching losses within 5% of datasheet values",
+        "Automated data capture in MATLAB, cutting each test session from 2 hours to 30 minutes"
+      ]
+    },
+    {
+      "title": "Tutor",
+      "company": "Example State Learning Center",
+      "location": "",
+      "start": "Jan 2023",
+      "end": "May 2023",
+      "engineering": false,
+      "bullets": []
+    }
+  ],
+  "projects": [
+    {
+      "title": "Senior Design: Battery Management System for an Electric Kart",
+      "tools": [
+        "Altium",
+        "STM32",
+        "C",
+        "CAN",
+        "LTspice"
+      ],
+      "start": "Fall 2025",
+      "end": "Spring 2026",
+      "bullets": [
+        "Balanced a 24-cell Li-ion pack within 10 mV using passive balancing on a custom 4-layer board, verified over 30 charge cycles",
+        "Kept cell temperature estimates within 1.5 °C of thermocouple readings with a lumped thermal model in C running at 10 Hz",
+        "Shut the pack down within 5 ms of an overcurrent fault, tested with 25 deliberate short-circuit events"
+      ]
+    },
+    {
+      "title": "Software-Defined Radio FM Receiver",
+      "tools": [
+        "Python",
+        "GNU Radio",
+        "RTL-SDR",
+        "NumPy"
+      ],
+      "start": "Spring 2025",
+      "end": "Spring 2025",
+      "bullets": [
+        "Demodulated broadcast FM in real time at 2.4 MS/s in GNU Radio, with stereo audio confirmed on 6 local stations",
+        "Cut CPU use by 40% by decimating early and replacing two blocks with a NumPy polyphase filter",
+        "Measured 55 dB stereo separation with a test tone, within 5 dB of a commercial receiver on the same antenna"
+      ]
+    },
+    {
+      "title": "Self-Balancing Robot",
+      "tools": [
+        "Arduino",
+        "C++",
+        "MPU-6050",
+        "MATLAB"
+      ],
+      "start": "Fall 2024",
+      "end": "Fall 2024",
+      "bullets": [
+        "Balanced a two-wheel robot for over 10 minutes using a PID loop tuned from a MATLAB model, recovering from 15° pushes",
+        "Fused gyro and accelerometer data with a complementary filter, keeping tilt error under 1° against a reference inclinometer",
+        "Logged 2,000 samples per run over serial and plotted step responses in MATLAB to check each gain change"
+      ]
+    }
+  ],
+  "skills": {
+    "software": [
+      "C",
+      "C++",
+      "Python",
+      "MATLAB",
+      "Verilog",
+      "Altium",
+      "KiCad",
+      "LTspice",
+      "FreeRTOS",
+      "GNU Radio",
+      "Git",
+      "Linux"
+    ],
+    "hardwareLab": [
+      "Oscilloscope",
+      "Spectrum analyzer",
+      "Logic analyzer",
+      "Double-pulse tester",
+      "Thermal camera",
+      "STM32",
+      "FPGA"
+    ],
+    "certifications": [
+      "Engineer in Training (EIT)",
+      "IPC J-STD-001 soldering"
+    ]
+  }
+}

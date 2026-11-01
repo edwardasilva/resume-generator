@@ -1,0 +1,124 @@
+{
+  "settings": {
+    "dateStyle": {
+      "education": "semester",
+      "projects": "semester",
+      "experience": "month"
+    },
+    "sectionOrder": [
+      "experience",
+      "projects",
+      "education",
+      "skills"
+    ]
+  },
+  "header": {
+    "name": "Priya Shah",
+    "phone": "(555) 555-0158",
+    "email": "priya.shah@example.com",
+    "linkedin": "linkedin.com/in/priya-shah-example",
+    "github": "github.com/priya-shah-example",
+    "location": "Brookfield, ST",
+    "workStatus": "US Citizen",
+    "relocate": true,
+    "clearance": ""
+  },
+  "education": [
+    {
+      "degree": "B.S. Electrical Engineering",
+      "gpa": "3.71/4.00",
+      "school": "Example State University",
+      "gradDate": "Spring 2026",
+      "coursework": [
+        "Embedded Systems",
+        "Power Electronics",
+        "Control Systems",
+        "Analog Circuit Design"
+      ],
+      "activities": [
+        "Eta Kappa Nu"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "title": "Embedded Firmware Intern",
+      "company": "Example Motor Controls",
+      "location": "Fairview, ST",
+      "start": "May 2025",
+      "end": "Aug 2025",
+      "engineering": true,
+      "bullets": [
+        "Cut motor startup current spikes by 35% by adding a soft-start ramp to STM32 firmware in C, measured with a current probe over 50 starts",
+        "Reduced board bring-up time from 2 days to 4 hours by writing a Python test script that checks 40 analog and digital channels over UART",
+        "Fixed a CAN bus timeout that dropped 1 in 200 messages by correcting the bit-timing settings, confirmed over a 12-hour soak test"
+      ]
+    },
+    {
+      "title": "Test Engineering Intern",
+      "company": "Example Power Systems",
+      "location": "Brookfield, ST",
+      "start": "May 2024",
+      "end": "Aug 2024",
+      "engineering": true,
+      "bullets": [
+        "Automated efficiency testing of a 500 W power supply with LabVIEW and a programmable load, cutting each test run from 3 hours to 25 minutes",
+        "Found a thermal derating error in a 12 V module by logging 8 thermocouples for 48 hours, and the design team changed the heatsink"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "title": "Senior Design: Solar Charge Controller",
+      "tools": [
+        "KiCad",
+        "STM32",
+        "C",
+        "LTspice"
+      ],
+      "start": "Fall 2025",
+      "end": "Spring 2026",
+      "bullets": [
+        "Raised harvested energy 18% over a fixed-voltage controller by running perturb-and-observe MPPT on an STM32, measured on a solar simulator",
+        "Designed a 2-layer KiCad board for a 100 W buck stage that passed a 4-hour full-load burn-in below 70 °C"
+      ]
+    },
+    {
+      "title": "Digital Audio Filter on an FPGA",
+      "tools": [
+        "Verilog",
+        "Vivado",
+        "MATLAB"
+      ],
+      "start": "Spring 2025",
+      "end": "Spring 2025",
+      "bullets": [
+        "Ran a 32-tap FIR low-pass filter at 48 kHz on a Basys 3 board, matching the MATLAB design within 0.3 dB across the passband"
+      ]
+    }
+  ],
+  "skills": {
+    "software": [
+      "C",
+      "Python",
+      "MATLAB",
+      "Verilog",
+      "KiCad",
+      "LTspice",
+      "LabVIEW",
+      "Git"
+    ],
+    "hardwareLab": [
+      "Oscilloscope",
+      "Current probe",
+      "Programmable load",
+      "STM32",
+      "FPGA",
+      "CAN bus"
+    ],
+    "certifications": [
+      "Engineer in Training (EIT)",
+      "IPC-A-610 Certified IPC Specialist"
+    ]
+  }
+}

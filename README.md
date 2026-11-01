@@ -25,6 +25,19 @@ See a sample resume: [docs/sample.pdf](docs/sample.pdf)
 
    This writes `resume.pdf`. It needs Python 3 and LuaLaTeX. If either is missing, the script says what it will install and asks before it uses `sudo`. It supports Fedora (dnf), Debian, Ubuntu and WSL (apt), and macOS (Homebrew). Run `./run --yes` to skip the question. `./run` checks the tools and then calls `build.py`, which does the layout and fitting.
 
+   To build a different file, pass it as an argument: `./run examples/new-grad.json` writes `new-grad.pdf`.
+
+## Examples
+
+The `examples/` folder has four more made-up resumes in the same format, from nearly empty to completely full. Each one shows how the script fits a different amount of content onto one page.
+
+| File | Who it describes | PDF |
+| --- | --- | --- |
+| `examples/first-year.json` | A first-year student with one class project, a one-line retail job and a few skills. The page has room left at the bottom. | [first-year.pdf](docs/examples/first-year.pdf) |
+| `examples/sophomore.json` | A second-year student with two projects, club activities and one non-engineering job. | [sophomore.pdf](docs/examples/sophomore.pdf) |
+| `examples/new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience. | [new-grad.pdf](docs/examples/new-grad.pdf) |
+| `examples/packed.json` | A graduating student with three engineering roles, three projects and long skill lists. It fits only at 10 pt with 0.4 in margins. | [packed.pdf](docs/examples/packed.pdf) |
+
 ## Field guide
 
 JSON doesn't allow comments, so this section explains each field. A blank field (`""`) or an empty list (`[]`) is left out of the PDF.

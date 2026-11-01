@@ -1,0 +1,80 @@
+{
+  "settings": {
+    "dateStyle": {
+      "education": "semester",
+      "projects": "semester",
+      "experience": "month"
+    },
+    "sectionOrder": [
+      "education",
+      "projects",
+      "experience",
+      "skills"
+    ]
+  },
+  "header": {
+    "name": "Sam Rivera",
+    "phone": "(555) 555-0107",
+    "email": "sam.rivera@example.com",
+    "linkedin": "linkedin.com/in/sam-rivera-example",
+    "github": "",
+    "location": "Lakeside, ST",
+    "workStatus": "US Citizen",
+    "relocate": false,
+    "clearance": ""
+  },
+  "education": [
+    {
+      "degree": "B.S. Electrical Engineering",
+      "gpa": "",
+      "school": "Example State University",
+      "gradDate": "Expected Spring 2030",
+      "coursework": [
+        "Intro to Engineering Design",
+        "Calculus I"
+      ],
+      "activities": [
+        "IEEE student branch"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "title": "Line-Following Robot",
+      "tools": [
+        "Arduino",
+        "C++"
+      ],
+      "start": "Fall 2026",
+      "end": "Fall 2026",
+      "bullets": [
+        "Built a line-following robot with an Arduino Uno and two IR sensors in C++, finishing the 10 m class track in 41 s, second of 12 teams",
+        "Cut wheel wobble on turns by tuning a proportional steering gain over 15 timed runs, measured with a stopwatch and video"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "title": "Cashier",
+      "company": "Example Grocery",
+      "location": "",
+      "start": "Jun 2025",
+      "end": "Present",
+      "engineering": false,
+      "bullets": []
+    }
+  ],
+  "skills": {
+    "software": [
+      "Arduino",
+      "C++",
+      "Excel"
+    ],
+    "hardwareLab": [
+      "Multimeter",
+      "Breadboarding",
+      "Soldering"
+    ],
+    "certifications": []
+  }
+}
