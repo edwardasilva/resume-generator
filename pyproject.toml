@@ -1,0 +1,10 @@
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.lint]
+# pycodestyle (E, W), pyflakes (F), isort (I) and pydocstyle (D).
+select = ["E", "W", "F", "I", "D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"

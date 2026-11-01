@@ -1,0 +1,73 @@
+name: Build resume
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*.*.*"]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ruff
+        run: pip install ruff
+      - name: Check formatting
+        run: ruff format --check
+      - name: Lint
+        run: ruff check
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build resume.pdf
+        run: ./run --yes
+        env:
+          CI: "true"
+      - name: Build each example
+        run: for f in examples/*.json; do ./run --yes "$f"; done
+      - name: Check that every PDF is exactly one page
+        run: |
+          sudo apt-get install -y --no-install-recommends poppler-utils
+          for pdf in resume.pdf examples/*.pdf; do
+            pages="$(pdfinfo "$pdf" | awk '/^Pages:/ {print $2}')"
+            echo "$pdf: $pages page(s)"
+            [ "$pages" = "1" ] || { echo "$pdf is not one page" >&2; exit 1; }
+          done
+      - name: Package the release zip
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          name="resume-generator-${GITHUB_REF_NAME}"
+          mkdir "$name"
+          cp -r resume.json run build.py resume.tex README.md LICENSE examples "$name/"
+          zip -r "$name.zip" "$name"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: resumes
+          path: |
+            resume.pdf
+            examples/*.pdf
+            resume-generator-*.zip
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [lint, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: resumes
+      - name: Create the GitHub release
+        run: >
+          gh release create "$GITHUB_REF_NAME"
+          --repo "$GITHUB_REPOSITORY"
+          --title "$GITHUB_REF_NAME"
+          --generate-notes
+          "resume-generator-${GITHUB_REF_NAME}.zip"
+          "examples/alex.pdf#Sample resume (alex.pdf)"
+        env:
+          GH_TOKEN: ${{ github.token }}

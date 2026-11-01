@@ -1,0 +1,126 @@
+{
+  "settings": {
+    "font": "times",
+    "dateStyle": {
+      "education": "semester",
+      "projects": "semester",
+      "experience": "month"
+    },
+    "sectionOrder": [
+      "experience",
+      "projects",
+      "education",
+      "skills"
+    ]
+  },
+  "header": {
+    "name": "Taylor Doe",
+    "phone": "(555) 555-0158",
+    "email": "taylor.doe@example.com",
+    "linkedin": "linkedin.com/in/taylor-doe-example",
+    "github": "github.com/taylor-doe-example",
+    "location": "Brookfield, ST",
+    "workStatus": "",
+    "relocate": true,
+    "clearance": ""
+  },
+  "education": [
+    {
+      "degree": "B.S. Electrical Engineering",
+      "gpa": "3.71/4.00",
+      "school": "Example State University",
+      "gradDate": "Spring 2026",
+      "coursework": [
+        "Embedded Systems",
+        "Introduction to High Power Electronics",
+        "Modern Control Design"
+      ],
+      "activities": [
+        "Eta Kappa Nu"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "title": "Embedded Firmware Intern",
+      "company": "Example Motor Controls",
+      "location": "Fairview, ST",
+      "start": "May 2025",
+      "end": "Aug 2025",
+      "engineering": true,
+      "bullets": [
+        "Added a 200 ms soft-start ramp to the STM32 PWM firmware for a 24 V brushless drive, which lowered startup current spikes by 35% across 50 starts measured with a current probe",
+        "Cut bring-up from 2 days to 4 hours with a Python script that tests 40 channels over UART",
+        "Fixed a CAN bus bug that dropped 1 message in 200 by measuring bit timing on an oscilloscope and moving the sample point to 87.5%, then ran a 12-hour soak test with no dropped messages"
+      ]
+    },
+    {
+      "title": "Test Engineering Intern",
+      "company": "Example Power Systems",
+      "location": "Brookfield, ST",
+      "start": "May 2024",
+      "end": "Aug 2024",
+      "engineering": true,
+      "bullets": [
+        "Automated a 20-point load sweep in LabVIEW with a programmable load and a power analyzer, so an efficiency test on the 500 W supply took 25 minutes instead of the 3 hours it took by hand",
+        "Found a 15 °C hot spot that the derating curve missed on a 12 V module by logging 8 thermocouples through a 48-hour full-load test, and the design team enlarged the heatsink on the next revision"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "title": "Senior Design: Solar Charge Controller",
+      "tools": [
+        "KiCad",
+        "STM32",
+        "C",
+        "LTspice"
+      ],
+      "start": "Fall 2025",
+      "end": "Spring 2026",
+      "bullets": [
+        "Wrote perturb-and-observe MPPT firmware in C for an STM32 that updates every 10 ms and harvested 18% more energy than a fixed-voltage controller in tests on a solar array simulator",
+        "Laid out a 100 W buck stage on a 2-layer KiCad board that stays under 70 °C at full load",
+        "Sized the output filter in LTspice and measured 42 mV of ripple on the oscilloscope"
+      ]
+    },
+    {
+      "title": "Digital Audio Filter on an FPGA",
+      "tools": [
+        "Verilog",
+        "Vivado",
+        "MATLAB",
+        "Basys 3"
+      ],
+      "start": "Spring 2025",
+      "end": "Spring 2025",
+      "bullets": [
+        "Built a 32-tap FIR low-pass filter in Verilog on a Basys 3 board running at 48 kHz, with 16-bit fixed-point coefficients that matched the MATLAB design within 0.3 dB in Vivado simulation"
+      ]
+    }
+  ],
+  "skills": {
+    "software": [
+      "C",
+      "Python",
+      "MATLAB",
+      "Verilog",
+      "KiCad",
+      "LTspice",
+      "LabVIEW"
+    ],
+    "hardwareLab": [
+      "Oscilloscope",
+      "Current probe",
+      "Programmable load",
+      "Power analyzer",
+      "STM32",
+      "FPGA",
+      "CAN bus"
+    ],
+    "certifications": [
+      "Engineer in Training (EIT)",
+      "IPC-A-610 Certified IPC Specialist"
+    ]
+  }
+}

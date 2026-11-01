@@ -1,0 +1,57 @@
+% One-page resume. Run ./run to build resume.pdf.
+% build.py writes build/settings.tex (font, size, margins and spacing) and
+% build/body.tex (the content from the JSON file) before each run.
+\documentclass[letterpaper]{article}
+
+% ---------- Packages ----------
+\usepackage{fontspec}
+\usepackage{enumitem}
+\input{build/settings}
+\resumemainfont
+\usepackage[margin=\resumemargin]{geometry}
+\usepackage[hidelinks]{hyperref}
+
+% ---------- Page layout ----------
+\raggedbottom
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\raggedright
+
+% ---------- Header ----------
+% Name and contact lines, centered, with a small gap before the first section.
+\newenvironment{resumeheader}{\par\centering}{\par\vspace{6.7pt}}
+
+% ---------- Section style ----------
+% Title, a full-width rule, then a clear gap before the first entry.
+\newcommand{\resumesection}[1]{%
+  \par\vspace{\sectiongap}%
+  {\large\bfseries #1}\par
+  \vspace{2pt}%
+  \hrule height 0.6pt
+  \vspace{0.45\baselineskip}}
+
+% ---------- Entry macros ----------
+\newlength{\datewidth}
+% Title on the left (wraps if long), date at the right margin.
+\newcommand{\entry}[2]{%
+  \settowidth{\datewidth}{#2}%
+  \parbox[t]{\dimexpr\linewidth-\datewidth-1em\relax}{\raggedright #1}%
+  \hfill #2\par}
+% Tools used for a project, on their own line under the title.
+\newcommand{\tools}[1]{#1\par}
+% Space between entries in a section.
+\newcommand{\entrygap}{\par\vspace{\entryspace}}
+\setlist[itemize]{leftmargin=12pt, label=\textbullet,
+  topsep=2.5pt, partopsep=0pt, itemsep=1.7pt, parsep=0pt}
+
+% ---------- Measurements for the fitting script ----------
+\newcommand{\measure}[1]{%
+  \typeout{RESUME-#1 page=\thepage\space used=\the\pagetotal\space
+    goal=\the\pagegoal\space line=\the\baselineskip}}
+
+\begin{document}
+\resumefont
+\input{build/body}
+\par\measure{END}
+\end{document}
