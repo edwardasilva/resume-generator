@@ -92,13 +92,14 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: resumes
-      - name: Create the GitHub release
-        run: >
-          gh release create "$GITHUB_REF_NAME"
-          --repo "$GITHUB_REPOSITORY"
-          --title "$GITHUB_REF_NAME"
-          --generate-notes
-          "resume-generator-${GITHUB_REF_NAME}.zip"
-          "examples/alex.pdf#Sample resume (alex.pdf)"
+      - name: Create or update the GitHub release
+        run: |
+          assets=("resume-generator-${GITHUB_REF_NAME}.zip" "examples/alex.pdf#Sample resume (alex.pdf)")
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --clobber "${assets[@]}"
+          else
+            gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" \
+              --title "$GITHUB_REF_NAME" --generate-notes "${assets[@]}"
+          fi
         env:
           GH_TOKEN: ${{ github.token }}
