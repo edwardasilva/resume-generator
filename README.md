@@ -133,6 +133,10 @@ Start with a past-tense verb, say what they built or changed, and end with a res
 
 `build.py` tries layouts from roomiest to tightest: 11 pt text with 0.5 in margins, then the font in steps down to 10 pt, then the margins down to 0.4 in. It keeps the roomiest layout that fits on one page. The spacing stays compact. If there is room left, the gaps between sections and entries grow by at most 3 pt each, so a short resume keeps some room at the bottom instead of large gaps. Line spacing never goes below 1.07. If the resume still doesn't fit at 10 pt and 0.4 in, it stops and says about how many lines to cut. Drop a coursework item first, then the weakest bullet, or add `"hide": true` to an older project.
 
+## Checking the text
+
+Applicant tracking systems read the PDF's text, not its look. When `pdftotext` is installed (it comes with poppler, for example `brew install poppler` or `sudo apt-get install poppler-utils`), each build extracts the text and checks that the name, contact items, section titles, entries and bullets all come out whole and in reading order, with no broken ligatures or unreadable glyphs. Problems print as a warning. Set `RESUME_TEXT_CHECK=strict` to make them an error. Words never break with a hyphen across lines, because a split word can't be found by a keyword search.
+
 ## Before applying
 
 A good resume helps, but a referral helps more. The owner should ask someone who knows their work for a referral before applying. For more on resumes, referrals and applying for engineering jobs, see [eeprep.com](https://eeprep.com) and its [resume page](https://eeprep.com/get-hired/resume/).
@@ -149,7 +153,7 @@ ruff format
 ruff check
 ```
 
-CI runs the same checks, builds every file in `examples/` with `./run`, and fails if any PDF isn't exactly one page or uses a font that isn't in `fonts/`. It also builds them on a bare TeX Live with no font packages and on macOS with BasicTeX.
+CI runs the same checks, builds every file in `examples/` with `./run`, and fails if any PDF isn't exactly one page, uses a font that isn't in `fonts/`, or doesn't pass the text check. It also builds them on a bare TeX Live with no font packages and on macOS with BasicTeX.
 
 ## License
 
