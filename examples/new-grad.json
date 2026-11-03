@@ -20,9 +20,7 @@
     "linkedin": "linkedin.com/in/taylor-doe-example",
     "github": "github.com/taylor-doe-example",
     "location": "Brookfield, ST",
-    "workStatus": "",
-    "relocate": true,
-    "clearance": ""
+    "relocate": true
   },
   "education": [
     {

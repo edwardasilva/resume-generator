@@ -171,7 +171,7 @@ def date_range(start, end):
         end = "Present"
     if not start or start == end:
         return esc(start or end)
-    return f"{esc(start)}--{esc(end)}"
+    return f"{esc(start)} -- {esc(end)}"
 
 
 def date_styles(data):
@@ -224,17 +224,20 @@ def header(h):
     for key in ("linkedin", "github", "website"):
         if h.get(key):
             contact.append(link(h[key], esc(short_url(h[key]))))
+    # Each item is kept whole, so a line never breaks inside a URL.
     if contact:
-        out.append("  " + r"\headersep{}".join(contact) + r"\par")
+        out.append(
+            "  " + r"\headersep{}".join(rf"\mbox{{{c}}}" for c in contact) + r"\par"
+        )
     status = [
         esc(h.get("location")),
-        esc(h.get("workStatus")),
         "Willing to relocate" if h.get("relocate") else "",
-        esc(h.get("clearance")),
     ]
     status = [s for s in status if s]
     if status:
-        out.append("  " + r"\headersep{}".join(status) + r"\par")
+        out.append(
+            "  " + r"\headersep{}".join(rf"\mbox{{{x}}}" for x in status) + r"\par"
+        )
     out.append(r"\end{resumeheader}")
     return out
 
@@ -272,14 +275,14 @@ def education(data):
 
 
 def projects(data):
-    """Return LaTeX lines for the projects: title and dates, tools, then bullets."""
+    """Return LaTeX lines for the projects: title (tools) and dates, then bullets."""
     out = []
     for p in shown(data.get("projects")):
-        title = rf"\textbf{{{link(p.get('url'), esc(p.get('title')))}}}"
-        dates = date_range(p.get("start"), p.get("end"))
-        out.append(rf"\entry{{{title}}}{{{dates}}}")
+        title = link(p.get("url"), esc(p.get("title")))
         if present(p.get("tools")):
-            out.append(rf"\tools{{{joined(p['tools'])}}}")
+            title += f" ({joined(p['tools'])})"
+        dates = date_range(p.get("start"), p.get("end"))
+        out.append(rf"\entry{{\textbf{{{title}}}}}{{{dates}}}")
         out += bullets(p.get("bullets"))
         out.append(r"\entrygap")
     return out
@@ -295,11 +298,9 @@ def experience(data):
             name = link(x.get("url"), esc(x.get("title")))
         place = f", {esc(x['location'])}" if x.get("location") else ""
         dates = date_range(x.get("start"), x.get("end"))
+        out.append(rf"\entry{{\textbf{{{name}}}{place}}}{{{dates}}}")
         if x.get("engineering"):
-            out.append(rf"\entry{{\textbf{{{name}}}{place}}}{{{dates}}}")
             out += bullets(x.get("bullets"))
-        else:
-            out.append(rf"\entry{{{name}{place}}}{{{dates}}}")
         out.append(r"\entrygap")
     return out
 
@@ -346,6 +347,102 @@ def body(data):
                 lines.pop()
             out += [rf"\resumesection{{{TITLES[name]}}}"] + lines
     return "\n".join(out) + "\n"
+
+
+# Characters that mean the PDF text layer is broken for an applicant tracking
+# system: unmapped glyphs, the replacement character, ligature code points
+# (fi, fl and friends) and private-use glyphs.
+TEXT_JUNK = re.compile(r"\(cid:\d+\)|[\ufffd\ufb00-\ufb06\ue000-\uf8ff]")
+# Typographic characters that LaTeX makes from plain ones, mapped back.
+TEXT_PLAIN = str.maketrans(
+    {
+        "\u2018": "'",
+        "\u2019": "'",
+        "\u201c": '"',
+        "\u201d": '"',
+        "\u2013": "-",
+        "\u2014": "-",
+    }
+)
+
+
+def plain(text):
+    """Return text as a reader sees it: straight quotes, hyphens, single spaces."""
+    text = str(text or "").replace("---", "-").replace("--", "-")
+    text = re.sub(r"``|''", '"', text).translate(TEXT_PLAIN)
+    return " ".join(text.split())
+
+
+def expected_text(data):
+    """Return the strings the PDF must contain, in reading order."""
+    out = []
+    h = data.get("header") or {}
+    out.append(h.get("name"))
+    out += [h.get("phone"), h.get("email")]
+    out += [short_url(h[k]) for k in ("linkedin", "github", "website") if h.get(k)]
+    out.append(h.get("location"))
+    out.append("Willing to relocate" if h.get("relocate") else "")
+
+    def names(items):
+        return [x.get("name") if isinstance(x, dict) else x for x in present(items)]
+
+    def lines(items):
+        return [INLINE_LINK.sub(r"\1", str(b)) for b in present(items)]
+
+    order = (data.get("settings") or {}).get("sectionOrder") or list(SECTIONS)
+    for name in order:
+        before = len(out)
+        if name == "education":
+            for e in shown(data.get("education")):
+                gpa = f", GPA {e['gpa']}" if e.get("gpa") else ""
+                out += [f"{e.get('degree') or ''}{gpa}", e.get("school")]
+                out += names(e.get("coursework")) + names(e.get("activities"))
+        elif name == "projects":
+            for p in shown(data.get("projects")):
+                out += [p.get("title")] + names(p.get("tools"))
+                out += lines(p.get("bullets"))
+        elif name == "experience":
+            for x in shown(data.get("experience")):
+                out += [x.get("title"), x.get("company"), x.get("location")]
+                if x.get("engineering"):
+                    out += lines(x.get("bullets"))
+        elif name == "skills":
+            for key in ("software", "hardwareLab", "certifications"):
+                out += names((data.get("skills") or {}).get(key))
+        if any(out[before:]):
+            out.insert(before, TITLES[name])
+    return [plain(x) for x in out if plain(x)]
+
+
+def check_text(pdf, data):
+    """Return problems with the PDF's text layer, or [] if it reads cleanly.
+
+    It extracts the text the way an applicant tracking system does, with
+    pdftotext, and checks that every heading, header item, entry and bullet
+    is there in reading order, with no broken ligatures or unmapped glyphs.
+    """
+    result = subprocess.run(
+        ["pdftotext", "-enc", "UTF-8", str(pdf), "-"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        return [f"pdftotext couldn't read {pdf.name}: {result.stderr.strip()}"]
+    raw = result.stdout
+    problems = []
+    for m in TEXT_JUNK.finditer(raw):
+        near = plain(raw[max(0, m.start() - 30) : m.end() + 30])
+        problems.append(f'unreadable text "{m.group()}" near "{near}"')
+    text, pos = plain(raw), 0
+    for want in expected_text(data):
+        found = text.find(want, pos)
+        if found >= 0:
+            pos = found + len(want)
+        elif want in text:
+            problems.append(f'out of reading order: "{want}"')
+        else:
+            problems.append(f'missing or garbled: "{want}"')
+    return problems
 
 
 def settings(typeface, font, margin, extra=0.0):
@@ -442,6 +539,30 @@ def spread(tex, end):
     return min(MAX_EXTRA_GAP, 0.5 * (goal - used) / gaps)
 
 
+def report_text(pdf, data):
+    """Check the PDF's text layer when pdftotext is installed.
+
+    Problems are warnings, unless RESUME_TEXT_CHECK=strict is set (as in CI),
+    which makes them an error.
+    """
+    if not shutil.which("pdftotext"):
+        return
+    problems = check_text(pdf, data)
+    if not problems:
+        print(f"Text check: {pdf.name} extracts cleanly with pdftotext.")
+        return
+    strict = os.environ.get("RESUME_TEXT_CHECK") == "strict"
+    print(
+        f"{'Error' if strict else 'Warning'}: {pdf.name} doesn't extract cleanly, "
+        "so an applicant tracking system may misread it:",
+        file=sys.stderr,
+    )
+    for problem in problems:
+        print(f"  - {problem}", file=sys.stderr)
+    if strict:
+        sys.exit(1)
+
+
 def main():
     """Build the PDF, or exit with a message saying what to fix."""
     source = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "resume.json"
@@ -470,6 +591,7 @@ def main():
                     f"Wrote {output.name} (1 page, {typeface}, {font:g} pt text, "
                     f"{margin:g} in margins, gaps +{extra:.1f} pt)."
                 )
+                report_text(output, data)
                 return
     except ResumeError as e:
         sys.exit(str(e))

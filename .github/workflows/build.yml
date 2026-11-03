@@ -22,16 +22,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # pdftotext comes with poppler-utils. With it installed, each build
+      # checks that the PDF text extracts cleanly, and strict mode fails on
+      # any problem.
+      - name: Install poppler-utils
+        run: sudo apt-get install -y --no-install-recommends poppler-utils
       - name: Build resume.pdf
         run: ./run --yes
         env:
           CI: "true"
+          RESUME_TEXT_CHECK: strict
       - name: Build each example
         run: for f in examples/*.json; do ./run --yes "$f"; done
+        env:
+          RESUME_TEXT_CHECK: strict
       - name: Check that every PDF is one page and uses the bundled fonts
-        run: |
-          sudo apt-get install -y --no-install-recommends poppler-utils
-          .github/check-pdfs.sh resume.pdf examples/*.pdf
+        run: .github/check-pdfs.sh resume.pdf examples/*.pdf
       - name: Package the release zip
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
@@ -92,13 +98,14 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: resumes
-      - name: Create the GitHub release
-        run: >
-          gh release create "$GITHUB_REF_NAME"
-          --repo "$GITHUB_REPOSITORY"
-          --title "$GITHUB_REF_NAME"
-          --generate-notes
-          "resume-generator-${GITHUB_REF_NAME}.zip"
-          "examples/alex.pdf#Sample resume (alex.pdf)"
+      - name: Create or update the GitHub release
+        run: |
+          assets=("resume-generator-${GITHUB_REF_NAME}.zip" "examples/alex.pdf#Sample resume (alex.pdf)")
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --clobber "${assets[@]}"
+          else
+            gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" \
+              --title "$GITHUB_REF_NAME" --generate-notes "${assets[@]}"
+          fi
         env:
           GH_TOKEN: ${{ github.token }}

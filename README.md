@@ -20,7 +20,7 @@ Each example in `examples/` is a made-up resume and the PDF built from it, from 
 
 | File | Who it describes | PDF |
 | --- | --- | --- |
-| `alex.json` | The starting point: a student graduating in 2027 with three projects, a CubeSat team role and a one-line job. | [alex.pdf](examples/alex.pdf) |
+| `alex.json` | The starting point, matching the finished example on eeprep's resume page: a student graduating in 2027 with two projects, a one-line job, and two skill lines whose every tool appears in a bullet. `[X]` marks a number the owner measures. | [alex.pdf](examples/alex.pdf) |
 | `first-year.json` | A first-year student with one class project, a one-line retail job and a few skills. The page has room left at the bottom. | [first-year.pdf](examples/first-year.pdf) |
 | `sophomore.json` | A second-year student with two projects, an electrical lead role in a robotics club and a one-line job. | [sophomore.pdf](examples/sophomore.pdf) |
 | `new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience and use the `times` font. | [new-grad.pdf](examples/new-grad.pdf) |
@@ -65,9 +65,7 @@ Acceptable fonts for `settings.font`:
 | `github` | Only if it holds work they're proud of. | `github.com/alex-doe-example` |
 | `website` | A personal site or portfolio, if they have one. | `example.com/~sam-doe` |
 | `location` | City and state. | `Springfield, ST` |
-| `workStatus` | Their work authorization, only if it helps them with an employer. Always be truthful. Leave it blank otherwise. | `""` |
 | `relocate` | `true` adds "Willing to relocate". | `true` |
-| `clearance` | An active security clearance, if they hold one. | `""` |
 
 ### `education`
 
@@ -89,7 +87,7 @@ A list, best project first. This is where most students show what they can do.
 | Field | What to put | Example |
 | --- | --- | --- |
 | `title` | A plain name for what they built. Don't use the word "project". | `FPGA Audio Equalizer` |
-| `tools` | Tools, languages and parts they actually used. Shown on their own line under the title. | `["Verilog", "Vivado", "MATLAB"]` |
+| `tools` | Tools, languages and parts they actually used. Shown in parentheses after the title, like `CubeSat Power Board (KiCad, LTspice)`. | `["Verilog", "Vivado", "MATLAB"]` |
 | `start`, `end` | Dates in the projects date style. A blank `end` or `Present` means ongoing. Matching dates show once. | `Spring 2025` |
 | `bullets` | One to four lines on what they did and what happened. | see below |
 | `hide` | `true` leaves the entry out without deleting it. | `true` |
@@ -133,6 +131,10 @@ Start with a past-tense verb, say what they built or changed, and end with a res
 
 `build.py` tries layouts from roomiest to tightest: 11 pt text with 0.5 in margins, then the font in steps down to 10 pt, then the margins down to 0.4 in. It keeps the roomiest layout that fits on one page. The spacing stays compact. If there is room left, the gaps between sections and entries grow by at most 3 pt each, so a short resume keeps some room at the bottom instead of large gaps. Line spacing never goes below 1.07. If the resume still doesn't fit at 10 pt and 0.4 in, it stops and says about how many lines to cut. Drop a coursework item first, then the weakest bullet, or add `"hide": true` to an older project.
 
+## Checking the text
+
+Applicant tracking systems read the PDF's text, not its look. When `pdftotext` is installed (it comes with poppler, for example `brew install poppler` or `sudo apt-get install poppler-utils`), each build extracts the text and checks that the name, contact items, section titles, entries and bullets all come out whole and in reading order, with no broken ligatures or unreadable glyphs. Problems print as a warning. Set `RESUME_TEXT_CHECK=strict` to make them an error. Words never break with a hyphen across lines, because a split word can't be found by a keyword search.
+
 ## Before applying
 
 A good resume helps, but a referral helps more. The owner should ask someone who knows their work for a referral before applying. For more on resumes, referrals and applying for engineering jobs, see [eeprep.com](https://eeprep.com) and its [resume page](https://eeprep.com/get-hired/resume/).
@@ -149,7 +151,7 @@ ruff format
 ruff check
 ```
 
-CI runs the same checks, builds every file in `examples/` with `./run`, and fails if any PDF isn't exactly one page or uses a font that isn't in `fonts/`. It also builds them on a bare TeX Live with no font packages and on macOS with BasicTeX.
+CI runs the same checks, builds every file in `examples/` with `./run`, and fails if any PDF isn't exactly one page, uses a font that isn't in `fonts/`, or doesn't pass the text check. It also builds them on a bare TeX Live with no font packages and on macOS with BasicTeX.
 
 ## License
 

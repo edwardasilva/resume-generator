@@ -3,7 +3,7 @@
     "dateStyle": {
       "education": "semester",
       "projects": "semester",
-      "experience": "month"
+      "experience": "semester"
     },
     "sectionOrder": [
       "education",
@@ -19,15 +19,13 @@
     "linkedin": "linkedin.com/in/alex-doe-example",
     "github": "github.com/alex-doe-example",
     "location": "Springfield, ST",
-    "workStatus": "",
-    "relocate": true,
-    "clearance": ""
+    "relocate": true
   },
   "education": [
     {
       "degree": "B.S. Electrical Engineering",
-      "gpa": "3.62/4.00",
-      "school": "Example State University",
+      "gpa": "[X.XX]/4.00",
+      "school": "[University]",
       "gradDate": "Expected Spring 2027",
       "coursework": [
         "Embedded Systems",
@@ -42,75 +40,40 @@
   ],
   "projects": [
     {
-      "title": "Synchronous Buck Converter for a CubeSat Power Board",
-      "url": "github.com/alex-doe-example/cubesat-buck-converter",
+      "title": "CubeSat Power Board",
       "tools": [
         "KiCad",
-        "LTspice",
-        "STM32",
-        "C"
+        "LTspice"
       ],
       "start": "Fall 2025",
       "end": "Spring 2026",
       "bullets": [
-        "Raised peak efficiency from 85% to 92% at 2 A on an electronic load by replacing the catch diode with a synchronous MOSFET and tuning dead time in 10 ns steps on an STM32 timer",
-        "Brought output ripple down from 80 mV to 25 mV peak to peak on the oscilloscope by moving to a 4-layer KiCad layout with a solid ground plane and a smaller switching loop, simulated in LTspice",
-        "Wrote overcurrent shutdown firmware in C that trips in under 50 µs, tested on 20 shorts"
+        "Designed a [X] W CubeSat buck converter in KiCad and LTspice, measured at [X]% on an electronic load",
+        "Cut output ripple from [X] mV to [X] mV by shrinking the switching loop, verified on an oscilloscope"
       ]
     },
     {
-      "title": "FPGA Audio Equalizer",
+      "title": "Bench Data Logger",
       "tools": [
-        "Verilog",
-        "Vivado",
-        "MATLAB",
-        "Basys 3"
+        "STM32",
+        "C",
+        "Python"
       ],
       "start": "Spring 2025",
       "end": "Spring 2025",
       "bullets": [
-        "Built a 5-band equalizer in Verilog for 48 kHz stereo audio with under 2 ms of latency",
-        "Kept the response within 0.5 dB of the MATLAB reference from 20 Hz to 20 kHz by testing 16-bit fixed-point coefficients in Vivado simulation before loading the design onto a Basys 3 board"
-      ]
-    },
-    {
-      "title": "Bluetooth Battery Monitor",
-      "tools": [
-        "ESP32",
-        "C++",
-        "Python",
-        "INA219"
-      ],
-      "start": "Fall 2024",
-      "end": "Fall 2024",
-      "bullets": [
-        "Built an ESP32 monitor that streams 4 cell voltages to a [Python dashboard](github.com/alex-doe-example/battery-dashboard) over Bluetooth",
-        "Calibrated an INA219 current sensor to within 1% of a bench meter from 0.1 A to 3 A",
-        "Stretched field-test runtime 18% with a C++ cutoff that drops extra loads at 3.3 V per cell"
+        "Wrote STM32 firmware in C to sample a 4-channel SPI ADC at [X] kHz and stream it to a Python logger",
+        "Moved UART writes to DMA after a logic analyzer showed dropped samples, cutting losses to [X]%"
       ]
     }
   ],
   "experience": [
     {
-      "title": "Power Subsystem Lead",
-      "company": "Example State CubeSat Team",
-      "url": "example.com/cubesat",
-      "location": "Springfield, ST",
-      "start": "Sep 2024",
-      "end": "Present",
-      "engineering": true,
-      "bullets": [
-        "Saved 40 g on the power board by swapping 3 linear regulators for 1 buck converter",
-        "Caught 2 battery protection faults before launch review with a Python script that ran overnight charge and discharge cycles on a bench supply and flagged any cell that drifted more than 20 mV",
-        "Run weekly design reviews for the 4-person power team"
-      ]
-    },
-    {
       "title": "Sales Associate",
-      "company": "Example Hardware Store",
+      "company": "[Retail store]",
       "location": "",
-      "start": "May 2023",
-      "end": "Aug 2024",
+      "start": "Summer 2023",
+      "end": "Summer 2024",
       "engineering": false,
       "bullets": []
     }
@@ -119,23 +82,15 @@
     "software": [
       "KiCad",
       "LTspice",
-      "MATLAB",
-      "Vivado",
-      "Python",
       "C",
-      "C++",
-      "Verilog"
+      "Python"
     ],
     "hardwareLab": [
+      "STM32",
       "Oscilloscope",
       "Electronic load",
-      "Bench supply",
-      "STM32",
-      "ESP32",
-      "FPGA"
+      "Logic analyzer"
     ],
-    "certifications": [
-      "IPC J-STD-001 Soldering"
-    ]
+    "certifications": []
   }
 }
