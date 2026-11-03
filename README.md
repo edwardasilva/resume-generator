@@ -20,7 +20,7 @@ Each example in `examples/` is a made-up resume and the PDF built from it, from 
 
 | File | Who it describes | PDF |
 | --- | --- | --- |
-| `alex.json` | The starting point: a student graduating in 2027 with three projects, a CubeSat team role and a one-line job. | [alex.pdf](examples/alex.pdf) |
+| `alex.json` | The starting point, matching the finished example on eeprep's resume page: a student graduating in 2027 with two projects, a one-line job, and two skill lines whose every tool appears in a bullet. `[X]` marks a number the owner measures. | [alex.pdf](examples/alex.pdf) |
 | `first-year.json` | A first-year student with one class project, a one-line retail job and a few skills. The page has room left at the bottom. | [first-year.pdf](examples/first-year.pdf) |
 | `sophomore.json` | A second-year student with two projects, an electrical lead role in a robotics club and a one-line job. | [sophomore.pdf](examples/sophomore.pdf) |
 | `new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience and use the `times` font. | [new-grad.pdf](examples/new-grad.pdf) |
@@ -65,9 +65,7 @@ Acceptable fonts for `settings.font`:
 | `github` | Only if it holds work they're proud of. | `github.com/alex-doe-example` |
 | `website` | A personal site or portfolio, if they have one. | `example.com/~sam-doe` |
 | `location` | City and state. | `Springfield, ST` |
-| `workStatus` | Their work authorization, only if it helps them with an employer. Always be truthful. Leave it blank otherwise. | `""` |
 | `relocate` | `true` adds "Willing to relocate". | `true` |
-| `clearance` | An active security clearance, if they hold one. | `""` |
 
 ### `education`
 
@@ -89,7 +87,7 @@ A list, best project first. This is where most students show what they can do.
 | Field | What to put | Example |
 | --- | --- | --- |
 | `title` | A plain name for what they built. Don't use the word "project". | `FPGA Audio Equalizer` |
-| `tools` | Tools, languages and parts they actually used. Shown on their own line under the title. | `["Verilog", "Vivado", "MATLAB"]` |
+| `tools` | Tools, languages and parts they actually used. Shown in parentheses after the title, like `CubeSat Power Board (KiCad, LTspice)`. | `["Verilog", "Vivado", "MATLAB"]` |
 | `start`, `end` | Dates in the projects date style. A blank `end` or `Present` means ongoing. Matching dates show once. | `Spring 2025` |
 | `bullets` | One to four lines on what they did and what happened. | see below |
 | `hide` | `true` leaves the entry out without deleting it. | `true` |

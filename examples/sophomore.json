@@ -20,9 +20,7 @@
     "github": "github.com/sam-doe-example",
     "website": "example.com/~sam-doe",
     "location": "Riverton, ST",
-    "workStatus": "",
-    "relocate": true,
-    "clearance": ""
+    "relocate": true
   },
   "education": [
     {

@@ -171,7 +171,7 @@ def date_range(start, end):
         end = "Present"
     if not start or start == end:
         return esc(start or end)
-    return f"{esc(start)}--{esc(end)}"
+    return f"{esc(start)} -- {esc(end)}"
 
 
 def date_styles(data):
@@ -231,9 +231,7 @@ def header(h):
         )
     status = [
         esc(h.get("location")),
-        esc(h.get("workStatus")),
         "Willing to relocate" if h.get("relocate") else "",
-        esc(h.get("clearance")),
     ]
     status = [s for s in status if s]
     if status:
@@ -277,14 +275,14 @@ def education(data):
 
 
 def projects(data):
-    """Return LaTeX lines for the projects: title and dates, tools, then bullets."""
+    """Return LaTeX lines for the projects: title (tools) and dates, then bullets."""
     out = []
     for p in shown(data.get("projects")):
-        title = rf"\textbf{{{link(p.get('url'), esc(p.get('title')))}}}"
-        dates = date_range(p.get("start"), p.get("end"))
-        out.append(rf"\entry{{{title}}}{{{dates}}}")
+        title = link(p.get("url"), esc(p.get("title")))
         if present(p.get("tools")):
-            out.append(rf"\tools{{{joined(p['tools'])}}}")
+            title += f" ({joined(p['tools'])})"
+        dates = date_range(p.get("start"), p.get("end"))
+        out.append(rf"\entry{{\textbf{{{title}}}}}{{{dates}}}")
         out += bullets(p.get("bullets"))
         out.append(r"\entrygap")
     return out
@@ -300,11 +298,9 @@ def experience(data):
             name = link(x.get("url"), esc(x.get("title")))
         place = f", {esc(x['location'])}" if x.get("location") else ""
         dates = date_range(x.get("start"), x.get("end"))
+        out.append(rf"\entry{{\textbf{{{name}}}{place}}}{{{dates}}}")
         if x.get("engineering"):
-            out.append(rf"\entry{{\textbf{{{name}}}{place}}}{{{dates}}}")
             out += bullets(x.get("bullets"))
-        else:
-            out.append(rf"\entry{{{name}{place}}}{{{dates}}}")
         out.append(r"\entrygap")
     return out
 
@@ -384,9 +380,8 @@ def expected_text(data):
     out.append(h.get("name"))
     out += [h.get("phone"), h.get("email")]
     out += [short_url(h[k]) for k in ("linkedin", "github", "website") if h.get(k)]
-    out += [h.get("location"), h.get("workStatus")]
+    out.append(h.get("location"))
     out.append("Willing to relocate" if h.get("relocate") else "")
-    out.append(h.get("clearance"))
 
     def names(items):
         return [x.get("name") if isinstance(x, dict) else x for x in present(items)]

@@ -20,9 +20,7 @@
     "linkedin": "linkedin.com/in/casey-doe-example",
     "github": "github.com/casey-doe-example",
     "location": "Hillcrest, ST",
-    "workStatus": "",
-    "relocate": true,
-    "clearance": ""
+    "relocate": true
   },
   "education": [
     {
