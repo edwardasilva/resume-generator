@@ -48,8 +48,8 @@
       "start": "Fall 2025",
       "end": "Spring 2026",
       "bullets": [
-        "Designed a [X] W synchronous buck converter in KiCad for a CubeSat power board and measured [X]% efficiency on an electronic load, within [X]% of the LTspice model",
-        "Shrank the switching loop on the second board revision and cut output ripple from [X] mV to [X] mV on an oscilloscope, within [X]% of a hand calculation"
+        "Designed a [X] W CubeSat buck converter in KiCad and LTspice, measured at [X]% on an electronic load",
+        "Cut output ripple from [X] mV to [X] mV by shrinking the switching loop, verified on an oscilloscope"
       ]
     },
     {
@@ -62,8 +62,8 @@
       "start": "Spring 2025",
       "end": "Spring 2025",
       "bullets": [
-        "Wrote STM32 firmware in C that reads a 4-channel SPI ADC at [X] kHz and streams the samples over UART to a Python script that logs each run to CSV",
-        "Traced dropped samples to a blocking UART write with a logic analyzer, moved transfers to DMA, and cut lost samples from [X]% to [X]%"
+        "Wrote STM32 firmware in C to sample a 4-channel SPI ADC at [X] kHz and stream it to a Python logger",
+        "Moved UART writes to DMA after a logic analyzer showed dropped samples, cutting losses to [X]%"
       ]
     }
   ],
