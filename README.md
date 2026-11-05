@@ -2,7 +2,7 @@
 
 Turn one JSON file into a clean, one-page PDF resume. You write the content in `resume.json`, and the script does the layout and fits it onto a single page.
 
-This project is a companion to [eeprep.com](https://eeprep.com). It was built for engineering students and follows the advice on [eeprep's resume page](https://eeprep.com/get-hired/resume/), but it works for any field. See a sample: [examples/alex.pdf](examples/alex.pdf).
+This project is a companion to [eeprep.com](https://eeprep.com). It was built for engineering students and follows the advice on [eeprep's resume page](https://eeprep.com/advice/resume/), but it works for any field. See a sample: [examples/alex.pdf](examples/alex.pdf).
 
 ## Download
 
@@ -137,7 +137,7 @@ Applicant tracking systems read the PDF's text, not its look. When `pdftotext` i
 
 ## Before applying
 
-A referral helps more than a good resume. Before you apply, ask someone who knows your work for one. For more on resumes, referrals and applying for engineering jobs, see [eeprep.com](https://eeprep.com) and its [resume page](https://eeprep.com/get-hired/resume/).
+A referral helps more than a good resume. Before you apply, ask someone who knows your work for one. For more on resumes, referrals and applying for engineering jobs, see [eeprep.com](https://eeprep.com) and its [resume page](https://eeprep.com/advice/resume/).
 
 ## Contributing
 
