@@ -75,6 +75,9 @@ TEX_SPECIAL = {
     "$": r"\$",
 }
 TEX_RE = re.compile("|".join(re.escape(c) for c in TEX_SPECIAL))
+# Control characters, which LaTeX rejects as invalid input. Tabs and line
+# breaks are whitespace and become a single space instead.
+CONTROL = re.compile(r"[\x00-\x08\x0e-\x1f\x7f]")
 
 
 class ResumeError(Exception):
@@ -82,8 +85,14 @@ class ResumeError(Exception):
 
 
 def esc(text):
-    """Escape text for LaTeX in a single pass."""
-    return TEX_RE.sub(lambda m: TEX_SPECIAL[m.group()], str(text or ""))
+    """Escape text for LaTeX in a single pass.
+
+    Runs of spaces, tabs and line breaks become one space, so a blank line
+    pasted into a bullet can't start a new paragraph. Control characters are
+    dropped. A no-break space is kept.
+    """
+    text = re.sub(r"[ \t\n\r\f\v]+", " ", CONTROL.sub("", str(text or "")))
+    return TEX_RE.sub(lambda m: TEX_SPECIAL[m.group()], text)
 
 
 def esc_url(url):
@@ -96,19 +105,25 @@ def esc_url(url):
     """
     url = str(url).strip()
     scheme = re.match(r"^([a-zA-Z][a-zA-Z0-9+.-]*):", url)
-    if not scheme:
+    if scheme and scheme.group(1).lower() in ("http", "https", "mailto", "tel"):
+        pass
+    elif not scheme or re.match(r"\d+(?:[/?#]|$)", url[scheme.end() :]):
+        # No scheme, or a host with a port such as example.com:8443/me.
         url = "https://" + url
-    elif scheme.group(1).lower() not in ("http", "https", "mailto", "tel"):
+    else:
         raise ResumeError(
             f'Links must use https://, http://, mailto: or tel:, not "{url}"'
         )
-    url = re.sub(r'[\s"<>\\^`{|}$]', lambda m: f"%{ord(m.group()):02X}", url)
+    url = re.sub(
+        r'[\s\x00-\x1f\x7f"<>\\^`{|}$]', lambda m: f"%{ord(m.group()):02X}", url
+    )
     return re.sub(r"([%#&_~])", r"\\\1", url)
 
 
 def short_url(url):
     """Return a URL as people read it: no scheme, no www. and no trailing slash."""
-    return re.sub(r"^(https?://)?(www\.)?", "", str(url).strip()).rstrip("/")
+    url = re.sub(r"^(https?://)?(www\.)?", "", str(url).strip(), flags=re.I)
+    return url.rstrip("/")
 
 
 def link(url, text):
@@ -116,8 +131,9 @@ def link(url, text):
     return rf"\href{{{esc_url(url)}}}{{{text}}}" if url else text
 
 
-# A Markdown-style inline link in bullet text: [text](url).
-INLINE_LINK = re.compile(r"\[([^\[\]]+)\]\(([^()\s]+)\)")
+# A Markdown-style inline link in bullet text: [text](url). The URL may hold
+# balanced parentheses, as in en.wikipedia.org/wiki/Buck_(converter).
+INLINE_LINK = re.compile(r"\[([^\[\]]+)\]\(((?:[^()\s]|\([^()\s]*\))+)\)")
 
 
 def rich(text):
@@ -136,7 +152,7 @@ def present(items):
 
 def shown(entries):
     """Return the entries that are not marked with "hide": true."""
-    return [e for e in entries or [] if not e.get("hide")]
+    return [e for e in entries or [] if e and not e.get("hide")]
 
 
 def item(x):
@@ -198,15 +214,122 @@ def font_name(data):
     return font
 
 
+# The type of each field: "text" (a string), "flag" (true or false), "lines"
+# (a list of strings) or "items" (a list of strings or {"name", "url"} links).
+# null counts as blank for any field.
+ENTRY_FIELDS = {
+    "education": {
+        **dict.fromkeys(("degree", "gpa", "school", "gradDate", "url"), "text"),
+        **dict.fromkeys(("start", "end"), "text"),
+        "coursework": "items",
+        "activities": "items",
+        "hide": "flag",
+    },
+    "projects": {
+        **dict.fromkeys(("title", "url", "start", "end"), "text"),
+        "tools": "items",
+        "bullets": "lines",
+        "hide": "flag",
+    },
+    "experience": {
+        **dict.fromkeys(("title", "company", "location", "url"), "text"),
+        **dict.fromkeys(("start", "end"), "text"),
+        "engineering": "flag",
+        "bullets": "lines",
+        "hide": "flag",
+    },
+}
+HEADER_FIELDS = {
+    **dict.fromkeys(
+        ("name", "phone", "email", "linkedin", "github", "website", "location"),
+        "text",
+    ),
+    "relocate": "flag",
+}
+SKILL_FIELDS = dict.fromkeys(("software", "hardwareLab", "certifications"), "items")
+
+
+def check_field(value, kind, where):
+    """Raise ResumeError if a field's value doesn't have the type it needs."""
+    if value is None:
+        return
+    if kind == "text" and not isinstance(value, str):
+        like = value if isinstance(value, (int, float)) else "..."
+        raise ResumeError(f'{where} must be text in quotes, like "{like}"')
+    if kind == "flag" and not isinstance(value, bool):
+        raise ResumeError(f"{where} must be true or false, without quotes")
+    if kind in ("lines", "items"):
+        if not isinstance(value, list):
+            raise ResumeError(f'{where} must be a list in brackets, like ["..."]')
+        for i, x in enumerate(value):
+            if isinstance(x, str) or x is None:
+                continue
+            if kind == "items" and isinstance(x, dict):
+                for key in ("name", "url"):
+                    check_field(x.get(key), "text", f"{where}[{i}].{key}")
+                continue
+            what = (
+                'text or {"name": "...", "url": "..."}' if kind == "items" else "text"
+            )
+            raise ResumeError(f"{where}[{i}] must be {what}")
+
+
+def check_object(value, where):
+    """Raise ResumeError unless value is a JSON object or null."""
+    if value is not None and not isinstance(value, dict):
+        raise ResumeError(f"{where} must be an object in braces, like {{...}}")
+
+
+def check_types(data):
+    """Check that every field has the type the layout expects."""
+    if not isinstance(data, dict):
+        raise ResumeError("The resume file must hold one object in braces, {...}")
+    settings = data.get("settings")
+    check_object(settings, "settings")
+    settings = settings or {}
+    check_field(settings.get("font"), "text", "settings.font")
+    order = settings.get("sectionOrder")
+    check_field(order, "lines", "settings.sectionOrder")
+    for name in order or []:
+        if name not in SECTIONS:
+            raise ResumeError(f'settings.sectionOrder: unknown section "{name}"')
+        if order.count(name) > 1:
+            raise ResumeError(f'settings.sectionOrder lists "{name}" twice')
+    check_object(data.get("header"), "header")
+    for key, kind in HEADER_FIELDS.items():
+        check_field((data.get("header") or {}).get(key), kind, f"header.{key}")
+    check_object(data.get("skills"), "skills")
+    for key, kind in SKILL_FIELDS.items():
+        check_field((data.get("skills") or {}).get(key), kind, f"skills.{key}")
+    for section, fields in ENTRY_FIELDS.items():
+        entries = data.get(section)
+        if entries is not None and not isinstance(entries, list):
+            raise ResumeError(f"{section} must be a list in brackets, like [{{...}}]")
+        for i, entry in enumerate(entries or []):
+            check_object(entry, f"{section}[{i}]")
+            for key, kind in fields.items():
+                check_field((entry or {}).get(key), kind, f"{section}[{i}].{key}")
+
+
 def validate(data):
-    """Check the font and every visible date against its section's style."""
+    """Check field types, the font, and each visible date against its style."""
+    check_types(data)
     font_name(data)
     styles = date_styles(data)
     for section in ("education", "projects", "experience"):
         style = styles.get(section, "semester")
-        for i, entry in enumerate(shown(data.get(section))):
+        for i, entry in enumerate(data.get(section) or []):
+            if not entry or entry.get("hide"):
+                continue
             for key in ("gradDate", "start", "end"):
                 check_date(entry.get(key), style, f"{section}[{i}].{key}")
+            if section == "experience" and present(entry.get("bullets")):
+                if not entry.get("engineering"):
+                    print(
+                        f"Note: experience[{i}] has bullets, but they're left out "
+                        'because it doesn\'t have "engineering": true.',
+                        file=sys.stderr,
+                    )
 
 
 def header(h):
@@ -249,7 +372,9 @@ def bullets(items):
         return []
     return (
         [r"\begin{itemize}"]
-        + [rf"  \item {rich(b)}" for b in items]
+        # \relax stops \item from reading a bullet that starts with "[" as
+        # its optional label.
+        + [rf"  \item\relax {rich(b)}" for b in items]
         + [r"\end{itemize}"]
     )
 
@@ -368,7 +493,7 @@ TEXT_PLAIN = str.maketrans(
 
 def plain(text):
     """Return text as a reader sees it: straight quotes, hyphens, single spaces."""
-    text = str(text or "").replace("---", "-").replace("--", "-")
+    text = CONTROL.sub("", str(text or "")).replace("---", "-").replace("--", "-")
     text = re.sub(r"``|''", '"', text).translate(TEXT_PLAIN)
     return " ".join(text.split())
 
@@ -473,24 +598,45 @@ def compile_once(typeface, font, margin, extra=0.0):
         settings(typeface, font, margin, extra), encoding="utf-8"
     )
     env = dict(os.environ, SOURCE_DATE_EPOCH="0", FORCE_SOURCE_DATE="1")
-    result = subprocess.run(
-        [
-            "lualatex",
-            "-interaction=nonstopmode",
-            "-halt-on-error",
-            "-output-directory=build",
-            "resume.tex",
-        ],
-        cwd=ROOT,
-        env=env,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-    log = (BUILD / "resume.log").read_text(encoding="utf-8", errors="replace")
+    log_file = BUILD / "resume.log"
+    # A log left from an earlier run would hide why this one failed.
+    log_file.unlink(missing_ok=True)
+    try:
+        result = subprocess.run(
+            [
+                "lualatex",
+                "-interaction=nonstopmode",
+                "-halt-on-error",
+                # The resume never needs to run programs. Turning shell
+                # escape off keeps it that way whatever the TeX config says.
+                "-no-shell-escape",
+                "-output-directory=build",
+                "resume.tex",
+            ],
+            cwd=ROOT,
+            env=env,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except FileNotFoundError:
+        raise ResumeError(
+            "lualatex isn't installed or isn't on PATH. "
+            "Run ./run, which offers to install it."
+        ) from None
+    if not log_file.exists():
+        raise ResumeError(
+            f"lualatex exited with code {result.returncode} and wrote no log."
+        )
+    log = log_file.read_text(encoding="utf-8", errors="replace")
     if result.returncode != 0:
         raise ResumeError(latex_error(log))
     pages = re.search(r"Output written on .*?\((\d+) pages?", log, re.S)
-    return int(pages.group(1)) if pages else 0, log
+    if not pages:
+        raise ResumeError(
+            "The resume has nothing to print. Fill in at least the header name."
+        )
+    return int(pages.group(1)), log
 
 
 def latex_error(log):
@@ -568,9 +714,12 @@ def main():
     source = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "resume.json"
     output = source.with_suffix(".pdf")
     try:
-        data = json.loads(source.read_text(encoding="utf-8"))
+        # utf-8-sig also reads a file that Windows Notepad saved with a BOM.
+        data = json.loads(source.read_text(encoding="utf-8-sig"))
     except OSError as e:
         sys.exit(f"Can't read {source.name}: {e.strerror}")
+    except UnicodeDecodeError:
+        sys.exit(f"{source.name} isn't a UTF-8 text file. Save it as UTF-8 JSON.")
     except json.JSONDecodeError as e:
         sys.exit(f"{source.name} isn't valid JSON: {e}")
     try:
