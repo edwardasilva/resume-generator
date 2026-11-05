@@ -129,7 +129,7 @@ Start with a past-tense verb, say what you built or changed, and end with a resu
 
 ## Fitting on one page
 
-`build.py` tries layouts from roomiest to tightest. It starts at 11 pt text with 0.5 in margins. It then steps the text down to 10 pt, then the margins down to 0.4 in. It keeps the roomiest layout that fits on one page. The spacing stays compact. If a page has room left, the gaps between sections and entries grow by at most 3 pt each. A short resume keeps some white space at the bottom instead of large gaps. Line spacing never goes below 1.07. If the resume still doesn't fit at 10 pt and 0.4 in, the build stops and says about how many lines to cut. Drop a coursework item first, then the weakest bullet, or add `"hide": true` to an older project.
+`build.py` tries layouts from roomiest to tightest. It starts at 11 pt text with 0.5 in margins. It then steps the text down to 10 pt, then the margins down to 0.4 in. It keeps the roomiest layout that fits on one page. The spacing stays compact. If a page has room left, the gaps between sections and entries grow by at most 3 pt each. A short resume keeps some white space at the bottom instead of large gaps. Line spacing never goes below 1.07. If the resume still doesn't fit at 10 pt and 0.4 in, the gaps shrink by up to 2 pt each, which absorbs an overflow of about a line. The build says when it had to do this, since the page is then full. If that isn't enough, the build stops and says about how many lines to cut. Drop a coursework item first, then the weakest bullet, or add `"hide": true` to an older project.
 
 ## Checking the text
 

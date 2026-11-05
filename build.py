@@ -43,6 +43,10 @@ ENTRY_GAP = 6.3
 # many points each, so a short resume keeps a little room at the bottom
 # instead of large gaps.
 MAX_EXTRA_GAP = 3.0
+# When a resume doesn't fit even at the tightest layout, section and entry
+# gaps shrink by at most this many points each before the build gives up, so
+# a resume that overflows by a line or less still fits.
+MAX_SQUEEZE = 2.0
 
 # Fonts allowed in settings.font: font files in fonts/, loaded by path so the
 # build doesn't depend on the fonts installed on the system. The first one is
@@ -679,10 +683,43 @@ def spread(tex, end):
     if not end:
         return 0.0
     _, used, goal, _ = end
-    gaps = tex.count(r"\resumesection") + 0.75 * tex.count(r"\entrygap")
+    gaps = gap_weight(tex)
     if gaps == 0:
         return 0.0
     return min(MAX_EXTRA_GAP, 0.5 * (goal - used) / gaps)
+
+
+def gap_weight(tex):
+    """Return how many points the page grows when every gap grows by 1 pt.
+
+    Each section title and the end of the header add one section gap, and
+    each entry gap grows by 0.75 of the change (see settings()).
+    """
+    sections = tex.count(r"\resumesection") + tex.count(r"\end{resumeheader}")
+    return sections + 0.75 * tex.count(r"\entrygap")
+
+
+def overflow(end):
+    """Return how many points of content don't fit on page 1.
+
+    The measurement can come before or after LaTeX breaks the page: on page 1
+    the overflow is used minus goal, and on page 2 it's what landed there.
+    used + (page - 2) * goal covers both.
+    """
+    page, used, goal, _ = end
+    return used + (page - 2) * goal
+
+
+def squeeze(tex, end):
+    """Return how many points to take off each gap so an overflow fits.
+
+    Returns None when the overflow is too large to absorb in MAX_SQUEEZE.
+    """
+    if not end or gap_weight(tex) == 0:
+        return None
+    # A point of slack, because page 1 can end a little short of the goal.
+    need = (overflow(end) + 1.0) / gap_weight(tex)
+    return need if 0 < need <= MAX_SQUEEZE else None
 
 
 def report_text(pdf, data):
@@ -742,14 +779,30 @@ def main():
                 )
                 report_text(output, data)
                 return
+        # Nothing fit. If the overflow is small, tighten the gaps a little.
+        font, margin = LAYOUTS[-1]
+        cut = squeeze(tex, measure(log, "END"))
+        tries = [] if cut is None else sorted({cut, MAX_SQUEEZE})
+        for tighter in tries:
+            pages, log = compile_once(typeface, font, margin, -tighter)
+            if pages == 1:
+                shutil.copy(BUILD / "resume.pdf", output)
+                print(
+                    f"Wrote {output.name} (1 page, {typeface}, {font:g} pt text, "
+                    f"{margin:g} in margins, gaps -{tighter:.1f} pt). It's at the "
+                    "tightest layout, so cut a line before you add one."
+                )
+                report_text(output, data)
+                return
+        if cut is not None:
+            # Report the overflow at the normal gaps, not the squeezed ones.
+            pages, log = compile_once(typeface, font, margin)
     except ResumeError as e:
         sys.exit(str(e))
     end = measure(log, "END")
     lines = 1
     if end:
-        page, used, goal, line = end
-        lines = max(1, round(((page - 2) * goal + used) / line + 0.5))
-    font, margin = LAYOUTS[-1]
+        lines = max(1, round(overflow(end) / end[3] + 0.5))
     sys.exit(
         f"{source.name} doesn't fit on one page, even at {font:g} pt with "
         f"{margin:g} in margins.\n"
