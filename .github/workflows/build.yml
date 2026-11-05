@@ -1,8 +1,10 @@
 name: Build resume
 
+# Pull requests run CI once, on the pull_request event. Pushes run it only on
+# main and on release tags, so a pull request's branch isn't built twice.
 on:
   push:
-    branches: ["**"]
+    branches: [main]
     tags: ["v*.*.*"]
   pull_request:
 
@@ -10,11 +12,16 @@ on:
 permissions:
   contents: read
 
+# A newer push to the same pull request or branch cancels the older run.
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       # Pinned, so a new ruff release can't change formatting or fail CI on
       # its own. Update it on purpose.
       - name: Install ruff
@@ -27,7 +34,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       # pdftotext comes with poppler-utils. With it installed, each build
       # checks that the PDF text extracts cleanly, and strict mode fails on
       # any problem.
@@ -51,7 +58,7 @@ jobs:
           mkdir "$name"
           cp -r resume.json run build.py resume.tex README.md LICENSE examples fonts "$name/"
           zip -r "$name.zip" "$name"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: resumes
           path: |
@@ -64,11 +71,26 @@ jobs:
   minimal-tex:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install TeX Live with scheme-basic
+        # mirror.ctan.org redirects to a random mirror, and one with a broken
+        # TLS certificate fails the download. Each retry gets a new mirror.
+        # The installer, and tlmgr after it, then use the mirror that worked.
         run: |
-          curl -sSL https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz | tar xz
+          set -euo pipefail
+          base=https://mirror.ctan.org/systems/texlive/tlnet
+          for try in 1 2 3 4 5; do
+            if url="$(curl -fsSL --max-time 300 -o install-tl.tar.gz \
+              -w '%{url_effective}' "$base/install-tl-unx.tar.gz")"; then
+              break
+            fi
+            [ "$try" -lt 5 ] || exit 1
+            sleep $((try * 5))
+          done
+          echo "Using $url"
+          tar -xzf install-tl.tar.gz
           install-tl-*/install-tl --no-interaction --scheme scheme-basic \
+            --repository "${url%/install-tl-unx.tar.gz}" \
             --texdir "$RUNNER_TEMP/texlive" --no-doc-install --no-src-install > /dev/null
           echo "$RUNNER_TEMP/texlive/bin/x86_64-linux" >> "$GITHUB_PATH"
       - name: Build each example
@@ -81,7 +103,7 @@ jobs:
   macos-basictex:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install BasicTeX
         run: |
           brew install --cask basictex
@@ -101,7 +123,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: resumes
       - name: Create or update the GitHub release
