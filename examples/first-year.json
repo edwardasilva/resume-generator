@@ -50,7 +50,7 @@
       "end": "Fall 2026",
       "bullets": [
         "Finished 2nd of 12 teams in the class line-following race, 41 s on a 10 m track",
-        "Got lap time down from 52 s to 41 s by tuning the steering gain in C++ over 15 test runs",
+        "Cut lap time from 52 s to 41 s by tuning the steering gain in C++ over 15 test runs",
         "Traced motor dropouts to 2 cold solder joints with a multimeter and resoldered them"
       ]
     }

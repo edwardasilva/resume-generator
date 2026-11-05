@@ -278,11 +278,11 @@ def projects(data):
     """Return LaTeX lines for the projects: title (tools) and dates, then bullets."""
     out = []
     for p in shown(data.get("projects")):
-        title = link(p.get("url"), esc(p.get("title")))
+        title = rf"\textbf{{{link(p.get('url'), esc(p.get('title')))}}}"
         if present(p.get("tools")):
             title += f" ({joined(p['tools'])})"
         dates = date_range(p.get("start"), p.get("end"))
-        out.append(rf"\entry{{\textbf{{{title}}}}}{{{dates}}}")
+        out.append(rf"\entry{{{title}}}{{{dates}}}")
         out += bullets(p.get("bullets"))
         out.append(r"\entrygap")
     return out
