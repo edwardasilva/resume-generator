@@ -12,6 +12,7 @@ fits on a single page. It uses only the Python standard library. Run it
 through ./run, which installs Python and TeX first if they are missing.
 """
 
+import html
 import json
 import os
 import re
@@ -34,19 +35,27 @@ LAYOUTS = [
     (10.0, 0.45),
     (10.0, 0.4),
 ]
-# Line spacing as a multiple of the usual 1.2 times the font size.
-LINE_SPACING = 1.07
-# Compact spacing in points: before each section title and between entries.
-SECTION_GAP = 7.0
-ENTRY_GAP = 6.3
-# When a page has room left, section and entry gaps grow by at most this
-# many points each, so a short resume keeps a little room at the bottom
-# instead of large gaps.
-MAX_EXTRA_GAP = 3.0
-# When a resume doesn't fit even at the tightest layout, section and entry
-# gaps shrink by at most this many points each before the build gives up, so
-# a resume that overflows by a line or less still fits.
-MAX_SQUEEZE = 2.0
+# The rules below follow eeprep's resume page (eeprep.com/advice/resume/):
+# text 10 to 11 pt, margins of at least 0.4 in, line spacing of at least 1.07,
+# one gap size between every pair of sections, and a page that is filled but
+# not crammed. White space never shrinks below the compact sizes to fit more.
+#
+# Line spacing as a multiple of the usual 1.2 times the font size, and
+# spacing in points before each section title and between entries. A full
+# page uses the compact values. A page with room left grows all of them
+# together, in proportion, up to the roomy values, until the page is full.
+LINE_SPACING = (1.07, 1.15)
+SECTION_GAP = (7.0, 10.0)
+ENTRY_GAP = (6.3, 8.55)
+# Room left at the bottom of a filled page, in lines, so rounding can't push
+# the last line onto a second page.
+FILL_RESERVE = 0.5
+# A page with more than this many empty lines at the roomy spacing gets a
+# note: the resume needs more content, not more space.
+EMPTY_LINES_NOTE = 3
+# A bullet whose last line fills less than this share of the line gets a
+# note. eeprep's page says a bullet fills one line or most of two.
+SHORT_LAST_LINE = 0.5
 
 # Fonts allowed in settings.font: font files in fonts/, loaded by path so the
 # build doesn't depend on the fonts installed on the system. The first one is
@@ -574,9 +583,19 @@ def check_text(pdf, data):
     return problems
 
 
-def settings(typeface, font, margin, extra=0.0):
-    """Return LaTeX definitions for the font, size, margins and gaps of a layout."""
-    line = font * 1.2 * LINE_SPACING
+def grow(span, fill):
+    """Return the value fill of the way from the compact to the roomy end."""
+    low, high = span
+    return low + fill * (high - low)
+
+
+def settings(typeface, font, margin, fill=0.0):
+    """Return LaTeX definitions for the font, size, margins and spacing.
+
+    fill runs from 0 (compact) to 1 (roomy) and sets the line spacing and
+    gaps together.
+    """
+    line = font * 1.2 * grow(LINE_SPACING, fill)
     name, name_line = font * 1.9, font * 2.2
     base, upright, bold = FONTS[typeface]
     return "\n".join(
@@ -589,17 +608,17 @@ def settings(typeface, font, margin, extra=0.0):
             rf"{{\fontsize{{{font}pt}}{{{line:.2f}pt}}\selectfont}}",
             rf"\newcommand{{\resumename}}"
             rf"{{\fontsize{{{name:.1f}pt}}{{{name_line:.1f}pt}}\selectfont}}",
-            rf"\newcommand{{\sectiongap}}{{{SECTION_GAP + extra:.2f}pt}}",
-            rf"\newcommand{{\entryspace}}{{{ENTRY_GAP + extra * 0.75:.2f}pt}}",
+            rf"\newcommand{{\sectiongap}}{{{grow(SECTION_GAP, fill):.2f}pt}}",
+            rf"\newcommand{{\entryspace}}{{{grow(ENTRY_GAP, fill):.2f}pt}}",
             "",
         ]
     )
 
 
-def compile_once(typeface, font, margin, extra=0.0):
+def compile_once(typeface, font, margin, fill=0.0):
     """Build the PDF at one layout and return the page count and the log text."""
     (BUILD / "settings.tex").write_text(
-        settings(typeface, font, margin, extra), encoding="utf-8"
+        settings(typeface, font, margin, fill), encoding="utf-8"
     )
     env = dict(os.environ, SOURCE_DATE_EPOCH="0", FORCE_SOURCE_DATE="1")
     log_file = BUILD / "resume.log"
@@ -675,32 +694,8 @@ def measure(log, key):
     return (int(m.group(1)), *map(float, m.groups()[1:])) if m else None
 
 
-def spread(tex, end):
-    """Return the extra points to add to each gap when the page has room left.
-
-    It uses at most half of the free space and never more than MAX_EXTRA_GAP.
-    """
-    if not end:
-        return 0.0
-    _, used, goal, _ = end
-    gaps = gap_weight(tex)
-    if gaps == 0:
-        return 0.0
-    return min(MAX_EXTRA_GAP, 0.5 * (goal - used) / gaps)
-
-
-def gap_weight(tex):
-    """Return how many points the page grows when every gap grows by 1 pt.
-
-    Each section title and the end of the header add one section gap, and
-    each entry gap grows by 0.75 of the change (see settings()).
-    """
-    sections = tex.count(r"\resumesection") + tex.count(r"\end{resumeheader}")
-    return sections + 0.75 * tex.count(r"\entrygap")
-
-
 def overflow(end):
-    """Return how many points of content don't fit on page 1.
+    """Return how many points of content don't fit on page 1 (negative: room).
 
     The measurement can come before or after LaTeX breaks the page: on page 1
     the overflow is used minus goal, and on page 2 it's what landed there.
@@ -710,16 +705,110 @@ def overflow(end):
     return used + (page - 2) * goal
 
 
-def squeeze(tex, end):
-    """Return how many points to take off each gap so an overflow fits.
+def fit(typeface):
+    """Find the roomiest layout that fits on one page, then fill the page.
 
-    Returns None when the overflow is too large to absorb in MAX_SQUEEZE.
+    Returns (font, margin, fill, free lines), or None and the log of the
+    tightest try when nothing fits.
     """
-    if not end or gap_weight(tex) == 0:
-        return None
-    # A point of slack, because page 1 can end a little short of the goal.
-    need = (overflow(end) + 1.0) / gap_weight(tex)
-    return need if 0 < need <= MAX_SQUEEZE else None
+    for font, margin in LAYOUTS:
+        pages, log = compile_once(typeface, font, margin)
+        if pages == 1:
+            return (font, margin, *fill_page(typeface, font, margin, log)), log
+    return None, log
+
+
+def fill_page(typeface, font, margin, compact_log):
+    """Grow the spacing to fill a page that fits, and return (fill, free lines).
+
+    Line breaks don't depend on vertical spacing, so the page's height grows in
+    a straight line with fill. One build at the roomy end gives the slope, and
+    one more lands on a full page.
+    """
+    compact = measure(compact_log, "END")
+    if not compact:
+        return 0.0, 0.0
+    line = compact[3]
+    reserve = FILL_RESERVE * line
+    room = -overflow(compact)
+    if room <= reserve:
+        return 0.0, room / line
+    pages, log = compile_once(typeface, font, margin, 1.0)
+    roomy = measure(log, "END")
+    if pages == 1 and roomy and -overflow(roomy) >= reserve:
+        return 1.0, -overflow(roomy) / line
+    # How much room the full step from compact to roomy takes up.
+    slope = room + overflow(roomy) if roomy else 0.0
+    fill = min(1.0, (room - reserve) / slope) if slope > 0 else 0.0
+    pages, log = compile_once(typeface, font, margin, fill)
+    end = measure(log, "END")
+    if pages != 1 or not end:
+        compile_once(typeface, font, margin)
+        return 0.0, room / line
+    return fill, -overflow(end) / line
+
+
+def short_bullets(pdf, margin):
+    """Return the bullets whose last line fills less than SHORT_LAST_LINE.
+
+    It reads word positions with pdftotext. A bullet's line starts with the
+    bullet mark, and its wrapped lines follow it in the same text block.
+    """
+    result = subprocess.run(
+        ["pdftotext", "-bbox-layout", str(pdf), "-"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        return []
+    page = re.search(r'<page width="([\d.]+)"', result.stdout)
+    if not page:
+        return []
+    right = float(page.group(1)) - margin * 72
+    lines = []
+    for block in result.stdout.split("<block")[1:]:
+        for line in re.findall(
+            r'<line xMin="([\d.]+)"[^>]*xMax="([\d.]+)"[^>]*>'
+            r"(.*?)</line>",
+            block,
+            re.S,
+        ):
+            words = re.findall(r"<word[^>]*>(.*?)</word>", line[2])
+            lines.append((float(line[0]), float(line[1]), words, block))
+    short = []
+    for i, (_, _, words, block) in enumerate(lines):
+        if not words or words[0] != "\u2022" or len(words) < 2:
+            continue
+        follow = []
+        for x, x1, more, other in lines[i + 1 :]:
+            if other is not block or not more or more[0] == "\u2022":
+                break
+            follow.append((x, x1))
+        if not follow:
+            continue
+        x, x1 = follow[-1]
+        if (x1 - x) / (right - x) < SHORT_LAST_LINE:
+            short.append(plain(html.unescape(" ".join(words[1:6]))))
+    return short
+
+
+def report_layout(pdf, margin, free):
+    """Print notes on what eeprep's resume page would change on the page."""
+    if free > EMPTY_LINES_NOTE:
+        print(
+            f"Note: about {free:.0f} lines at the bottom are empty, even with "
+            "roomy spacing. Fill the page with content: a class project, lab "
+            "work, or another bullet.",
+            file=sys.stderr,
+        )
+    if not shutil.which("pdftotext"):
+        return
+    for start in short_bullets(pdf, margin):
+        print(
+            f'Note: the bullet "{start}..." ends with a short second line. Cut '
+            "it to one line, or add a detail that fills most of the second.",
+            file=sys.stderr,
+        )
 
 
 def report_text(pdf, data):
@@ -765,44 +854,26 @@ def main():
         BUILD.mkdir(exist_ok=True)
         tex = body(data)
         (BUILD / "body.tex").write_text(tex, encoding="utf-8")
-        for font, margin in LAYOUTS:
-            pages, log = compile_once(typeface, font, margin)
-            if pages == 1:
-                extra = spread(tex, measure(log, "END"))
-                if extra and compile_once(typeface, font, margin, extra)[0] != 1:
-                    extra = 0.0
-                    compile_once(typeface, font, margin)
-                shutil.copy(BUILD / "resume.pdf", output)
-                print(
-                    f"Wrote {output.name} (1 page, {typeface}, {font:g} pt text, "
-                    f"{margin:g} in margins, gaps +{extra:.1f} pt)."
-                )
-                report_text(output, data)
-                return
-        # Nothing fit. If the overflow is small, tighten the gaps a little.
-        font, margin = LAYOUTS[-1]
-        cut = squeeze(tex, measure(log, "END"))
-        tries = [] if cut is None else sorted({cut, MAX_SQUEEZE})
-        for tighter in tries:
-            pages, log = compile_once(typeface, font, margin, -tighter)
-            if pages == 1:
-                shutil.copy(BUILD / "resume.pdf", output)
-                print(
-                    f"Wrote {output.name} (1 page, {typeface}, {font:g} pt text, "
-                    f"{margin:g} in margins, gaps -{tighter:.1f} pt). It's at the "
-                    "tightest layout, so cut a line before you add one."
-                )
-                report_text(output, data)
-                return
-        if cut is not None:
-            # Report the overflow at the normal gaps, not the squeezed ones.
-            pages, log = compile_once(typeface, font, margin)
+        layout, log = fit(typeface)
+        if layout:
+            font, margin, fill, free = layout
+            shutil.copy(BUILD / "resume.pdf", output)
+            print(
+                f"Wrote {output.name} (1 page, {typeface}, {font:g} pt text, "
+                f"{margin:g} in margins, line spacing "
+                f"{grow(LINE_SPACING, fill):.2f}, section gap "
+                f"{grow(SECTION_GAP, fill):.1f} pt)."
+            )
+            report_layout(output, margin, free)
+            report_text(output, data)
+            return
     except ResumeError as e:
         sys.exit(str(e))
     end = measure(log, "END")
     lines = 1
     if end:
         lines = max(1, round(overflow(end) / end[3] + 0.5))
+    font, margin = LAYOUTS[-1]
     sys.exit(
         f"{source.name} doesn't fit on one page, even at {font:g} pt with "
         f"{margin:g} in margins.\n"
