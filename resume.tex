@@ -24,7 +24,7 @@
 
 % ---------- Header ----------
 % Name and contact lines, centered, with a small gap before the first section.
-\newenvironment{resumeheader}{\par\centering\hyphenpenalty=50 \exhyphenpenalty=50 }{\par\vspace{6.7pt}}
+\newenvironment{resumeheader}{\par\centering\hyphenpenalty=50 \exhyphenpenalty=50 }{\par\vspace{\sectiongap}}
 % A separator between header items. If the line wraps there, the bar is
 % dropped so no line starts or ends with one. The header turns these breaks
 % back on. build.py keeps each header item in a box, so a URL never breaks
@@ -35,7 +35,7 @@
 % Title, a full-width rule, then a clear gap before the first entry.
 \newcommand{\resumesection}[1]{%
   \par\vspace{\sectiongap}%
-  {\large\bfseries #1}\par
+  {\normalsize\bfseries #1}\par
   \vspace{2pt}%
   \hrule height 0.6pt
   \vspace{0.45\baselineskip}}
