@@ -58,7 +58,7 @@ Acceptable fonts for `settings.font`:
 
 | Field | What to put | Example |
 | --- | --- | --- |
-| `name` | The name you want recruiters to use. | `Alex Doe` |
+| `name` | The name you want recruiters to use. It also fills the PDF's title (`Alex Doe Resume`) and author properties. | `Alex Doe` |
 | `phone` | Their phone number. No label such as "Cell:". | `(555) 555-0142` |
 | `email` | An address you check every day. A school address is fine. | `alex.doe@example.com` |
 | `linkedin` | Their profile URL without `https://`. | `linkedin.com/in/alex-doe-example` |

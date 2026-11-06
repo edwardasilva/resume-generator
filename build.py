@@ -472,9 +472,23 @@ TITLES = {
 }
 
 
+def metadata(data):
+    """Return a hypersetup line for the PDF's document properties.
+
+    The title is "<name> Resume" and the author is the name, as eeprep's
+    resume page suggests. The subject is "Resume". A blank name leaves out the
+    title and author.
+    """
+    name = esc((data.get("header") or {}).get("name"))
+    fields = [("pdfsubject", "Resume")]
+    if name:
+        fields = [("pdftitle", f"{name} Resume"), ("pdfauthor", name)] + fields
+    return [r"\hypersetup{" + ", ".join(f"{k}={{{v}}}" for k, v in fields) + "}"]
+
+
 def body(data):
-    """Return the LaTeX body: the header, then each section in the chosen order."""
-    out = header(data.get("header") or {})
+    """Return the LaTeX body: PDF properties, the header, then each section."""
+    out = metadata(data) + header(data.get("header") or {})
     order = (data.get("settings") or {}).get("sectionOrder") or list(SECTIONS)
     for name in order:
         if name not in RENDER:
