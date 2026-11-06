@@ -476,22 +476,13 @@ def metadata(data):
     """Return a hypersetup line for the PDF's document properties.
 
     The title is "<name> Resume" and the author is the name, as eeprep's
-    resume page suggests. The subject is "Resume" and the keywords are the
-    skill items. A field with nothing to put in it is left out.
+    resume page suggests. The subject is "Resume". A blank name leaves out the
+    title and author.
     """
     name = esc((data.get("header") or {}).get("name"))
-    s = data.get("skills") or {}
-    skill_names = [
-        x.get("name") if isinstance(x, dict) else x
-        for key in ("software", "hardwareLab", "certifications")
-        for x in present(s.get(key))
-    ]
     fields = [("pdfsubject", "Resume")]
     if name:
         fields = [("pdftitle", f"{name} Resume"), ("pdfauthor", name)] + fields
-    keywords = ", ".join(esc(k) for k in skill_names if k)
-    if keywords:
-        fields.append(("pdfkeywords", keywords))
     return [r"\hypersetup{" + ", ".join(f"{k}={{{v}}}" for k, v in fields) + "}"]
 
 
