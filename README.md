@@ -28,13 +28,13 @@ Each example in `examples/` is a made-up resume and the PDF built from it, from 
 
 ## Field guide
 
-JSON doesn't allow comments, so this section explains each field. A blank field (`""`) or an empty list (`[]`) is left out of the PDF.
+JSON doesn't allow comments, so this section explains each field. A blank field (`""`) or an empty list (`[]`) is left out of the PDF. Text goes in quotes, `true` and `false` go without them, and lists such as `bullets` go in brackets, even with one item. The build stops and names any field with the wrong kind of value.
 
 The phone, email, LinkedIn, GitHub and website in the header are links. The email opens a new message and the phone number dials. Any entry can also have a link:
 
 | Field | What to put | Example |
 | --- | --- | --- |
-| `url` | Optional on any education, project or experience entry. The school, project title or employer becomes a link, shown in the normal text color. To link a skill, coursework or activity item, write it as `{"name": "...", "url": "..."}`. Inside a bullet, `[text](url)` links the text. Links must be web addresses (`https://` is added if missing), `mailto:` or `tel:`. | `github.com/alex-doe-example/cubesat-buck-converter` |
+| `url` | Optional on any education, project or experience entry. The school, project title or employer becomes a link, shown in the normal text color. To link a skill, coursework or activity item, write it as `{"name": "...", "url": "..."}`. Inside a bullet, `[text](url)` links the text. The URL may contain parentheses, as in `en.wikipedia.org/wiki/Buck_(converter)`. Links must be web addresses (`https://` is added if missing), `mailto:` or `tel:`. | `github.com/alex-doe-example/cubesat-buck-converter` |
 
 ### `settings`
 
@@ -101,7 +101,7 @@ A list, most recent first.
 | `title`, `company` | Your role and where you worked. | `Power Subsystem Lead`, `Example State CubeSat Team` |
 | `location` | City and state, or blank. | `Springfield, ST` |
 | `start`, `end` | Dates in the experience date style. A blank `end` or `Present` means ongoing. | `Sep 2024`, `Present` |
-| `engineering` | `true` for engineering work with bullets. `false` gives a one-line entry for other jobs. | `false` |
+| `engineering` | `true` for engineering work with bullets. `false` gives a one-line entry for other jobs, and the build notes any bullets it leaves out. | `false` |
 | `bullets` | Same rules as project bullets. | |
 | `hide` | `true` leaves the entry out. | |
 
@@ -129,7 +129,13 @@ Start with a past-tense verb, say what you built or changed, and end with a resu
 
 ## Fitting on one page
 
-`build.py` tries layouts from roomiest to tightest. It starts at 11 pt text with 0.5 in margins. It then steps the text down to 10 pt, then the margins down to 0.4 in. It keeps the roomiest layout that fits on one page. The spacing stays compact. If a page has room left, the gaps between sections and entries grow by at most 3 pt each. A short resume keeps some white space at the bottom instead of large gaps. Line spacing never goes below 1.07. If the resume still doesn't fit at 10 pt and 0.4 in, the build stops and says about how many lines to cut. Drop a coursework item first, then the weakest bullet, or add `"hide": true` to an older project.
+The layout follows the rules on [eeprep's resume page](https://eeprep.com/advice/resume/): text from 10 to 11 pt, margins of at least 0.4 in, line spacing of at least 1.07, the same gap between every pair of sections, and a page that is full but not crammed.
+
+`build.py` finds the largest text that fits. It starts at 11 pt text with 0.5 in margins, steps the text down to 10 pt, then the margins down to 0.4 in, and keeps the first layout that fits on one page. It then fills the page. Line spacing, section gaps and entry gaps grow together, in proportion, until the page is full. They go from compact (1.07 line spacing, 7 pt section gaps) up to roomy (1.15 and 10 pt). Spacing never shrinks below compact to fit more.
+
+If the page still has more than 3 empty lines at roomy spacing, the build notes it. eeprep's page counts empty space as wasted, so add a class project, lab work or a bullet instead. The build also notes any bullet whose second line fills less than half the line. Cut it to one line, or add a detail that fills most of the second.
+
+If the resume doesn't fit at 10 pt and 0.4 in, the build stops and says about how many lines to cut. Drop a coursework item first, then the weakest bullet, or add `"hide": true` to an older project.
 
 ## Checking the text
 
@@ -146,7 +152,7 @@ Releases are made by pushing a tag such as `v0.1.0`. CI then builds and checks e
 `build.py` is formatted and linted with [ruff](https://docs.astral.sh/ruff/), configured in `pyproject.toml`. Before opening a pull request, run:
 
 ```sh
-pip install ruff
+pip install ruff==0.16.9
 ruff format
 ruff check
 ```

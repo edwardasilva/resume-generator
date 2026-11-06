@@ -12,7 +12,9 @@ for arg in "$@"; do
     -y|--yes) assume_yes=1 ;;
     -h|--help) sed -n '2,4p' "$0" | sed 's/^# //'; exit 0 ;;
     -*) echo "Unknown option: $arg" >&2; exit 2 ;;
-    *) input="$arg" ;;
+    *)
+      [[ -z "$input" ]] || { echo "Give one JSON file at a time." >&2; exit 2; }
+      input="$arg" ;;
   esac
 done
 if [[ -z "$input" ]]; then

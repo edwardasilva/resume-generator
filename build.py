@@ -12,6 +12,7 @@ fits on a single page. It uses only the Python standard library. Run it
 through ./run, which installs Python and TeX first if they are missing.
 """
 
+import html
 import json
 import os
 import re
@@ -34,15 +35,27 @@ LAYOUTS = [
     (10.0, 0.45),
     (10.0, 0.4),
 ]
-# Line spacing as a multiple of the usual 1.2 times the font size.
-LINE_SPACING = 1.07
-# Compact spacing in points: before each section title and between entries.
-SECTION_GAP = 7.0
-ENTRY_GAP = 6.3
-# When a page has room left, section and entry gaps grow by at most this
-# many points each, so a short resume keeps a little room at the bottom
-# instead of large gaps.
-MAX_EXTRA_GAP = 3.0
+# The rules below follow eeprep's resume page (eeprep.com/advice/resume/):
+# text 10 to 11 pt, margins of at least 0.4 in, line spacing of at least 1.07,
+# one gap size between every pair of sections, and a page that is filled but
+# not crammed. White space never shrinks below the compact sizes to fit more.
+#
+# Line spacing as a multiple of the usual 1.2 times the font size, and
+# spacing in points before each section title and between entries. A full
+# page uses the compact values. A page with room left grows all of them
+# together, in proportion, up to the roomy values, until the page is full.
+LINE_SPACING = (1.07, 1.15)
+SECTION_GAP = (7.0, 10.0)
+ENTRY_GAP = (6.3, 8.55)
+# Room left at the bottom of a filled page, in lines, so rounding can't push
+# the last line onto a second page.
+FILL_RESERVE = 0.5
+# A page with more than this many empty lines at the roomy spacing gets a
+# note: the resume needs more content, not more space.
+EMPTY_LINES_NOTE = 3
+# A bullet whose last line fills less than this share of the line gets a
+# note. eeprep's page says a bullet fills one line or most of two.
+SHORT_LAST_LINE = 0.5
 
 # Fonts allowed in settings.font: font files in fonts/, loaded by path so the
 # build doesn't depend on the fonts installed on the system. The first one is
@@ -75,6 +88,9 @@ TEX_SPECIAL = {
     "$": r"\$",
 }
 TEX_RE = re.compile("|".join(re.escape(c) for c in TEX_SPECIAL))
+# Control characters, which LaTeX rejects as invalid input. Tabs and line
+# breaks are whitespace and become a single space instead.
+CONTROL = re.compile(r"[\x00-\x08\x0e-\x1f\x7f]")
 
 
 class ResumeError(Exception):
@@ -82,8 +98,14 @@ class ResumeError(Exception):
 
 
 def esc(text):
-    """Escape text for LaTeX in a single pass."""
-    return TEX_RE.sub(lambda m: TEX_SPECIAL[m.group()], str(text or ""))
+    """Escape text for LaTeX in a single pass.
+
+    Runs of spaces, tabs and line breaks become one space, so a blank line
+    pasted into a bullet can't start a new paragraph. Control characters are
+    dropped. A no-break space is kept.
+    """
+    text = re.sub(r"[ \t\n\r\f\v]+", " ", CONTROL.sub("", str(text or "")))
+    return TEX_RE.sub(lambda m: TEX_SPECIAL[m.group()], text)
 
 
 def esc_url(url):
@@ -96,19 +118,25 @@ def esc_url(url):
     """
     url = str(url).strip()
     scheme = re.match(r"^([a-zA-Z][a-zA-Z0-9+.-]*):", url)
-    if not scheme:
+    if scheme and scheme.group(1).lower() in ("http", "https", "mailto", "tel"):
+        pass
+    elif not scheme or re.match(r"\d+(?:[/?#]|$)", url[scheme.end() :]):
+        # No scheme, or a host with a port such as example.com:8443/me.
         url = "https://" + url
-    elif scheme.group(1).lower() not in ("http", "https", "mailto", "tel"):
+    else:
         raise ResumeError(
             f'Links must use https://, http://, mailto: or tel:, not "{url}"'
         )
-    url = re.sub(r'[\s"<>\\^`{|}$]', lambda m: f"%{ord(m.group()):02X}", url)
+    url = re.sub(
+        r'[\s\x00-\x1f\x7f"<>\\^`{|}$]', lambda m: f"%{ord(m.group()):02X}", url
+    )
     return re.sub(r"([%#&_~])", r"\\\1", url)
 
 
 def short_url(url):
     """Return a URL as people read it: no scheme, no www. and no trailing slash."""
-    return re.sub(r"^(https?://)?(www\.)?", "", str(url).strip()).rstrip("/")
+    url = re.sub(r"^(https?://)?(www\.)?", "", str(url).strip(), flags=re.I)
+    return url.rstrip("/")
 
 
 def link(url, text):
@@ -116,8 +144,9 @@ def link(url, text):
     return rf"\href{{{esc_url(url)}}}{{{text}}}" if url else text
 
 
-# A Markdown-style inline link in bullet text: [text](url).
-INLINE_LINK = re.compile(r"\[([^\[\]]+)\]\(([^()\s]+)\)")
+# A Markdown-style inline link in bullet text: [text](url). The URL may hold
+# balanced parentheses, as in en.wikipedia.org/wiki/Buck_(converter).
+INLINE_LINK = re.compile(r"\[([^\[\]]+)\]\(((?:[^()\s]|\([^()\s]*\))+)\)")
 
 
 def rich(text):
@@ -136,7 +165,7 @@ def present(items):
 
 def shown(entries):
     """Return the entries that are not marked with "hide": true."""
-    return [e for e in entries or [] if not e.get("hide")]
+    return [e for e in entries or [] if e and not e.get("hide")]
 
 
 def item(x):
@@ -198,15 +227,122 @@ def font_name(data):
     return font
 
 
+# The type of each field: "text" (a string), "flag" (true or false), "lines"
+# (a list of strings) or "items" (a list of strings or {"name", "url"} links).
+# null counts as blank for any field.
+ENTRY_FIELDS = {
+    "education": {
+        **dict.fromkeys(("degree", "gpa", "school", "gradDate", "url"), "text"),
+        **dict.fromkeys(("start", "end"), "text"),
+        "coursework": "items",
+        "activities": "items",
+        "hide": "flag",
+    },
+    "projects": {
+        **dict.fromkeys(("title", "url", "start", "end"), "text"),
+        "tools": "items",
+        "bullets": "lines",
+        "hide": "flag",
+    },
+    "experience": {
+        **dict.fromkeys(("title", "company", "location", "url"), "text"),
+        **dict.fromkeys(("start", "end"), "text"),
+        "engineering": "flag",
+        "bullets": "lines",
+        "hide": "flag",
+    },
+}
+HEADER_FIELDS = {
+    **dict.fromkeys(
+        ("name", "phone", "email", "linkedin", "github", "website", "location"),
+        "text",
+    ),
+    "relocate": "flag",
+}
+SKILL_FIELDS = dict.fromkeys(("software", "hardwareLab", "certifications"), "items")
+
+
+def check_field(value, kind, where):
+    """Raise ResumeError if a field's value doesn't have the type it needs."""
+    if value is None:
+        return
+    if kind == "text" and not isinstance(value, str):
+        like = value if isinstance(value, (int, float)) else "..."
+        raise ResumeError(f'{where} must be text in quotes, like "{like}"')
+    if kind == "flag" and not isinstance(value, bool):
+        raise ResumeError(f"{where} must be true or false, without quotes")
+    if kind in ("lines", "items"):
+        if not isinstance(value, list):
+            raise ResumeError(f'{where} must be a list in brackets, like ["..."]')
+        for i, x in enumerate(value):
+            if isinstance(x, str) or x is None:
+                continue
+            if kind == "items" and isinstance(x, dict):
+                for key in ("name", "url"):
+                    check_field(x.get(key), "text", f"{where}[{i}].{key}")
+                continue
+            what = (
+                'text or {"name": "...", "url": "..."}' if kind == "items" else "text"
+            )
+            raise ResumeError(f"{where}[{i}] must be {what}")
+
+
+def check_object(value, where):
+    """Raise ResumeError unless value is a JSON object or null."""
+    if value is not None and not isinstance(value, dict):
+        raise ResumeError(f"{where} must be an object in braces, like {{...}}")
+
+
+def check_types(data):
+    """Check that every field has the type the layout expects."""
+    if not isinstance(data, dict):
+        raise ResumeError("The resume file must hold one object in braces, {...}")
+    settings = data.get("settings")
+    check_object(settings, "settings")
+    settings = settings or {}
+    check_field(settings.get("font"), "text", "settings.font")
+    order = settings.get("sectionOrder")
+    check_field(order, "lines", "settings.sectionOrder")
+    for name in order or []:
+        if name not in SECTIONS:
+            raise ResumeError(f'settings.sectionOrder: unknown section "{name}"')
+        if order.count(name) > 1:
+            raise ResumeError(f'settings.sectionOrder lists "{name}" twice')
+    check_object(data.get("header"), "header")
+    for key, kind in HEADER_FIELDS.items():
+        check_field((data.get("header") or {}).get(key), kind, f"header.{key}")
+    check_object(data.get("skills"), "skills")
+    for key, kind in SKILL_FIELDS.items():
+        check_field((data.get("skills") or {}).get(key), kind, f"skills.{key}")
+    for section, fields in ENTRY_FIELDS.items():
+        entries = data.get(section)
+        if entries is not None and not isinstance(entries, list):
+            raise ResumeError(f"{section} must be a list in brackets, like [{{...}}]")
+        for i, entry in enumerate(entries or []):
+            check_object(entry, f"{section}[{i}]")
+            for key, kind in fields.items():
+                check_field((entry or {}).get(key), kind, f"{section}[{i}].{key}")
+
+
 def validate(data):
-    """Check the font and every visible date against its section's style."""
+    """Check field types, the font, and each visible date against its style."""
+    check_types(data)
     font_name(data)
     styles = date_styles(data)
     for section in ("education", "projects", "experience"):
         style = styles.get(section, "semester")
-        for i, entry in enumerate(shown(data.get(section))):
+        for i, entry in enumerate(data.get(section) or []):
+            if not entry or entry.get("hide"):
+                continue
             for key in ("gradDate", "start", "end"):
                 check_date(entry.get(key), style, f"{section}[{i}].{key}")
+            if section == "experience" and present(entry.get("bullets")):
+                if not entry.get("engineering"):
+                    print(
+                        f"Note: experience[{i}] has bullets, but they're left out "
+                        'because it doesn\'t have "engineering": true.',
+                        file=sys.stderr,
+                    )
 
 
 def header(h):
@@ -249,7 +385,9 @@ def bullets(items):
         return []
     return (
         [r"\begin{itemize}"]
-        + [rf"  \item {rich(b)}" for b in items]
+        # \relax stops \item from reading a bullet that starts with "[" as
+        # its optional label.
+        + [rf"  \item\relax {rich(b)}" for b in items]
         + [r"\end{itemize}"]
     )
 
@@ -368,7 +506,7 @@ TEXT_PLAIN = str.maketrans(
 
 def plain(text):
     """Return text as a reader sees it: straight quotes, hyphens, single spaces."""
-    text = str(text or "").replace("---", "-").replace("--", "-")
+    text = CONTROL.sub("", str(text or "")).replace("---", "-").replace("--", "-")
     text = re.sub(r"``|''", '"', text).translate(TEXT_PLAIN)
     return " ".join(text.split())
 
@@ -445,9 +583,19 @@ def check_text(pdf, data):
     return problems
 
 
-def settings(typeface, font, margin, extra=0.0):
-    """Return LaTeX definitions for the font, size, margins and gaps of a layout."""
-    line = font * 1.2 * LINE_SPACING
+def grow(span, fill):
+    """Return the value fill of the way from the compact to the roomy end."""
+    low, high = span
+    return low + fill * (high - low)
+
+
+def settings(typeface, font, margin, fill=0.0):
+    """Return LaTeX definitions for the font, size, margins and spacing.
+
+    fill runs from 0 (compact) to 1 (roomy) and sets the line spacing and
+    gaps together.
+    """
+    line = font * 1.2 * grow(LINE_SPACING, fill)
     name, name_line = font * 1.9, font * 2.2
     base, upright, bold = FONTS[typeface]
     return "\n".join(
@@ -460,37 +608,58 @@ def settings(typeface, font, margin, extra=0.0):
             rf"{{\fontsize{{{font}pt}}{{{line:.2f}pt}}\selectfont}}",
             rf"\newcommand{{\resumename}}"
             rf"{{\fontsize{{{name:.1f}pt}}{{{name_line:.1f}pt}}\selectfont}}",
-            rf"\newcommand{{\sectiongap}}{{{SECTION_GAP + extra:.2f}pt}}",
-            rf"\newcommand{{\entryspace}}{{{ENTRY_GAP + extra * 0.75:.2f}pt}}",
+            rf"\newcommand{{\sectiongap}}{{{grow(SECTION_GAP, fill):.2f}pt}}",
+            rf"\newcommand{{\entryspace}}{{{grow(ENTRY_GAP, fill):.2f}pt}}",
             "",
         ]
     )
 
 
-def compile_once(typeface, font, margin, extra=0.0):
+def compile_once(typeface, font, margin, fill=0.0):
     """Build the PDF at one layout and return the page count and the log text."""
     (BUILD / "settings.tex").write_text(
-        settings(typeface, font, margin, extra), encoding="utf-8"
+        settings(typeface, font, margin, fill), encoding="utf-8"
     )
     env = dict(os.environ, SOURCE_DATE_EPOCH="0", FORCE_SOURCE_DATE="1")
-    result = subprocess.run(
-        [
-            "lualatex",
-            "-interaction=nonstopmode",
-            "-halt-on-error",
-            "-output-directory=build",
-            "resume.tex",
-        ],
-        cwd=ROOT,
-        env=env,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-    log = (BUILD / "resume.log").read_text(encoding="utf-8", errors="replace")
+    log_file = BUILD / "resume.log"
+    # A log left from an earlier run would hide why this one failed.
+    log_file.unlink(missing_ok=True)
+    try:
+        result = subprocess.run(
+            [
+                "lualatex",
+                "-interaction=nonstopmode",
+                "-halt-on-error",
+                # The resume never needs to run programs. Turning shell
+                # escape off keeps it that way whatever the TeX config says.
+                "-no-shell-escape",
+                "-output-directory=build",
+                "resume.tex",
+            ],
+            cwd=ROOT,
+            env=env,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except FileNotFoundError:
+        raise ResumeError(
+            "lualatex isn't installed or isn't on PATH. "
+            "Run ./run, which offers to install it."
+        ) from None
+    if not log_file.exists():
+        raise ResumeError(
+            f"lualatex exited with code {result.returncode} and wrote no log."
+        )
+    log = log_file.read_text(encoding="utf-8", errors="replace")
     if result.returncode != 0:
         raise ResumeError(latex_error(log))
     pages = re.search(r"Output written on .*?\((\d+) pages?", log, re.S)
-    return int(pages.group(1)) if pages else 0, log
+    if not pages:
+        raise ResumeError(
+            "The resume has nothing to print. Fill in at least the header name."
+        )
+    return int(pages.group(1)), log
 
 
 def latex_error(log):
@@ -525,18 +694,121 @@ def measure(log, key):
     return (int(m.group(1)), *map(float, m.groups()[1:])) if m else None
 
 
-def spread(tex, end):
-    """Return the extra points to add to each gap when the page has room left.
+def overflow(end):
+    """Return how many points of content don't fit on page 1 (negative: room).
 
-    It uses at most half of the free space and never more than MAX_EXTRA_GAP.
+    The measurement can come before or after LaTeX breaks the page: on page 1
+    the overflow is used minus goal, and on page 2 it's what landed there.
+    used + (page - 2) * goal covers both.
     """
-    if not end:
-        return 0.0
-    _, used, goal, _ = end
-    gaps = tex.count(r"\resumesection") + 0.75 * tex.count(r"\entrygap")
-    if gaps == 0:
-        return 0.0
-    return min(MAX_EXTRA_GAP, 0.5 * (goal - used) / gaps)
+    page, used, goal, _ = end
+    return used + (page - 2) * goal
+
+
+def fit(typeface):
+    """Find the roomiest layout that fits on one page, then fill the page.
+
+    Returns (font, margin, fill, free lines), or None and the log of the
+    tightest try when nothing fits.
+    """
+    for font, margin in LAYOUTS:
+        pages, log = compile_once(typeface, font, margin)
+        if pages == 1:
+            return (font, margin, *fill_page(typeface, font, margin, log)), log
+    return None, log
+
+
+def fill_page(typeface, font, margin, compact_log):
+    """Grow the spacing to fill a page that fits, and return (fill, free lines).
+
+    Line breaks don't depend on vertical spacing, so the page's height grows in
+    a straight line with fill. One build at the roomy end gives the slope, and
+    one more lands on a full page.
+    """
+    compact = measure(compact_log, "END")
+    if not compact:
+        return 0.0, 0.0
+    line = compact[3]
+    reserve = FILL_RESERVE * line
+    room = -overflow(compact)
+    if room <= reserve:
+        return 0.0, room / line
+    pages, log = compile_once(typeface, font, margin, 1.0)
+    roomy = measure(log, "END")
+    if pages == 1 and roomy and -overflow(roomy) >= reserve:
+        return 1.0, -overflow(roomy) / line
+    # How much room the full step from compact to roomy takes up.
+    slope = room + overflow(roomy) if roomy else 0.0
+    fill = min(1.0, (room - reserve) / slope) if slope > 0 else 0.0
+    pages, log = compile_once(typeface, font, margin, fill)
+    end = measure(log, "END")
+    if pages != 1 or not end:
+        compile_once(typeface, font, margin)
+        return 0.0, room / line
+    return fill, -overflow(end) / line
+
+
+def short_bullets(pdf, margin):
+    """Return the bullets whose last line fills less than SHORT_LAST_LINE.
+
+    It reads word positions with pdftotext. A bullet's line starts with the
+    bullet mark, and its wrapped lines follow it in the same text block.
+    """
+    result = subprocess.run(
+        ["pdftotext", "-bbox-layout", str(pdf), "-"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        return []
+    page = re.search(r'<page width="([\d.]+)"', result.stdout)
+    if not page:
+        return []
+    right = float(page.group(1)) - margin * 72
+    lines = []
+    for block in result.stdout.split("<block")[1:]:
+        for line in re.findall(
+            r'<line xMin="([\d.]+)"[^>]*xMax="([\d.]+)"[^>]*>'
+            r"(.*?)</line>",
+            block,
+            re.S,
+        ):
+            words = re.findall(r"<word[^>]*>(.*?)</word>", line[2])
+            lines.append((float(line[0]), float(line[1]), words, block))
+    short = []
+    for i, (_, _, words, block) in enumerate(lines):
+        if not words or words[0] != "\u2022" or len(words) < 2:
+            continue
+        follow = []
+        for x, x1, more, other in lines[i + 1 :]:
+            if other is not block or not more or more[0] == "\u2022":
+                break
+            follow.append((x, x1))
+        if not follow:
+            continue
+        x, x1 = follow[-1]
+        if (x1 - x) / (right - x) < SHORT_LAST_LINE:
+            short.append(plain(html.unescape(" ".join(words[1:6]))))
+    return short
+
+
+def report_layout(pdf, margin, free):
+    """Print notes on what eeprep's resume page would change on the page."""
+    if free > EMPTY_LINES_NOTE:
+        print(
+            f"Note: about {free:.0f} lines at the bottom are empty, even with "
+            "roomy spacing. Fill the page with content: a class project, lab "
+            "work, or another bullet.",
+            file=sys.stderr,
+        )
+    if not shutil.which("pdftotext"):
+        return
+    for start in short_bullets(pdf, margin):
+        print(
+            f'Note: the bullet "{start}..." ends with a short second line. Cut '
+            "it to one line, or add a detail that fills most of the second.",
+            file=sys.stderr,
+        )
 
 
 def report_text(pdf, data):
@@ -568,9 +840,12 @@ def main():
     source = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "resume.json"
     output = source.with_suffix(".pdf")
     try:
-        data = json.loads(source.read_text(encoding="utf-8"))
+        # utf-8-sig also reads a file that Windows Notepad saved with a BOM.
+        data = json.loads(source.read_text(encoding="utf-8-sig"))
     except OSError as e:
         sys.exit(f"Can't read {source.name}: {e.strerror}")
+    except UnicodeDecodeError:
+        sys.exit(f"{source.name} isn't a UTF-8 text file. Save it as UTF-8 JSON.")
     except json.JSONDecodeError as e:
         sys.exit(f"{source.name} isn't valid JSON: {e}")
     try:
@@ -579,27 +854,25 @@ def main():
         BUILD.mkdir(exist_ok=True)
         tex = body(data)
         (BUILD / "body.tex").write_text(tex, encoding="utf-8")
-        for font, margin in LAYOUTS:
-            pages, log = compile_once(typeface, font, margin)
-            if pages == 1:
-                extra = spread(tex, measure(log, "END"))
-                if extra and compile_once(typeface, font, margin, extra)[0] != 1:
-                    extra = 0.0
-                    compile_once(typeface, font, margin)
-                shutil.copy(BUILD / "resume.pdf", output)
-                print(
-                    f"Wrote {output.name} (1 page, {typeface}, {font:g} pt text, "
-                    f"{margin:g} in margins, gaps +{extra:.1f} pt)."
-                )
-                report_text(output, data)
-                return
+        layout, log = fit(typeface)
+        if layout:
+            font, margin, fill, free = layout
+            shutil.copy(BUILD / "resume.pdf", output)
+            print(
+                f"Wrote {output.name} (1 page, {typeface}, {font:g} pt text, "
+                f"{margin:g} in margins, line spacing "
+                f"{grow(LINE_SPACING, fill):.2f}, section gap "
+                f"{grow(SECTION_GAP, fill):.1f} pt)."
+            )
+            report_layout(output, margin, free)
+            report_text(output, data)
+            return
     except ResumeError as e:
         sys.exit(str(e))
     end = measure(log, "END")
     lines = 1
     if end:
-        page, used, goal, line = end
-        lines = max(1, round(((page - 2) * goal + used) / line + 0.5))
+        lines = max(1, round(overflow(end) / end[3] + 0.5))
     font, margin = LAYOUTS[-1]
     sys.exit(
         f"{source.name} doesn't fit on one page, even at {font:g} pt with "
