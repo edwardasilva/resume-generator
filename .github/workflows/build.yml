@@ -7,19 +7,27 @@ on:
     branches: [main]
     tags: ["v*.*.*"]
   pull_request:
+  # The install paths depend on Homebrew, CTAN and Ubuntu's archive, which change
+  # without a commit here. A weekly run catches that before a user does.
+  schedule:
+    - cron: "23 14 * * 1"
+  workflow_dispatch:
 
 # Read-only by default. Only the release job can write, to publish a release.
 permissions:
   contents: read
 
-# A newer push to the same pull request or branch cancels the older run.
+# A newer push to the same pull request or branch cancels the older run. The
+# event is in the group, so the weekly run and a push to main don't cancel
+# each other.
 concurrency:
-  group: build-${{ github.event.pull_request.number || github.ref }}
+  group: build-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       # Pinned, so a new ruff release can't change formatting or fail CI on
@@ -33,6 +41,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       # pdftotext comes with poppler-utils. With it installed, each build
@@ -70,29 +79,38 @@ jobs:
   # packages, like a fresh BasicTeX. The bundled fonts must be enough.
   minimal-tex:
     runs-on: ubuntu-latest
+    # A CTAN mirror once hung the TeX Live install for 14 minutes. Without a
+    # limit, a job can run for 6 hours.
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install TeX Live with scheme-basic
-        # mirror.ctan.org redirects to a random mirror, and one with a broken
-        # TLS certificate fails the download. Each retry gets a new mirror.
-        # The installer, and tlmgr after it, then use the mirror that worked.
+        # mirror.ctan.org redirects to a random mirror. A bad one has failed this
+        # step three ways: a broken TLS certificate, a refused connection, and an
+        # install that hung. Each try gets a new mirror and gives up on a slow
+        # one, and the installer, and tlmgr after it, use the mirror that worked.
         run: |
           set -euo pipefail
           base=https://mirror.ctan.org/systems/texlive/tlnet
+          texdir="$RUNNER_TEMP/texlive"
           for try in 1 2 3 4 5; do
-            if url="$(curl -fsSL --max-time 300 -o install-tl.tar.gz \
-              -w '%{url_effective}' "$base/install-tl-unx.tar.gz")"; then
+            rm -rf install-tl install-tl.tar.gz "$texdir"
+            mkdir install-tl
+            url=""
+            if url="$(curl -fsSL --connect-timeout 20 --max-time 120 -o install-tl.tar.gz \
+                -w '%{url_effective}' "$base/install-tl-unx.tar.gz")" &&
+              tar -xzf install-tl.tar.gz -C install-tl --strip-components=1 &&
+              timeout 300 install-tl/install-tl --no-interaction --scheme scheme-basic \
+                --repository "${url%/install-tl-unx.tar.gz}" \
+                --texdir "$texdir" --no-doc-install --no-src-install > /dev/null; then
               break
             fi
-            [ "$try" -lt 5 ] || exit 1
+            [ "$try" -lt 5 ] || { echo "::error::TeX Live install failed on 5 mirrors."; exit 1; }
+            echo "Try $try failed (mirror: ${url:-none}). Trying another mirror."
             sleep $((try * 5))
           done
           echo "Using $url"
-          tar -xzf install-tl.tar.gz
-          install-tl-*/install-tl --no-interaction --scheme scheme-basic \
-            --repository "${url%/install-tl-unx.tar.gz}" \
-            --texdir "$RUNNER_TEMP/texlive" --no-doc-install --no-src-install > /dev/null
-          echo "$RUNNER_TEMP/texlive/bin/x86_64-linux" >> "$GITHUB_PATH"
+          echo "$texdir/bin/x86_64-linux" >> "$GITHUB_PATH"
       - name: Build each example
         run: for f in examples/*.json; do ./run --yes "$f"; done
       - name: Check that every PDF is one page and uses the bundled fonts
@@ -102,6 +120,7 @@ jobs:
 
   macos-basictex:
     runs-on: macos-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install BasicTeX
@@ -116,10 +135,13 @@ jobs:
           brew install poppler
           .github/check-pdfs.sh examples/*.pdf
 
+  # The release ships run, so it waits for every install path to pass, not
+  # only the Ubuntu build.
   release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [lint, build]
+    needs: [lint, build, minimal-tex, macos-basictex]
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: write
     steps:
