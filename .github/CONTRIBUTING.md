@@ -25,7 +25,7 @@ CI builds every file in `examples/` and fails if any PDF is not exactly one page
 
 Be kind and assume good intent. To report a problem with someone's behavior, use GitHub's Report content feature or message the repository owner in private.
 
-For a security problem, follow the [security policy](SECURITY.md). Do not open a public issue.
+To report a vulnerability, use GitHub's private vulnerability reporting on this repository. Do not open a public issue.
 
 ## License
 
