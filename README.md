@@ -157,10 +157,30 @@ A referral helps more than a good resume. Before you apply, ask someone who know
 
 ## Contributing
 
-See [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md).
+`v0.1.0` is the public release. Tags are created only when Edward says so. Every merge is a squash merge.
+
+To report a vulnerability, use GitHub's private vulnerability reporting on this repository. Do not open a public issue.
+
+`build.py` is formatted and linted with [ruff](https://docs.astral.sh/ruff/), configured in `pyproject.toml`. Before opening a pull request, run:
+
+```sh
+pip install ruff==0.16.9
+ruff format
+ruff check
+```
+
+Claude Code can take an issue to a pull request. Add the `claude` label to an issue, or comment `@claude` on an issue or a pull request, and `.github/workflows/claude.yml` runs it. Only the repo owner can start it. Claude works on a `claude/` branch, opens a pull request that closes the issue, and answers review comments that mention `@claude`. It never merges, pushes to `main`, tags, or cuts a release. The owner squash-merges each pull request, and a merge does not cut a release.
+
+CI runs the same checks, builds every file in `examples/` with `./run`, and fails if any PDF isn't exactly one page, uses a font that isn't in `fonts/`, or doesn't pass the text check. Release tags, a monthly run, and a manual run (`gh workflow run build.yml --ref main`) also build them on a bare TeX Live with no font packages and on macOS with BasicTeX. Pull requests skip those two slower jobs.
 
 ## License
 
-The code is MIT. See [LICENSE](LICENSE).
+The repo has two licenses, one for content and one for code.
+
+Content is licensed under [CC BY 4.0](LICENSE-CONTENT). You may share and adapt it if you give credit and link the license. Content means the example resumes and sample data in `examples/`, and the docs: `README.md` and the Markdown files in `.github/`.
+
+Code is licensed under the [MIT License](LICENSE). Code means everything else, including `build.py`, `resume.tex`, `run`, `pyproject.toml`, and the scripts and workflows in `.github/`.
 
 The fonts in `fonts/` keep their own licenses: Libertinus Serif is under the SIL Open Font License 1.1 ([fonts/OFL.txt](fonts/OFL.txt)), and TeX Gyre Termes and TeX Gyre Heros are under the GUST Font License ([fonts/GUST-FONT-LICENSE.txt](fonts/GUST-FONT-LICENSE.txt)). See [fonts/README.md](fonts/README.md) for where each file comes from.
+
+The skills in `.claude/skills/` keep their own licenses.
