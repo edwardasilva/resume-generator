@@ -1,0 +1,96 @@
+{
+  "settings": {
+    "dateStyle": {
+      "education": "semester",
+      "projects": "semester",
+      "experience": "semester"
+    },
+    "sectionOrder": [
+      "education",
+      "projects",
+      "experience",
+      "skills"
+    ]
+  },
+  "header": {
+    "name": "Alex Doe",
+    "phone": "(555) 555-0142",
+    "email": "alex.doe@example.com",
+    "linkedin": "linkedin.com/in/alex-doe-example",
+    "github": "github.com/alex-doe-example",
+    "location": "Springfield, ST",
+    "relocate": true
+  },
+  "education": [
+    {
+      "degree": "B.S. Electrical Engineering",
+      "gpa": "[X.XX]/4.00",
+      "school": "[University]",
+      "gradDate": "Expected Spring 2027",
+      "coursework": [
+        "Embedded Systems",
+        "Introduction to High Power Electronics",
+        "Advanced Digital Design"
+      ],
+      "activities": [
+        "IEEE student branch",
+        "Tau Beta Pi"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "title": "CubeSat Power Board",
+      "tools": [
+        "KiCad",
+        "LTspice"
+      ],
+      "start": "Fall 2025",
+      "end": "Spring 2026",
+      "bullets": [
+        "Designed a [X] W CubeSat buck converter in KiCad and LTspice, measured at [X]% on an electronic load",
+        "Cut output ripple from [X] mV to [X] mV by shrinking the switching loop, verified on an oscilloscope"
+      ]
+    },
+    {
+      "title": "Bench Data Logger",
+      "tools": [
+        "STM32",
+        "C",
+        "Python"
+      ],
+      "start": "Spring 2025",
+      "end": "Spring 2025",
+      "bullets": [
+        "Wrote STM32 firmware in C to sample a 4-channel SPI ADC at [X] kHz and stream it to a Python logger",
+        "Moved UART writes to DMA after a logic analyzer showed dropped samples, cutting losses to [X]%"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "title": "Sales Associate",
+      "company": "[Retail store]",
+      "location": "",
+      "start": "Summer 2023",
+      "end": "Summer 2024",
+      "engineering": false,
+      "bullets": []
+    }
+  ],
+  "skills": {
+    "software": [
+      "KiCad",
+      "LTspice",
+      "C",
+      "Python"
+    ],
+    "hardwareLab": [
+      "STM32",
+      "Oscilloscope",
+      "Electronic load",
+      "Logic analyzer"
+    ],
+    "certifications": []
+  }
+}

@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+# Build a one-page PDF resume from a JSON file (default: resume.json, which
+# is created from examples/alex.json on the first run).
+# Usage: ./run [--yes] [file.json]   (--yes, or CI=true, installs Python and TeX without asking)
+set -euo pipefail
+
+assume_yes=0
+input=""
+[[ "${CI:-}" == "true" ]] && assume_yes=1
+for arg in "$@"; do
+  case "$arg" in
+    -y|--yes) assume_yes=1 ;;
+    -h|--help) sed -n '2,4p' "$0" | sed 's/^# //'; exit 0 ;;
+    -*) echo "Unknown option: $arg" >&2; exit 2 ;;
+    *)
+      [[ -z "$input" ]] || { echo "Give one JSON file at a time." >&2; exit 2; }
+      input="$arg" ;;
+  esac
+done
+if [[ -z "$input" ]]; then
+  input="$(dirname "$0")/resume.json"
+  if [[ ! -f "$input" ]]; then
+    cp "$(dirname "$0")/examples/alex.json" "$input"
+    echo "Created resume.json from examples/alex.json. Edit it with your details."
+  fi
+fi
+[[ -f "$input" ]] || { echo "No such file: $input" >&2; exit 1; }
+input="$(cd "$(dirname "$input")" && pwd)/$(basename "$input")"
+cd "$(dirname "$0")"
+
+# LaTeX packages the layout uses, beyond what every TeX install has.
+tex_packages="fontspec luaotfload enumitem geometry hyperref"
+missing=()
+command -v python3 >/dev/null || missing+=(python3)
+command -v lualatex >/dev/null || missing+=(lualatex)
+
+install_tools() {
+  local what="${missing[*]}" cmd=""
+  local need_py=0 need_tex=0
+  [[ " $what " == *" python3 "* ]] && need_py=1
+  [[ " $what " == *" lualatex "* ]] && need_tex=1
+  case "$(uname -s)" in
+    Linux)
+      if command -v dnf >/dev/null; then
+        local pkgs=""
+        [[ $need_py -eq 1 ]] && pkgs+=" python3"
+        [[ $need_tex -eq 1 ]] && pkgs+=" texlive-scheme-basic texlive-luatex texlive-luaotfload texlive-fontspec texlive-geometry texlive-enumitem texlive-hyperref texlive-lm"
+        cmd="sudo dnf install -y$pkgs"
+      elif command -v apt-get >/dev/null; then
+        local pkgs=""
+        [[ $need_py -eq 1 ]] && pkgs+=" python3"
+        [[ $need_tex -eq 1 ]] && pkgs+=" texlive-luatex texlive-latex-recommended texlive-latex-extra lmodern"
+        cmd="sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends$pkgs"
+      fi ;;
+    Darwin)
+      if command -v brew >/dev/null; then
+        [[ $need_py -eq 1 ]] && cmd="brew install python"
+        if [[ $need_tex -eq 1 ]]; then
+          [[ -n "$cmd" ]] && cmd+=" && "
+          cmd+="brew install --cask basictex && export PATH=\"/Library/TeX/texbin:\$PATH\" && sudo tlmgr update --self && sudo tlmgr install $tex_packages"
+        fi
+      fi ;;
+  esac
+  if [[ -z "$cmd" ]]; then
+    echo "Missing: $what. This system isn't supported by the installer." >&2
+    echo "Install Python 3 and TeX Live (https://tug.org/texlive/) with LuaLaTeX, fontspec, geometry, enumitem and hyperref, then run ./run again." >&2
+    exit 1
+  fi
+  echo "Missing: $what. This will run:"
+  echo "  $cmd"
+  if [[ $assume_yes -ne 1 ]]; then
+    read -r -p "Install now? It uses sudo. [y/N] " answer
+    [[ "$answer" =~ ^[Yy]$ ]] || { echo "Not installed. Nothing was changed."; exit 1; }
+  fi
+  bash -c "$cmd"
+  export PATH="/Library/TeX/texbin:$PATH"
+}
+
+[[ ${#missing[@]} -eq 0 ]] || install_tools
+
+# A small TeX install, such as BasicTeX, may lack some LaTeX packages. The
+# fonts come with this project in fonts/, so no font packages are needed.
+needed=()
+for pkg in $tex_packages; do
+  kpsewhich "$pkg.sty" >/dev/null || needed+=("$pkg")
+done
+if [[ ${#needed[@]} -gt 0 ]]; then
+  if ! command -v tlmgr >/dev/null; then
+    echo "Missing LaTeX packages: ${needed[*]}. Install them with your TeX distribution, then run ./run again." >&2
+    exit 1
+  fi
+  sudo=""
+  [[ -w "$(kpsewhich -var-value=TEXMFMAIN)" ]] || sudo="sudo "
+  cmd="${sudo}tlmgr install ${needed[*]}"
+  echo "Missing LaTeX packages: ${needed[*]}. This will run:"
+  echo "  $cmd"
+  if [[ $assume_yes -ne 1 ]]; then
+    read -r -p "Install now? [y/N] " answer
+    [[ "$answer" =~ ^[Yy]$ ]] || { echo "Not installed. Nothing was changed."; exit 1; }
+  fi
+  $cmd
+fi
+
+exec python3 build.py "$input"
