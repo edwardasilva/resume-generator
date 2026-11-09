@@ -157,7 +157,9 @@ A referral helps more than a good resume. Before you apply, ask someone who know
 
 ## Contributing
 
-All four repos (eeprep, resume-generator, edwardasilva, information) are on the 0.0.x beta line, and the current release is `v0.0.1`. A release bumps only the last number. Each release is exactly one commit on `main`. `v0.0.1` is a single commit with no parent. Each later release is one squashed commit whose parent is the previous release commit, tagged `vX.Y.Z` with an annotated tag whose message is `<repo> vX.Y.Z`. Pushing the tag makes CI build and check every resume and attach the zip and a sample PDF to the GitHub release. Every merge is a squash merge. `protect-main` is paused only while the release commit is pushed, and turned back on right after.
+`v0.1.0` is the public release. Tags are created only when Edward says so. Every merge is a squash merge.
+
+To report a vulnerability, use GitHub's private vulnerability reporting on this repository. Do not open a public issue.
 
 `build.py` is formatted and linted with [ruff](https://docs.astral.sh/ruff/), configured in `pyproject.toml`. Before opening a pull request, run:
 
