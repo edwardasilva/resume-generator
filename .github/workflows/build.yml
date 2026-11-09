@@ -1,8 +1,7 @@
 name: Build resume
 
 # Pull requests into main run the build job, which lints first. Release tags run every
-# job, and the release
-# waits for all of them. The two install-path jobs, minimal-tex and macos-basictex, are the
+# job, and the release waits for all of them. The two install-path jobs, minimal-tex and macos-basictex, are the
 # slowest (a TeX Live install and a macOS runner) and test Homebrew, CTAN and Ubuntu's archive
 # more than this repo, so they run on release tags and by hand, not on every pull request.
 # Run them by hand before a release:
