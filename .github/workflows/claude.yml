@@ -1,7 +1,7 @@
 name: Claude
 
 # Claude Code works an issue and answers review feedback. Add the claude label to an issue, or
-# comment @claude on an issue, a pull request, or a review. Only the repo owner's comments start
+# comment @claude on an issue, a pull request, or a review. Only the repo owner's labels and comments start
 # it, so a stranger cannot run it on a public repo. Claude works on a claude/ branch and opens a
 # pull request. It never pushes to main, merges, tags, or releases. Workflows run from main, so
 # this file does nothing until it merges.
