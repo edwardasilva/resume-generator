@@ -1,4 +1,5 @@
 build/
 /resume.json
-/resume.pdf
+/*-Resume.pdf
+/Resume.pdf
 __pycache__/

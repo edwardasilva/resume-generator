@@ -100,7 +100,7 @@ jobs:
       - name: Install poppler-utils
         if: steps.scope.outputs.code == 'true'
         run: sudo apt-get install -y --no-install-recommends poppler-utils
-      - name: Build resume.pdf
+      - name: Build the default resume PDF
         if: steps.scope.outputs.code == 'true'
         run: ./run --yes
         env:
@@ -113,7 +113,7 @@ jobs:
           RESUME_TEXT_CHECK: strict
       - name: Check that every PDF is one page and uses the bundled fonts
         if: steps.scope.outputs.code == 'true'
-        run: .github/check-pdfs.sh resume.pdf examples/*.pdf
+        run: .github/check-pdfs.sh *-Resume.pdf examples/*.pdf
       - name: Package the release zip
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
@@ -126,7 +126,7 @@ jobs:
         with:
           name: resumes
           path: |
-            resume.pdf
+            *-Resume.pdf
             examples/*.pdf
             resume-generator-*.zip
 
@@ -207,7 +207,7 @@ jobs:
           name: resumes
       - name: Create or update the GitHub release
         run: |
-          assets=("resume-generator-${GITHUB_REF_NAME}.zip" "examples/alex.pdf#Sample resume (alex.pdf)")
+          assets=("resume-generator-${GITHUB_REF_NAME}.zip" "examples/Alex-Doe-Resume.pdf#Sample resume (Alex-Doe-Resume.pdf)")
           if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release upload "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --clobber "${assets[@]}"
           else

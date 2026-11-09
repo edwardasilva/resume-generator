@@ -2,17 +2,17 @@
 
 Turn one JSON file into a clean, one-page PDF resume. You write the content in `resume.json`, and the script does the layout and fits it onto a single page.
 
-This project is a companion to [eeprep.com](https://eeprep.com). It was built for engineering students and follows the advice on [eeprep's resume page](https://eeprep.com/advice/resume/), but it works for any field. See a sample: [examples/alex.pdf](examples/alex.pdf).
+This project is a companion to [eeprep.com](https://eeprep.com). It was built for engineering students and follows the advice on [eeprep's resume page](https://eeprep.com/advice/resume/), but it works for any field. See a sample: [examples/Alex-Doe-Resume.pdf](examples/Alex-Doe-Resume.pdf).
 
 ## Download
 
-Get the latest zip from the [releases page](https://github.com/edwardasilva/resume-generator/releases/latest), unzip it, edit `resume.json` (see the field guide below) and run `./run`. It writes `resume.pdf`.
+Get the latest zip from the [releases page](https://github.com/edwardasilva/resume-generator/releases/latest), unzip it, edit `resume.json` (see the field guide below) and run `./run`. It writes the PDF named after the `name` in `header`, such as `Alex-Doe-Resume.pdf`.
 
 `./run` needs Python 3 and LuaLaTeX. If either is missing, it says what it will install and asks before it uses `sudo`. It supports Fedora (dnf), Debian, Ubuntu and WSL (apt), and macOS (Homebrew). Run `./run --yes` to skip the question. The fonts come with the project in `fonts/`, so no font packages are needed, and the PDF looks the same on every system.
 
-To work from the repository instead, clone it and run `./run`. The first run copies `examples/alex.json` to `resume.json`. Git ignores `resume.json` and `resume.pdf`, so your personal details stay out of the repository.
+To work from the repository instead, clone it and run `./run`. The first run copies `examples/alex.json` to `resume.json`. Git ignores `resume.json` and the `*-Resume.pdf` file in the top folder, so your personal details stay out of the repository.
 
-To build any other file, pass it as an argument: `./run examples/new-grad.json` writes `examples/new-grad.pdf` next to it.
+To build any other file, pass it as an argument: `./run examples/new-grad.json` writes `examples/Taylor-Doe-Resume.pdf` next to it. The PDF is always named `[Name]-Resume.pdf` after the header name, or `Resume.pdf` if there is none.
 
 ## Examples
 
@@ -20,11 +20,11 @@ Each example in `examples/` is a made-up resume and the PDF built from it, from 
 
 | File | Who it describes | PDF |
 | --- | --- | --- |
-| `alex.json` | The starting point. It matches the finished example on eeprep's resume page. The student graduates in 2027 and has two projects, a one-line job and two skill lines. Every tool in the skill lines appears in a bullet. `[X]` marks a number you measure. | [alex.pdf](examples/alex.pdf) |
-| `first-year.json` | A first-year student with one class project, a one-line retail job and a few skills. The page has room left at the bottom. | [first-year.pdf](examples/first-year.pdf) |
-| `sophomore.json` | A second-year student with two projects, an electrical lead role in a robotics club and a one-line job. | [sophomore.pdf](examples/sophomore.pdf) |
-| `new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience and use the `times` font. | [new-grad.pdf](examples/new-grad.pdf) |
-| `packed.json` | A graduating student with three engineering roles, a one-line job, three projects and long skill lists, in the `arial` font. The script tightens it to fit. | [packed.pdf](examples/packed.pdf) |
+| `alex.json` | The starting point. It matches the finished example on eeprep's resume page. The student graduates in 2027 and has two projects, a one-line job and two skill lines. Every tool in the skill lines appears in a bullet. `[X]` marks a number you measure. | [Alex-Doe-Resume.pdf](examples/Alex-Doe-Resume.pdf) |
+| `first-year.json` | A first-year student with one class project, a one-line retail job and a few skills. The page has room left at the bottom. | [Jordan-Doe-Resume.pdf](examples/Jordan-Doe-Resume.pdf) |
+| `sophomore.json` | A second-year student with two projects, an electrical lead role in a robotics club and a one-line job. | [Sam-Doe-Resume.pdf](examples/Sam-Doe-Resume.pdf) |
+| `new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience and use the `times` font. | [Taylor-Doe-Resume.pdf](examples/Taylor-Doe-Resume.pdf) |
+| `packed.json` | A graduating student with three engineering roles, a one-line job, three projects and long skill lists, in the `arial` font. The script tightens it to fit. | [Casey-Doe-Resume.pdf](examples/Casey-Doe-Resume.pdf) |
 
 ## Field guide
 
@@ -76,7 +76,7 @@ A list. Most students have one entry. Add a second for a master's degree.
 | `degree` | Degree and major. | `B.S. Electrical Engineering` |
 | `gpa` | `N.NN/4.00`. List it when a posting sets a minimum you meet. | `3.62/4.00` |
 | `school` | Their university. | `Example State University` |
-| `gradDate` | Your graduation date, in the education date style. Add "Expected" if you haven't graduated. | `Expected Spring 2027` |
+| `gradDate` | Your graduation date, in the education date style. Add "Expected" if you haven't graduated. It goes at the right of the degree line. If the degree line is too long to share it, the build moves the date to the school line. | `Expected Spring 2027` |
 | `coursework` | Upper-level courses that match the jobs you want. | `["Power Electronics", "Embedded Systems"]` |
 | `activities` | Clubs and honor societies. Put real build work in `projects`. | `["IEEE student branch"]` |
 
@@ -115,6 +115,8 @@ A non-engineering job still shows you can hold a job. One line is enough.
 | `hardwareLab` | Lab equipment and hardware you can use without help. | `["Oscilloscope", "Electronic load"]` |
 | `certifications` | Only ones you can prove. | `[]` |
 
+The build prints every name as you write it and never changes capitalization, so `LTspice`, `FPGA` and `Oscilloscope` all stay as typed. Capitalize tools the way their makers do.
+
 Put every listed skill in a bullet or a project's `tools`. Leave out soft skills such as "communication". Show them in the bullets instead.
 
 ## Writing good bullets
@@ -136,6 +138,10 @@ The layout follows the rules on [eeprep's resume page](https://eeprep.com/advice
 If the page still has more than 3 empty lines at roomy spacing, the build notes it. eeprep's page counts empty space as wasted, so add a class project, lab work or a bullet instead. The build also notes any bullet whose second line fills less than half the line. Cut it to one line, or add a detail that fills most of the second.
 
 If the resume doesn't fit at 10 pt, the build stops and says about how many lines to cut. Drop a coursework item first, then the weakest bullet, or add `"hide": true` to an older project.
+
+## Checking the PDF
+
+To look at the result, run `pdftoppm -png -r 80 Alex-Doe-Resume.pdf page` (it comes with poppler) and open `page-1.png`. Check that it is one page and that nothing is cut off.
 
 ## Checking the text
 
