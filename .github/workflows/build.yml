@@ -1,6 +1,7 @@
 name: Build resume
 
-# Pull requests into main run lint and build. Release tags run every job, and the release
+# Pull requests into main run the build job, which lints first. Release tags run every
+# job, and the release
 # waits for all of them. The two install-path jobs, minimal-tex and macos-basictex, are the
 # slowest (a TeX Live install and a macOS runner) and test Homebrew, CTAN and Ubuntu's archive
 # more than this repo, so they run on release tags and by hand, not on every pull request.
@@ -24,12 +25,26 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # The checks this job ran are now the first steps of build. It stays as a stub only until
+  # the protect-main ruleset requires build alone, then it is deleted.
   lint:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 2
     steps:
+      - name: Moved into build
+        run: echo "ruff, shellcheck and the release zip check run in the build job."
+
+  # One gate: lint, the release zip check, then the PDF builds. The protect-main ruleset
+  # requires this job by its id, build. Keep it.
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # Depth 2 fetches a pull request's merge commit and its first parent, the base
+      # branch, so the scope step can see which files the pull request changes.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          fetch-depth: 2
           persist-credentials: false
       # Pinned, so a new ruff release can't change formatting or fail CI on
       # its own. Update it on purpose.
@@ -57,18 +72,6 @@ jobs:
           test -f fonts/LibertinusSerif-Regular.otf
           test -f examples/alex.json
           test -f resume.json
-
-  # The protect-main ruleset requires lint and build by these job ids. Keep them.
-  build:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      # Depth 2 fetches a pull request's merge commit and its first parent, the base
-      # branch, so the scope step can see which files the pull request changes.
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 2
-          persist-credentials: false
       # A pull request that changes only docs, such as CLAUDE.md or CONTRIBUTING.md,
       # skips the TeX build. The build job still reports, so the ruleset is
       # satisfied. Every other event builds.
