@@ -3,7 +3,7 @@
     "dateStyle": {
       "education": "semester",
       "projects": "semester",
-      "experience": "month"
+      "experience": "semester"
     },
     "sectionOrder": [
       "education",
@@ -60,7 +60,7 @@
       "title": "Cashier",
       "company": "Example Grocery",
       "location": "",
-      "start": "Jun 2025",
+      "start": "Summer 2025",
       "end": "Present",
       "engineering": false,
       "bullets": []
