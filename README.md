@@ -157,21 +157,11 @@ A referral helps more than a good resume. Before you apply, ask someone who know
 
 ## Contributing
 
+To suggest an idea or open a pull request, see [CONTRIBUTING](.github/CONTRIBUTING.md).
+
 `v0.1.0` is the public release. Tags are created only when Edward says so. Every merge is a squash merge.
 
 To report a vulnerability, use GitHub's private vulnerability reporting on this repository. Do not open a public issue.
-
-`build.py` is formatted and linted with [ruff](https://docs.astral.sh/ruff/), configured in `pyproject.toml`. Before opening a pull request, run:
-
-```sh
-pip install ruff==0.16.9
-ruff format
-ruff check
-```
-
-Claude Code can take an issue to a pull request. Add the `claude` label to an issue, or comment `@claude` on an issue or a pull request, and `.github/workflows/claude.yml` runs it. Only the repo owner can start it. Claude works on a `claude/` branch, opens a pull request that closes the issue, and answers review comments that mention `@claude`. It never merges, pushes to `main`, tags, or cuts a release. The owner squash-merges each pull request, and a merge does not cut a release.
-
-CI runs the same checks, builds every file in `examples/` with `./run`, and fails if any PDF isn't exactly one page, uses a font that isn't in `fonts/`, or doesn't pass the text check. Release tags, a monthly run, and a manual run (`gh workflow run build.yml --ref main`) also build them on a bare TeX Live with no font packages and on macOS with BasicTeX. Pull requests skip those two slower jobs.
 
 ## License
 
