@@ -1,6 +1,6 @@
 # resume-generator
 
-Turn one JSON file into a clean, one-page PDF resume. You write the content in `resume.json`, and the script does the layout and fits it onto a single page.
+Turn one JSON file into a one-page PDF resume. You write the content in `resume.json`, and the script does the layout and fits it onto a single page.
 
 This project is a companion to [eeprep.com](https://eeprep.com). It was built for engineering students and follows the advice on [eeprep's resume page](https://eeprep.com/advice/resume/), but it works for any field. See a sample: [examples/Alex-Doe-Resume.pdf](examples/Alex-Doe-Resume.pdf).
 
@@ -59,9 +59,9 @@ Acceptable fonts for `settings.font`:
 | Field | What to put | Example |
 | --- | --- | --- |
 | `name` | The name you want recruiters to use. It also fills the PDF's title (`Alex Doe Resume`) and author properties. | `Alex Doe` |
-| `phone` | Their phone number. No label such as "Cell:". | `(555) 555-0142` |
+| `phone` | Your phone number. No label such as "Cell:". | `(555) 555-0142` |
 | `email` | An address you check every day. A school address is fine. | `alex.doe@example.com` |
-| `linkedin` | Their profile URL without `https://`. | `linkedin.com/in/alex-doe-example` |
+| `linkedin` | Your profile URL without `https://`. | `linkedin.com/in/alex-doe-example` |
 | `github` | Only if it holds work you're proud of. | `github.com/alex-doe-example` |
 | `website` | A personal site or portfolio, if you have one. | `example.com/~alex-doe` |
 | `location` | City and state. | `Springfield, ST` |
@@ -75,7 +75,7 @@ A list. Most students have one entry. Add a second for a master's degree.
 | --- | --- | --- |
 | `degree` | Degree and major. | `B.S. Electrical Engineering` |
 | `gpa` | `N.NN/4.00`. List it when a posting sets a minimum you meet. | `3.62/4.00` |
-| `school` | Their university. | `Example State University` |
+| `school` | Your university. | `Example State University` |
 | `gradDate` | Your graduation date, in the education date style. Add "Expected" if you haven't graduated. It goes at the right of the degree line. If the degree line is too long to share it, the build moves the date to the school line. | `Expected Spring 2027` |
 | `coursework` | Upper-level courses that match the jobs you want. | `["Power Electronics", "Embedded Systems"]` |
 | `activities` | Clubs and honor societies. Put real build work in `projects`. | `["IEEE student branch"]` |
@@ -145,11 +145,11 @@ To look at the result, run `pdftoppm -png -r 80 Alex-Doe-Resume.pdf page` (it co
 
 ## Checking the text
 
-Applicant tracking systems read the PDF's text, not its look. When `pdftotext` is installed, each build extracts the text. It comes with poppler, for example `brew install poppler` or `sudo apt-get install poppler-utils`. The build checks that the name, contact items, section titles, entries and bullets all come out whole and in reading order, with no broken ligatures or unreadable glyphs. Problems print as a warning. Set `RESUME_TEXT_CHECK=strict` to make them an error. Words never break with a hyphen across lines, because a split word can't be found by a keyword search.
+Applicant tracking systems read the PDF's text, not its look. When `pdftotext` is installed, each build extracts the text. Install poppler to get it, with `brew install poppler` or `sudo apt-get install poppler-utils`. The build checks that the name, contact items, section titles, entries and bullets all come out whole and in reading order, with no broken ligatures or unreadable glyphs. Problems print as a warning. Set `RESUME_TEXT_CHECK=strict` to make them an error. Words never break with a hyphen across lines, because a split word can't be found by a keyword search.
 
 ## Writing the content with an AI tool
 
-If you draft `resume.json` with Claude Code, Cursor, or another coding agent, give it [the eeprep resume skill](https://eeprep.com/skills/eeprep-resume/README.md) first. It teaches the agent the layout rules this tool follows, the bullet pattern, how to tailor a version to one posting, and the one rule that matters most: it never invents a number, a tool, or a result you did not give it. It writes `[X]` where a measurement belongs and tells you to go measure it.
+If you draft `resume.json` with Claude Code, Cursor, or another coding agent, give it [the eeprep resume skill](https://eeprep.com/skills/eeprep-resume/README.md) first. It teaches the agent the layout rules this tool follows, the bullet pattern, and how to tailor a version to one posting. It never invents a number, a tool, or a result you did not give it. It writes `[X]` where a measurement belongs and tells you to go measure it.
 
 ## Before applying
 
