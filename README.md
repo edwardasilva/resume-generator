@@ -141,6 +141,10 @@ If the resume doesn't fit at 10 pt and 0.4 in, the build stops and says about ho
 
 Applicant tracking systems read the PDF's text, not its look. When `pdftotext` is installed, each build extracts the text. It comes with poppler, for example `brew install poppler` or `sudo apt-get install poppler-utils`. The build checks that the name, contact items, section titles, entries and bullets all come out whole and in reading order, with no broken ligatures or unreadable glyphs. Problems print as a warning. Set `RESUME_TEXT_CHECK=strict` to make them an error. Words never break with a hyphen across lines, because a split word can't be found by a keyword search.
 
+## Writing the content with an AI tool
+
+If you draft `resume.json` with Claude Code, Cursor, or another coding agent, give it [the eeprep resume skill](https://eeprep.com/skills/eeprep-resume/README.md) first. It teaches the agent the layout rules this tool follows, the bullet pattern, how to tailor a version to one posting, and the one rule that matters most: it never invents a number, a tool, or a result you did not give it. It writes `[X]` where a measurement belongs and tells you to go measure it.
+
 ## Before applying
 
 A referral helps more than a good resume. Before you apply, ask someone who knows your work for one. For more on resumes, referrals and applying for engineering jobs, see [eeprep.com](https://eeprep.com) and its [resume page](https://eeprep.com/advice/resume/).
