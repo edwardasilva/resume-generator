@@ -18,7 +18,6 @@
     "email": "sam.doe@example.com",
     "linkedin": "linkedin.com/in/sam-doe-example",
     "github": "github.com/sam-doe-example",
-    "website": "example.com/~sam-doe",
     "location": "Riverton, ST",
     "relocate": true
   },
@@ -80,7 +79,7 @@
       "engineering": true,
       "bullets": [
         "Designed and soldered a 2-layer power distribution board in KiCad with 6 fused outputs to replace the old hand-wired harness, so wiring before a match takes 45 minutes instead of 3 hours",
-        "Traced controller resets on hard turns to a 1.2 V dip on the 5 V rail with an oscilloscope and gave the controller its own 5 V regulator, with no resets in the 12 matches since"
+        "Traced controller resets on hard turns to a 1.2 V dip on the 5 V rail with an oscilloscope and gave the controller its own 5 V regulator, with no resets in the 12 matches since the change"
       ]
     },
     {
