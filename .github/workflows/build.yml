@@ -38,6 +38,27 @@ jobs:
         run: ruff format --check
       - name: Lint
         run: ruff check
+      # The two shell scripts ship in the release zip, so they get the same
+      # treatment as build.py. shellcheck comes with the Ubuntu runner.
+      - name: Lint the shell scripts
+        run: shellcheck run .github/check-pdfs.sh
+      # A zip that is missing a file ships broken, and nobody notices until a
+      # user runs it. Build the release zip the same way the release job does
+      # and check that it runs from an empty folder.
+      - name: Check the release zip runs on its own
+        run: |
+          set -euo pipefail
+          name="resume-generator-check"
+          mkdir "$name"
+          cp -r run build.py resume.tex README.md LICENSE examples fonts "$name/"
+          zip -qr "$name.zip" "$name"
+          rm -rf "$name"
+          unzip -q "$name.zip" -d /tmp/zipcheck
+          cd "/tmp/zipcheck/$name"
+          ./run --help
+          python3 -c "import ast, sys; ast.parse(open('build.py').read())"
+          test -f fonts/LibertinusSerif-Regular.otf
+          test -f examples/alex.json
 
   build:
     runs-on: ubuntu-latest
