@@ -32,11 +32,9 @@ LAYOUTS = [
     (10.5, 0.5),
     (10.25, 0.5),
     (10.0, 0.5),
-    (10.0, 0.45),
-    (10.0, 0.4),
 ]
 # The rules below follow eeprep's resume page (eeprep.com/advice/resume/):
-# text 10 to 11 pt, margins of at least 0.4 in, line spacing of at least 1.07,
+# text 10 to 11 pt, margins of 0.5 in, line spacing of at least 1.07,
 # one gap size between every pair of sections, and a page that is filled but
 # not crammed. White space never shrinks below the compact sizes to fit more.
 #
