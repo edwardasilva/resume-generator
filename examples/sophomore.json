@@ -3,7 +3,7 @@
     "dateStyle": {
       "education": "semester",
       "projects": "semester",
-      "experience": "month"
+      "experience": "semester"
     },
     "sectionOrder": [
       "education",
@@ -75,7 +75,7 @@
       "title": "Electrical Lead",
       "company": "Example State Robotics Club",
       "location": "Riverton, ST",
-      "start": "Aug 2026",
+      "start": "Fall 2026",
       "end": "Present",
       "engineering": true,
       "bullets": [
@@ -87,7 +87,7 @@
       "title": "Barista",
       "company": "Example Coffee Co.",
       "location": "Riverton, ST",
-      "start": "May 2025",
+      "start": "Summer 2025",
       "end": "Present",
       "engineering": false,
       "bullets": []

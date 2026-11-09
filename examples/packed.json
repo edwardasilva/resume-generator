@@ -4,7 +4,7 @@
     "dateStyle": {
       "education": "semester",
       "projects": "semester",
-      "experience": "month"
+      "experience": "semester"
     },
     "sectionOrder": [
       "experience",
@@ -50,8 +50,8 @@
       "company": "Example Avionics",
       "url": "example.com/avionics",
       "location": "Northgate, ST",
-      "start": "May 2025",
-      "end": "Aug 2025",
+      "start": "Summer 2025",
+      "end": "Summer 2025",
       "engineering": true,
       "bullets": [
         "Cut noise on a 16-bit ADC front end from 12 LSB to 3 LSB RMS by redesigning the anti-aliasing filter as a 2nd-order active stage and rerouting its ground return in Altium, checked with an FFT of 1 million samples",
@@ -64,8 +64,8 @@
       "title": "Embedded Software Intern",
       "company": "Example Robotics",
       "location": "Hillcrest, ST",
-      "start": "May 2024",
-      "end": "Aug 2024",
+      "start": "Summer 2024",
+      "end": "Summer 2024",
       "engineering": true,
       "bullets": [
         "Ported STM32 motor-control firmware from bare-metal C to FreeRTOS and kept 10 kHz control loop jitter under 2 µs by running the loop from a timer interrupt outside the scheduler, measured on a logic analyzer",
@@ -77,8 +77,8 @@
       "title": "Undergraduate Research Assistant",
       "company": "Example State Power Lab",
       "location": "",
-      "start": "Sep 2023",
-      "end": "Apr 2024",
+      "start": "Fall 2023",
+      "end": "Spring 2024",
       "engineering": true,
       "bullets": [
         "Measured switching losses on 12 GaN transistors with a double-pulse tester, all within 5% of the datasheet",
@@ -89,8 +89,8 @@
       "title": "Tutor",
       "company": "Example State Learning Center",
       "location": "",
-      "start": "Jan 2023",
-      "end": "May 2023",
+      "start": "Spring 2023",
+      "end": "Spring 2023",
       "engineering": false,
       "bullets": []
     }
