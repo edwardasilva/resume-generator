@@ -3,18 +3,14 @@ name: Build resume
 # Pull requests into main run lint and build. Release tags run every job, and the release
 # waits for all of them. The two install-path jobs, minimal-tex and macos-basictex, are the
 # slowest (a TeX Live install and a macOS runner) and test Homebrew, CTAN and Ubuntu's archive
-# more than this repo, so they run on release tags, once a month, and by hand, not on every
-# pull request. Run them by hand before a release:
+# more than this repo, so they run on release tags and by hand, not on every pull request.
+# Run them by hand before a release:
 #   gh workflow run build.yml --ref main
 on:
   push:
     tags: ["v*.*.*"]
   pull_request:
     branches: [main]
-  # The install paths depend on Homebrew, CTAN and Ubuntu's archive, which change
-  # without a commit here. A monthly run catches that before a user does.
-  schedule:
-    - cron: "23 14 1 * *"
   workflow_dispatch:
 
 # Read-only by default. Only the release job can write, to publish a release.
@@ -22,8 +18,7 @@ permissions:
   contents: read
 
 # A newer push to the same pull request or branch cancels the older run. The
-# event is in the group, so the monthly run and a tag push don't cancel each
-# other.
+# event is in the group, so a manual run and a tag push don't cancel each other.
 concurrency:
   group: build-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -34,6 +29,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       # Pinned, so a new ruff release can't change formatting or fail CI on
       # its own. Update it on purpose.
       - name: Install ruff
@@ -42,27 +39,24 @@ jobs:
         run: ruff format --check
       - name: Lint
         run: ruff check
-      # The two shell scripts ship in the release zip, so they get the same
-      # treatment as build.py. shellcheck comes with the Ubuntu runner.
+      # run ships in the release zip, so it gets the same treatment as build.py.
+      # shellcheck comes with the Ubuntu runner.
       - name: Lint the shell scripts
-        run: shellcheck run .github/check-pdfs.sh
+        run: shellcheck run .github/check-pdfs.sh .github/package.sh
       # A zip that is missing a file ships broken, and nobody notices until a
       # user runs it. Build the release zip the same way the release job does
       # and check that it runs from an empty folder.
       - name: Check the release zip runs on its own
         run: |
           set -euo pipefail
-          name="resume-generator-check"
-          mkdir "$name"
-          cp -r run build.py resume.tex README.md LICENSE examples fonts "$name/"
-          zip -qr "$name.zip" "$name"
-          rm -rf "$name"
-          unzip -q "$name.zip" -d /tmp/zipcheck
-          cd "/tmp/zipcheck/$name"
+          .github/package.sh resume-generator-check
+          unzip -q resume-generator-check.zip -d /tmp/zipcheck
+          cd /tmp/zipcheck/resume-generator-check
           ./run --help
           python3 -c "import ast, sys; ast.parse(open('build.py').read())"
           test -f fonts/LibertinusSerif-Regular.otf
           test -f examples/alex.json
+          test -f resume.json
 
   # The protect-main ruleset requires lint and build by these job ids. Keep them.
   build:
@@ -74,6 +68,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 2
+          persist-credentials: false
       # A pull request that changes only docs, such as CLAUDE.md or CONTRIBUTING.md,
       # skips the TeX build. The build job still reports, so the ruleset is
       # satisfied. Every other event builds.
@@ -116,11 +111,7 @@ jobs:
         run: .github/check-pdfs.sh *-Resume.pdf examples/*.pdf
       - name: Package the release zip
         if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          name="resume-generator-${GITHUB_REF_NAME}"
-          mkdir "$name"
-          cp -r resume.json run build.py resume.tex README.md LICENSE examples fonts "$name/"
-          zip -r "$name.zip" "$name"
+        run: .github/package.sh "resume-generator-${GITHUB_REF_NAME}"
       - if: steps.scope.outputs.code == 'true'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -140,6 +131,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Install TeX Live with scheme-basic
         # mirror.ctan.org redirects to a random mirror. A bad one has failed this
         # step three ways: a broken TLS certificate, a refused connection, and an
@@ -180,6 +173,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Install BasicTeX
         run: |
           brew install --cask basictex
