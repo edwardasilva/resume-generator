@@ -74,7 +74,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 2
-      # A pull request that changes only docs, such as CLAUDE.md or SECURITY.md,
+      # A pull request that changes only docs, such as CLAUDE.md or CONTRIBUTING.md,
       # skips the TeX build. The build job still reports, so the ruleset is
       # satisfied. Every other event builds.
       - name: Find what the pull request changes
@@ -88,7 +88,7 @@ jobs:
           files="$(git diff --name-only HEAD^1 HEAD)"
           printf '%s\n' "$files"
           if [ -n "$files" ] && ! printf '%s\n' "$files" | grep -Evq \
-            '^(CLAUDE\.md|AGENTS\.md|CONTRIBUTING\.md|\.github/(SECURITY\.md|ISSUE_TEMPLATE/.*|pull_request_template\.md))$'; then
+            '^(CLAUDE\.md|AGENTS\.md|CONTRIBUTING\.md|\.github/(CONTRIBUTING\.md|ISSUE_TEMPLATE/.*|pull_request_template\.md))$'; then
             echo "code=false" >> "$GITHUB_OUTPUT"
             echo "Only docs changed, so the TeX build is skipped." | tee -a "$GITHUB_STEP_SUMMARY"
           else
