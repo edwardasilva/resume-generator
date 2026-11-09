@@ -1,4 +1,4 @@
-% One-page resume. Run ./run to build resume.pdf.
+% One-page resume. Run ./run to build [Name]-Resume.pdf.
 % build.py writes build/settings.tex (font, size, margins and spacing) and
 % build/body.tex (the content from the JSON file) before each run.
 \documentclass[letterpaper]{article}
@@ -48,6 +48,20 @@
   \settowidth{\datewidth}{#2}%
   \parbox[t]{\dimexpr\linewidth-\datewidth-1em\relax}{\raggedright #1}%
   \hfill #2\par}
+% Education: the date goes on the degree row when degree and date fit on one
+% line. If the degree row would wrap, the date moves to the school row so the
+% header takes the fewest lines.
+\newlength{\titlewidth}
+\newcommand{\eduentry}[3]{%
+  \settowidth{\datewidth}{#2}%
+  \settowidth{\titlewidth}{#1}%
+  \ifdim\dimexpr\titlewidth+\datewidth+1em\relax>\linewidth
+    {\raggedright #1\par}%
+    \entry{#3}{#2}%
+  \else
+    \entry{#1}{#2}%
+    #3\par
+  \fi}
 % Space between entries in a section.
 \newcommand{\entrygap}{\par\vspace{\entryspace}}
 \setlist[itemize]{leftmargin=12pt, label=\textbullet,

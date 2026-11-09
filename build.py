@@ -4,7 +4,8 @@
 Usage: build.py [file.json]
 
 The default input is resume.json. The PDF is written next to the input file
-with the same name, so examples/new-grad.json becomes examples/new-grad.pdf.
+and named after the header name, so a resume for Taylor Doe in
+examples/new-grad.json becomes examples/Taylor-Doe-Resume.pdf.
 
 The script reads the JSON file, writes the LaTeX body and layout settings into
 build/, runs LuaLaTeX, and tries layouts from roomiest to tightest until one
@@ -398,9 +399,12 @@ def education(data):
         title = rf"\textbf{{{esc(e.get('degree'))}}}"
         if e.get("gpa"):
             title += f", GPA {esc(e['gpa'])}"
-        out.append(rf"\entry{{{title}}}{{{esc(e.get('gradDate'))}}}")
-        if e.get("school"):
-            out.append(link(e.get("url"), esc(e["school"])) + r"\par")
+        school = link(e.get("url"), esc(e["school"])) if e.get("school") else ""
+        date = esc(e.get("gradDate"))
+        if school:
+            out.append(rf"\eduentry{{{title}}}{{{date}}}{{{school}}}")
+        else:
+            out.append(rf"\entry{{{title}}}{{{date}}}")
         for label, key in (
             ("Relevant coursework", "coursework"),
             ("Activities", "activities"),
@@ -848,10 +852,16 @@ def report_text(pdf, data):
         sys.exit(1)
 
 
+def pdf_name(data):
+    """Return [Name]-Resume.pdf from the header name, or Resume.pdf without one."""
+    name = str((data.get("header") or {}).get("name") or "")
+    words = re.sub(r"[^\w]+", " ", name).split()
+    return "-".join(words + ["Resume"]) + ".pdf"
+
+
 def main():
     """Build the PDF, or exit with a message saying what to fix."""
     source = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "resume.json"
-    output = source.with_suffix(".pdf")
     try:
         # utf-8-sig also reads a file that Windows Notepad saved with a BOM.
         data = json.loads(source.read_text(encoding="utf-8-sig"))
@@ -863,6 +873,7 @@ def main():
         sys.exit(f"{source.name} isn't valid JSON: {e}")
     try:
         validate(data)
+        output = source.with_name(pdf_name(data))
         typeface = font_name(data)
         BUILD.mkdir(exist_ok=True)
         tex = body(data)

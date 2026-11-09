@@ -94,7 +94,7 @@
       "start": "Spring 2025",
       "end": "Spring 2025",
       "bullets": [
-        "Built a 32-tap FIR low-pass filter in Verilog on a Basys 3 board running at 48 kHz, with 16-bit fixed-point coefficients that matched the MATLAB design within 0.3 dB in Vivado simulation"
+        "Built a 32-tap FIR low-pass filter in Verilog on a Basys 3 FPGA board running at 48 kHz, with 16-bit fixed-point coefficients that matched the MATLAB design within 0.3 dB in Vivado simulation"
       ]
     }
   ],
