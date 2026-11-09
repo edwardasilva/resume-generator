@@ -163,7 +163,7 @@ ruff check
 
 Claude Code can take an issue to a pull request. Add the `claude` label to an issue, or comment `@claude` on an issue or a pull request, and `.github/workflows/claude.yml` runs it. Only the repo owner can start it. Claude works on a `claude/` branch, opens a pull request that closes the issue, and answers review comments that mention `@claude`. It never merges, pushes to `main`, tags, or cuts a release. The owner squash-merges each pull request, and a merge does not cut a release.
 
-CI runs the same checks, builds every file in `examples/` with `./run`, and fails if any PDF isn't exactly one page, uses a font that isn't in `fonts/`, or doesn't pass the text check. It also builds them on a bare TeX Live with no font packages and on macOS with BasicTeX.
+CI runs the same checks, builds every file in `examples/` with `./run`, and fails if any PDF isn't exactly one page, uses a font that isn't in `fonts/`, or doesn't pass the text check. Release tags, a monthly run, and a manual run (`gh workflow run build.yml --ref main`) also build them on a bare TeX Live with no font packages and on macOS with BasicTeX. Pull requests skip those two slower jobs.
 
 ## License
 
