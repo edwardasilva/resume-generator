@@ -68,8 +68,9 @@ FONTS = {
 SECTIONS = ("education", "projects", "experience", "skills")
 SEMESTER = re.compile(r"^(Expected )?(Spring|Summer|Fall|Winter) \d{4}$")
 MONTH = re.compile(
-    r"^(Expected )?(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|"
-    r"March|April|June|July|August|September|October|November|December) \d{4}$"
+    r"^(Expected )?(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec|"
+    r"January|February|March|April|June|July|August|September|October|November|"
+    r"December) \d{4}$"
 )
 
 # Characters that LaTeX treats specially, and what to print for each one.

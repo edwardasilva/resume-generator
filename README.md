@@ -42,7 +42,7 @@ The phone, email, LinkedIn, GitHub and website in the header are links. The emai
 | --- | --- | --- |
 | `sectionOrder` | Order of the sections. Lead with your strongest one. | `["education", "projects", "experience", "skills"]` |
 | `font` | `libertinus`, `times` or `arial`. Leave it out to use `libertinus`. | `"libertinus"` |
-| `dateStyle` | The date style for each section: `semester` (Fall 2025) or `month` (Sep 2025). Every date in a section must use that section's style. The build stops if one doesn't. A section left out uses `semester`. | `{"education": "semester", "projects": "semester", "experience": "semester"}` |
+| `dateStyle` | The date style for each section: `semester` (Fall 2025) or `month` (Sep 2025 or Sept 2025). Every date in a section must use that section's style. The build stops if one doesn't. A section left out uses `semester`. | `{"education": "semester", "projects": "semester", "experience": "semester"}` |
 
 Common orders: students with no engineering job usually go education, projects, experience, skills. Once you have an engineering internship, try experience first. Give every section the same date style, so the page never mixes Fall 2025 with Sep 2025.
 
