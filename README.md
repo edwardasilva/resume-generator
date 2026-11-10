@@ -8,7 +8,7 @@ This project is a companion to [eeprep.com](https://eeprep.com). It was built fo
 
 Get the latest zip from the [releases page](https://github.com/edwardasilva/resume-generator/releases/latest), unzip it, edit `resume.json` (see the field guide below) and run `./run`. It writes the PDF named after the `name` in `header`, such as `Alex-Doe-Resume.pdf`.
 
-`./run` needs Python 3 and LuaLaTeX. If either is missing, it says what it will install and asks before it uses `sudo`. It supports Fedora (dnf), Debian, Ubuntu and WSL (apt), and macOS (Homebrew). Run `./run --yes` to skip the question. The fonts come with the project in `fonts/`, so no font packages are needed, and the PDF looks the same on every system.
+`./run` needs Python 3.9 or newer and LuaLaTeX. If either is missing, it says what it will install and asks before it uses `sudo`. On Linux the install command starts with `sudo`, so `sudo` has to be installed. It supports Fedora (dnf), Debian, Ubuntu and WSL (apt), and macOS (Homebrew). Run `./run --yes` to skip the question. It is also skipped when `CI=true` is set. The fonts come with the project in `fonts/`, so no font packages are needed, and the PDF looks the same on every system.
 
 To work from the repository instead, clone it and run `./run`. The first run copies `examples/alex.json` to `resume.json`. Git ignores `resume.json` and the `*-Resume.pdf` file in the top folder, so your personal details stay out of the repository.
 
@@ -145,7 +145,7 @@ To look at the result, run `pdftoppm -png -r 80 Alex-Doe-Resume.pdf page` (it co
 
 ## Checking the text
 
-Applicant tracking systems read the PDF's text, not its look. When `pdftotext` is installed, each build extracts the text. Install poppler to get it, with `brew install poppler` or `sudo apt-get install poppler-utils`. The build checks that the name, contact items, section titles, entries and bullets all come out whole and in reading order, with no broken ligatures or unreadable glyphs. Problems print as a warning. Set `RESUME_TEXT_CHECK=strict` to make them an error. Words never break with a hyphen across lines, because a split word can't be found by a keyword search.
+Applicant tracking systems read the PDF's text, not its look. When `pdftotext` is installed, each build extracts the text. Install poppler to get it, with `brew install poppler`, `sudo apt-get install poppler-utils` or `sudo dnf install poppler-utils`. The build checks that the name, contact items, section titles, entries and bullets all come out whole and in reading order, with no broken ligatures or unreadable glyphs. Problems print as a warning. Set `RESUME_TEXT_CHECK=strict` to make them an error. Words never break with a hyphen across lines, because a split word can't be found by a keyword search.
 
 ## Writing the content with an AI tool
 
