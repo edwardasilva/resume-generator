@@ -17,13 +17,16 @@ pip install ruff==0.16.9
 ruff format
 ruff check
 ./run examples/alex.json
+bash tests/check.sh
 ```
 
-If you change a file in `examples/`, commit its rebuilt PDF. Otherwise discard the rebuilt PDFs with `git restore examples/`.
+`tests/check.sh` needs LuaLaTeX and poppler-utils. If you change `run` or a script, also run `shellcheck` on it.
+
+If you change a file in `examples/`, commit its rebuilt PDF. Otherwise discard the rebuilt PDFs with `git restore examples/`. If `examples/Alex-Doe-Resume.pdf` changes, rebuild `examples/alex-doe-resume.png` with `pdftoppm -png -r 80 -singlefile examples/Alex-Doe-Resume.pdf examples/alex-doe-resume`.
 
 Every PDF in `examples/` must stay exactly one page. If you skip the checks, maintainers run them before merging.
 
-4. Open a pull request into `main` with a short description of what changed and why. That is all a pull request needs. An issue link is optional. Maintainers review the change. Merges are squash merges.
+4. Open a pull request into `main` with a short description of what changed and why. That is all a pull request needs. An issue link is optional. Maintainers review the change.
 
 ## Coding agents
 
@@ -35,7 +38,9 @@ Only the repository owner can start either workflow. Both work on a branch and o
 
 ## Releases
 
-Before cutting a release, run release-cut and land or close every `release-sweep` issue.
+Only the repository owner cuts releases.
+
+Release notes are the notes GitHub generates from pull requests, plus a Breaking changes line written by hand when there is one. There is no CHANGELOG file. Put the Breaking changes text in `.github/breaking-changes.md` before cutting the tag; the release workflow prepends it to the generated notes. After the release, clear that file or replace it with the next breaking change.
 
 ## Conduct
 

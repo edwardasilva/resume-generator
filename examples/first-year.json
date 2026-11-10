@@ -16,7 +16,7 @@
     "name": "Alex Doe",
     "phone": "(555) 555-0107",
     "email": "alex.doe@example.com",
-    "linkedin": "linkedin.com/in/alex-doe-example",
+    "linkedin": "linkedin.com/in/your-name",
     "github": "",
     "location": "Lakeside, ST",
     "relocate": false
@@ -40,7 +40,7 @@
   "projects": [
     {
       "title": "Line-Following Robot",
-      "url": "github.com/alex-doe-example/line-follower",
+      "url": "github.com/your-username/line-follower",
       "tools": [
         "Arduino",
         "C++",
