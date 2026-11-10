@@ -2,7 +2,9 @@
 
 Turn one JSON file into a one-page PDF resume. You write the content in `resume.json`, and the script does the layout and fits it onto a single page.
 
-This project is a companion to [eeprep.com](https://eeprep.com). It was built for engineering students and follows the advice on [eeprep's resume page](https://eeprep.com/advice/resume/), but it works for any field. See a sample: [examples/Alex-Doe-Resume.pdf](examples/Alex-Doe-Resume.pdf).
+This project is a companion to [eeprep.com](https://eeprep.com). It was built for engineering students and follows the advice on [eeprep's resume page](https://eeprep.com/advice/resume/), but it works for any field.
+
+[![Sample resume for Alex Doe](examples/alex-doe-resume.png)](examples/Alex-Doe-Resume.pdf)
 
 ## Download
 
