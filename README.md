@@ -16,6 +16,8 @@ To work from the repository instead, clone it and run `./run`. The first run cop
 
 To build any other file, pass it as an argument: `./run examples/new-grad.json` writes `examples/Alex-Doe-Resume-new-grad.pdf` next to it. The PDF is named `[Name]-Resume.pdf` after the header name, or `Resume.pdf` if there is none. Any file other than `resume.json` and `alex.json` adds its own name, as in `[Name]-Resume-[file].pdf` (a leading `resume-` is dropped, so `resume-firmware.json` writes `[Name]-Resume-firmware.pdf`), so two files for one person don't overwrite each other.
 
+Build only JSON files you trust. The LaTeX build runs with shell escape off, and the JSON has no field that names a file, so text such as `\input{/etc/passwd}` prints as plain text and nothing on your machine is read or run because of it. Two things to know before you build a file from someone else: `./run` may ask for `sudo` to install missing packages, and the PDF overwrites any file with the same name beside the input.
+
 ## Examples
 
 Each example in `examples/` is a made-up resume and the PDF built from it, from nearly empty to completely full.
