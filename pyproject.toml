@@ -1,0 +1,12 @@
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+# The vendored agent skills keep their upstream formatting.
+exclude = [".claude"]
+
+[tool.ruff.lint]
+# pycodestyle (E, W), pyflakes (F), isort (I) and pydocstyle (D).
+select = ["E", "W", "F", "I", "D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"

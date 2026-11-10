@@ -1,0 +1,14 @@
+# Monthly and grouped, so the pinned action SHAs stay current with at most one pull request a
+# month. Security updates still open on their own when an advisory lands.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    groups:
+      github-actions:
+        patterns:
+          - "*"
