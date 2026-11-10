@@ -1,0 +1,13 @@
+# Examples
+
+This folder holds five made-up example resumes, each as a JSON source and the PDF built from it.
+
+| Example    | Source                             | PDF                                                              | Description                                                                                                                                                                                                                  |
+| ---------- | ---------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Alex       | [alex.json](alex.json)             | [Alex-Doe-Resume.pdf](Alex-Doe-Resume.pdf)                       | Alex Doe, an electrical engineering student expected to graduate in Spring 2027, with two projects and a one-line sales job. The school, GPA, and measured figures are placeholders, with `[X]` marking a number to measure. |
+| First year | [first-year.json](first-year.json) | [Alex-Doe-Resume-first-year.pdf](Alex-Doe-Resume-first-year.pdf) | Alex Doe as a first-year electrical engineering student expected to graduate in Spring 2030, with one class project and a one-line grocery job.                                                                              |
+| Sophomore  | [sophomore.json](sophomore.json)   | [Alex-Doe-Resume-sophomore.pdf](Alex-Doe-Resume-sophomore.pdf)   | Alex Doe as a second-year electrical engineering student expected to graduate in Spring 2029, with two projects, an electrical lead role in a robotics club, and a one-line barista job.                                     |
+| New grad   | [new-grad.json](new-grad.json)     | [Alex-Doe-Resume-new-grad.pdf](Alex-Doe-Resume-new-grad.pdf)     | Alex Doe as a new graduate (Spring 2026) with two engineering internships, two projects, and certifications. Experience comes first, and the resume uses the Times font.                                                     |
+| Packed     | [packed.json](packed.json)         | [Alex-Doe-Resume-packed.pdf](Alex-Doe-Resume-packed.pdf)         | Alex Doe as a graduating student (Spring 2026) with three engineering roles, a one-line tutor job, three projects, and long skill lists, using the Arial font.                                                               |
+
+To rebuild a PDF, from the repository root run `./run examples/alex.json`. The PDF is written next to the JSON file. The same command works for the other four files.
