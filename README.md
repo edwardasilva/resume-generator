@@ -168,7 +168,7 @@ A referral helps more than a good resume. Before you apply, ask someone who know
 
 To suggest an idea or open a pull request, see [CONTRIBUTING](.github/CONTRIBUTING.md).
 
-`v0.1.0` is the public release. Tags are created only when Edward says so. Every merge is a squash merge.
+Only the repository owner cuts releases.
 
 To report a vulnerability, use GitHub's private vulnerability reporting on this repository. Do not open a public issue.
 

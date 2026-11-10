@@ -1,4 +1,5 @@
 name: Release cut
+# Before a release, run this workflow and land or close every release-sweep issue.
 
 # Run by hand before cutting a release. Sweep the repo for release-blocking findings, open one
 # release-sweep issue per finding, then fix each finding on its own claude/ branch. Never trigger
