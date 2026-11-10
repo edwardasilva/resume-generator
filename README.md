@@ -28,7 +28,7 @@ Each example in `examples/` is a made-up resume and the PDF built from it, from 
 
 ## Field guide
 
-JSON doesn't allow comments, so this section explains each field. A blank field (`""`) or an empty list (`[]`) is left out of the PDF. Text goes in quotes, `true` and `false` go without them, and lists such as `bullets` go in brackets, even with one item. The build stops and names any field with the wrong kind of value.
+JSON doesn't allow comments, so this section explains each field. A blank field (`""`) or an empty list (`[]`) is left out of the PDF. Text goes in quotes, `true` and `false` go without them, and lists such as `bullets` go in brackets, even with one item. The build stops and names any field with the wrong kind of value. It prints a note for any field name it doesn't read, such as a misspelled one, and for any section with content that `sectionOrder` leaves out.
 
 The phone, email, LinkedIn, GitHub and website in the header are links. The email opens a new message and the phone number dials. Any entry can also have a link:
 
@@ -40,7 +40,7 @@ The phone, email, LinkedIn, GitHub and website in the header are links. The emai
 
 | Field | What to put | Example |
 | --- | --- | --- |
-| `sectionOrder` | Order of the sections. Lead with your strongest one. | `["education", "projects", "experience", "skills"]` |
+| `sectionOrder` | Order of the sections. Lead with your strongest one. A section left out of the list is left off the page. | `["education", "projects", "experience", "skills"]` |
 | `font` | `libertinus`, `times` or `arial`. Leave it out to use `libertinus`. | `"libertinus"` |
 | `dateStyle` | The date style for each section: `semester` (Fall 2025) or `month` (Sep 2025, Sept 2025 or September 2025; pick one spelling and keep it). Every date in a section must use that section's style. The build stops if one doesn't. A section left out uses `semester`. | `{"education": "semester", "projects": "semester", "experience": "semester"}` |
 

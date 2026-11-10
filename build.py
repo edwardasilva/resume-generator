@@ -15,6 +15,7 @@ fits on a single page. It uses only the Python standard library. Run it
 through ./run, which installs Python and TeX first if they are missing.
 """
 
+import difflib
 import html
 import json
 import os
@@ -294,6 +295,7 @@ def check_field(value, kind, where):
             if isinstance(x, str) or x is None:
                 continue
             if kind == "items" and isinstance(x, dict):
+                note_unknown(x, ("name", "url"), f"{where}[{i}].")
                 for key in ("name", "url"):
                     check_field(x.get(key), "text", f"{where}[{i}].{key}")
                 continue
@@ -309,13 +311,39 @@ def check_object(value, where):
         raise ResumeError(f"{where} must be an object in braces, like {{...}}")
 
 
+def note_unknown(value, known, where=""):
+    """Print a note for each key of a JSON object that this tool doesn't read.
+
+    A misspelled key is otherwise skipped in silence, and what it holds never
+    reaches the page. The note suggests the closest known key, if one is near.
+    """
+    if not isinstance(value, dict):
+        return
+    lowered = {name.lower(): name for name in known}
+    for key in value:
+        if key in known:
+            continue
+        close = difflib.get_close_matches(key.lower(), lowered, n=1)
+        hint = f" Did you mean {lowered[close[0]]}?" if close else ""
+        print(
+            f"Note: {where}{key} isn't a field this tool reads.{hint}",
+            file=sys.stderr,
+        )
+
+
 def check_types(data):
-    """Check that every field has the type the layout expects."""
+    """Check that every field has the type the layout expects.
+
+    A key this tool doesn't read gets a note, not an error.
+    """
     if not isinstance(data, dict):
         raise ResumeError("The resume file must hold one object in braces, {...}")
+    note_unknown(data, ("settings", "header", *SECTIONS))
     settings = data.get("settings")
     check_object(settings, "settings")
     settings = settings or {}
+    note_unknown(settings, ("sectionOrder", "font", "dateStyle"), "settings.")
+    note_unknown(settings.get("dateStyle"), ENTRY_FIELDS, "settings.dateStyle.")
     check_field(settings.get("font"), "text", "settings.font")
     order = settings.get("sectionOrder")
     check_field(order, "lines", "settings.sectionOrder")
@@ -325,9 +353,11 @@ def check_types(data):
         if order.count(name) > 1:
             raise ResumeError(f'settings.sectionOrder lists "{name}" twice')
     check_object(data.get("header"), "header")
+    note_unknown(data.get("header"), HEADER_FIELDS, "header.")
     for key, kind in HEADER_FIELDS.items():
         check_field((data.get("header") or {}).get(key), kind, f"header.{key}")
     check_object(data.get("skills"), "skills")
+    note_unknown(data.get("skills"), SKILL_FIELDS, "skills.")
     for key, kind in SKILL_FIELDS.items():
         check_field((data.get("skills") or {}).get(key), kind, f"skills.{key}")
     for section, fields in ENTRY_FIELDS.items():
@@ -336,13 +366,36 @@ def check_types(data):
             raise ResumeError(f"{section} must be a list in brackets, like [{{...}}]")
         for i, entry in enumerate(entries or []):
             check_object(entry, f"{section}[{i}]")
+            note_unknown(entry, fields, f"{section}[{i}].")
             for key, kind in fields.items():
                 check_field((entry or {}).get(key), kind, f"{section}[{i}].{key}")
+
+
+def note_left_out(data):
+    """Print a note for each section with content that sectionOrder leaves out."""
+    order = (data.get("settings") or {}).get("sectionOrder")
+    if not order:
+        return
+    skills = data.get("skills") or {}
+    for section in SECTIONS:
+        if section in order:
+            continue
+        if section == "skills":
+            filled = any(present(skills.get(key)) for key in SKILL_FIELDS)
+        else:
+            filled = bool(shown(data.get(section)))
+        if filled:
+            print(
+                f"Note: {section} has content, but it's left off the page "
+                "because settings.sectionOrder doesn't list it.",
+                file=sys.stderr,
+            )
 
 
 def validate(data):
     """Check field types, the font, and each visible date against its style."""
     check_types(data)
+    note_left_out(data)
     font_name(data)
     styles = date_styles(data)
     for section in ("education", "projects", "experience"):
