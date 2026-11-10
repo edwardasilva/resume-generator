@@ -4,8 +4,6 @@ Turn one JSON file into a one-page PDF resume. You write the content in `resume.
 
 This project is a companion to [eeprep.com](https://eeprep.com). It was built for engineering students and follows the advice on [eeprep's resume page](https://eeprep.com/advice/resume/), but it works for any field.
 
-[![Sample resume for Alex Doe](examples/alex-doe-resume.png)](examples/Alex-Doe-Resume.pdf)
-
 ## Download
 
 Get the latest zip from the [releases page](https://github.com/edwardasilva/resume-generator/releases/latest), unzip it, edit `resume.json` (see the field guide below) and run `./run`. It writes the PDF named after the `name` in `header`, such as `Alex-Doe-Resume.pdf`.
@@ -22,7 +20,7 @@ Each example in `examples/` is a made-up resume and the PDF built from it, from 
 
 | File | Who it describes | PDF |
 | --- | --- | --- |
-| `alex.json` | The starting point. It matches the finished example on eeprep's resume page. The student graduates in 2027 and has two projects, a one-line job and two skill lines. Every tool in the skill lines appears in a bullet. `[X]` marks a number you measure. | [Alex-Doe-Resume.pdf](examples/Alex-Doe-Resume.pdf) |
+| `alex.json` | The starting point. It follows the finished example on eeprep's resume page. The student graduates in 2027 and has two projects, a one-line job and two skill lines. Every tool in the skill lines appears in a bullet. `[X]` marks a number you measure. | [Alex-Doe-Resume.pdf](examples/Alex-Doe-Resume.pdf) |
 | `first-year.json` | A first-year student with one class project, a one-line retail job and a few skills. The page has room left at the bottom. | [Alex-Doe-Resume-first-year.pdf](examples/Alex-Doe-Resume-first-year.pdf) |
 | `sophomore.json` | A second-year student with two projects, an electrical lead role in a robotics club and a one-line job. | [Alex-Doe-Resume-sophomore.pdf](examples/Alex-Doe-Resume-sophomore.pdf) |
 | `new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience and use the `times` font. | [Alex-Doe-Resume-new-grad.pdf](examples/Alex-Doe-Resume-new-grad.pdf) |
@@ -42,11 +40,11 @@ The phone, email, LinkedIn, GitHub and website in the header are links, except t
 
 | Field | What to put | Example |
 | --- | --- | --- |
-| `sectionOrder` | Order of the sections. Lead with your strongest one. A section left out of the list is left off the page. | `["education", "projects", "experience", "skills"]` |
+| `sectionOrder` | Order of the sections. Lead with your strongest one. A section left out of the list is left off the page. | `["education", "skills", "projects", "experience"]` |
 | `font` | `libertinus`, `times` or `arial`. Leave it out to use `libertinus`. | `"libertinus"` |
 | `dateStyle` | The date style for each section: `semester` (Fall 2025) or `month` (Sep 2025, Sept 2025 or September 2025; pick one spelling and keep it). Every date in a section must use that section's style. The build stops if one doesn't. A section left out uses `semester`. | `{"education": "semester", "projects": "semester", "experience": "semester"}` |
 
-Common orders: students with no engineering job usually go education, projects, experience, skills. Once you have an engineering internship, try experience first. Give every section the same date style, so the page never mixes Fall 2025 with Sep 2025.
+Common orders: students with no engineering job usually go education, skills, projects, experience. Skills stays right under Education in every order. Once you have an engineering internship, try experience first. Give every section the same date style, so the page never mixes Fall 2025 with Sep 2025.
 
 Acceptable fonts for `settings.font`:
 
@@ -157,11 +155,20 @@ If you draft `resume.json` with Claude Code, Cursor, or another coding agent, gi
 
 A referral helps more than a good resume. Before you apply, ask someone who knows your work for one. For more on resumes, referrals and applying for engineering jobs, see [eeprep.com](https://eeprep.com) and its [resume page](https://eeprep.com/advice/resume/).
 
+## Limits
+
+- The paper is US Letter. There is no A4 setting.
+- The resume is one page. If the content does not fit, the build stops. There is no second page.
+- The sections are `education`, `projects`, `experience` and `skills`, with those titles. You can reorder them in `settings.sectionOrder`, but you cannot add or rename one. Any other name stops the build with `unknown section`.
+- A job with `"engineering": false` prints as one line, and its bullets are left out.
+- The `libertinus` font covers Latin, Greek and Cyrillic. No font covers Chinese, Japanese or Korean. `times` and `arial` also lack Cyrillic and accented Greek letters. The build stops and names any character the font cannot draw.
+- `./run` installs missing tools only on Fedora, Debian, Ubuntu (including WSL) and macOS. On other systems, install Python and LuaLaTeX yourself.
+
 ## Contributing
 
 To suggest an idea or open a pull request, see [CONTRIBUTING](.github/CONTRIBUTING.md).
 
-`v0.1.0` is the public release. Tags are created only when Edward says so. Every merge is a squash merge.
+Only the repository owner cuts releases.
 
 To report a vulnerability, use GitHub's private vulnerability reporting on this repository. Do not open a public issue.
 
