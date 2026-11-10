@@ -3,6 +3,8 @@
 # is created from examples/alex.json on the first run).
 # Usage: ./run [--yes] [file.json]   (--yes, or CI=true, installs Python and TeX without asking)
 set -euo pipefail
+# The project folder, also when ./run is started through a symlink.
+here="$(cd "$(dirname "$(readlink -f "$0" 2>/dev/null || echo "$0")")" && pwd)"
 
 assume_yes=0
 input=""
@@ -18,15 +20,15 @@ for arg in "$@"; do
   esac
 done
 if [[ -z "$input" ]]; then
-  input="$(dirname "$0")/resume.json"
+  input="$here/resume.json"
   if [[ ! -f "$input" ]]; then
-    cp "$(dirname "$0")/examples/alex.json" "$input"
+    cp "$here/examples/alex.json" "$input"
     echo "Created resume.json from examples/alex.json. Edit it with your details."
   fi
 fi
 [[ -f "$input" ]] || { echo "No such file: $input" >&2; exit 1; }
 input="$(cd "$(dirname "$input")" && pwd)/$(basename "$input")"
-cd "$(dirname "$0")"
+cd "$here"
 
 # LaTeX packages the layout uses, beyond what every TeX install has.
 tex_packages="fontspec luaotfload enumitem geometry hyperref"
