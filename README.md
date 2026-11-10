@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/brand/resume-generator-lockup-dark-outlined.svg">
+  <img src="docs/brand/resume-generator-lockup-outlined.svg" alt="resume-generator" width="320">
+</picture>
+
 # resume-generator
 
 Turn one JSON file into a one-page PDF resume. You write the content in `resume.json`, and the script does the layout and fits it onto a single page.
