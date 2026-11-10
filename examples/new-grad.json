@@ -14,9 +14,9 @@
     ]
   },
   "header": {
-    "name": "Taylor Doe",
+    "name": "Alex Doe",
     "phone": "(555) 555-0158",
-    "email": "taylor.doe@example.com",
+    "email": "alex.doe@example.com",
     "linkedin": "linkedin.com/in/your-name",
     "github": "github.com/your-username",
     "location": "Brookfield, ST",
@@ -121,7 +121,7 @@
       "Engineer in Training (EIT)",
       {
         "name": "IPC-A-610 Certified IPC Specialist",
-        "url": "example.com/verify?id=IPC-610_042&name=Taylor%20Doe"
+        "url": "example.com/verify?id=IPC-610_042&name=Alex%20Doe"
       }
     ]
   }

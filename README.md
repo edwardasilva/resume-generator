@@ -12,7 +12,7 @@ Get the latest zip from the [releases page](https://github.com/edwardasilva/resu
 
 To work from the repository instead, clone it and run `./run`. The first run copies `examples/alex.json` to `resume.json`. Git ignores `resume.json` and the `*-Resume.pdf` file in the top folder, so your personal details stay out of the repository.
 
-To build any other file, pass it as an argument: `./run examples/new-grad.json` writes `examples/Taylor-Doe-Resume.pdf` next to it. The PDF is always named `[Name]-Resume.pdf` after the header name, or `Resume.pdf` if there is none.
+To build any other file, pass it as an argument: `./run examples/new-grad.json` writes `examples/Alex-Doe-Resume-new-grad.pdf` next to it. The PDF is named `[Name]-Resume.pdf` after the header name, or `Resume.pdf` if there is none. Any file other than `resume.json` and `alex.json` adds its own name, as in `[Name]-Resume-[file].pdf` (a leading `resume-` is dropped, so `resume-firmware.json` writes `[Name]-Resume-firmware.pdf`), so two files for one person don't overwrite each other.
 
 ## Examples
 
@@ -21,14 +21,14 @@ Each example in `examples/` is a made-up resume and the PDF built from it, from 
 | File | Who it describes | PDF |
 | --- | --- | --- |
 | `alex.json` | The starting point. It matches the finished example on eeprep's resume page. The student graduates in 2027 and has two projects, a one-line job and two skill lines. Every tool in the skill lines appears in a bullet. `[X]` marks a number you measure. | [Alex-Doe-Resume.pdf](examples/Alex-Doe-Resume.pdf) |
-| `first-year.json` | A first-year student with one class project, a one-line retail job and a few skills. The page has room left at the bottom. | [Jordan-Doe-Resume.pdf](examples/Jordan-Doe-Resume.pdf) |
-| `sophomore.json` | A second-year student with two projects, an electrical lead role in a robotics club and a one-line job. | [Sam-Doe-Resume.pdf](examples/Sam-Doe-Resume.pdf) |
-| `new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience and use the `times` font. | [Taylor-Doe-Resume.pdf](examples/Taylor-Doe-Resume.pdf) |
-| `packed.json` | A graduating student with three engineering roles, a one-line job, three projects and long skill lists, in the `arial` font. The script tightens it to fit. | [Casey-Doe-Resume.pdf](examples/Casey-Doe-Resume.pdf) |
+| `first-year.json` | A first-year student with one class project, a one-line retail job and a few skills. The page has room left at the bottom. | [Alex-Doe-Resume-first-year.pdf](examples/Alex-Doe-Resume-first-year.pdf) |
+| `sophomore.json` | A second-year student with two projects, an electrical lead role in a robotics club and a one-line job. | [Alex-Doe-Resume-sophomore.pdf](examples/Alex-Doe-Resume-sophomore.pdf) |
+| `new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience and use the `times` font. | [Alex-Doe-Resume-new-grad.pdf](examples/Alex-Doe-Resume-new-grad.pdf) |
+| `packed.json` | A graduating student with three engineering roles, a one-line job, three projects and long skill lists, in the `arial` font. The script tightens it to fit. | [Alex-Doe-Resume-packed.pdf](examples/Alex-Doe-Resume-packed.pdf) |
 
 ## Field guide
 
-JSON doesn't allow comments, so this section explains each field. A blank field (`""`) or an empty list (`[]`) is left out of the PDF. Text goes in quotes, `true` and `false` go without them, and lists such as `bullets` go in brackets, even with one item. The build stops and names any field with the wrong kind of value.
+JSON doesn't allow comments, so this section explains each field. A blank field (`""`) or an empty list (`[]`) is left out of the PDF. Text goes in quotes, `true` and `false` go without them, and lists such as `bullets` go in brackets, even with one item. The build stops and names any field with the wrong kind of value. It prints a note for any field name it doesn't read, such as a misspelled one, and for any section with content that `sectionOrder` leaves out.
 
 The phone, email, LinkedIn, GitHub and website in the header are links, except the example values `linkedin.com/in/your-name` and `github.com/your-username` (and any address under them), which print as plain text so they never point at a real account. Replace them with your own. The email opens a new message and the phone number dials. Any entry can also have a link:
 
@@ -40,9 +40,9 @@ The phone, email, LinkedIn, GitHub and website in the header are links, except t
 
 | Field | What to put | Example |
 | --- | --- | --- |
-| `sectionOrder` | Order of the sections. Lead with your strongest one. | `["education", "projects", "experience", "skills"]` |
+| `sectionOrder` | Order of the sections. Lead with your strongest one. A section left out of the list is left off the page. | `["education", "projects", "experience", "skills"]` |
 | `font` | `libertinus`, `times` or `arial`. Leave it out to use `libertinus`. | `"libertinus"` |
-| `dateStyle` | The date style for each section: `semester` (Fall 2025) or `month` (Sep 2025 or Sept 2025). Every date in a section must use that section's style. The build stops if one doesn't. A section left out uses `semester`. | `{"education": "semester", "projects": "semester", "experience": "semester"}` |
+| `dateStyle` | The date style for each section: `semester` (Fall 2025) or `month` (Sep 2025, Sept 2025 or September 2025; pick one spelling and keep it). Every date in a section must use that section's style. The build stops if one doesn't. A section left out uses `semester`. | `{"education": "semester", "projects": "semester", "experience": "semester"}` |
 
 Common orders: students with no engineering job usually go education, projects, experience, skills. Once you have an engineering internship, try experience first. Give every section the same date style, so the page never mixes Fall 2025 with Sep 2025.
 
@@ -167,7 +167,7 @@ To report a vulnerability, use GitHub's private vulnerability reporting on this 
 
 The repo has two licenses, one for content and one for code.
 
-Content is licensed under [CC BY 4.0](LICENSE-CONTENT). You may share and adapt it if you give credit and link the license. Content means the example resumes and sample data in `examples/`, and the docs: `README.md` and the Markdown files in `.github/`.
+Content is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (full text in [LICENSE-CONTENT](LICENSE-CONTENT)). You may share and adapt it if you credit [resume-generator contributors](https://github.com/edwardasilva/resume-generator) and link the license. Content means the example resumes and sample data in `examples/`, and the docs: `README.md` and the Markdown files in `.github/`.
 
 Code is licensed under the [MIT License](LICENSE). Code means everything else, including `build.py`, `resume.tex`, `run`, `pyproject.toml`, and the scripts and workflows in `.github/`.
 

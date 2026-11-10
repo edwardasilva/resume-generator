@@ -4,13 +4,13 @@ Thanks for helping with resume-generator. Ideas and fixes are welcome.
 
 ## Suggest an idea or a fix
 
-Open an [issue](https://github.com/edwardasilva/resume-generator/issues/new/choose) and pick a template. Say what you would change and why.
+Open an [issue](https://github.com/edwardasilva/resume-generator/issues/new/choose) and describe what you would change and why. A short description is all it needs.
 
 ## Open a pull request
 
 1. Fork the repo (or cut a short branch if you have write access).
 2. Make one change. Keep the pull request small.
-3. Before you push:
+3. If you can, run these before you push:
 
 ```bash
 pip install ruff==0.16.9
@@ -21,7 +21,9 @@ ruff check
 
 If you change a file in `examples/`, commit its rebuilt PDF. Otherwise discard the rebuilt PDFs with `git restore examples/`.
 
-CI builds every file in `examples/` and fails if any PDF is not exactly one page. Merges are squash merges.
+Every PDF in `examples/` must stay exactly one page. If you skip the checks, maintainers run them before merging.
+
+4. Open a pull request into `main` with a short description of what changed and why. That is all a pull request needs. An issue link is optional. Maintainers review the change. Merges are squash merges.
 
 ## Coding agents
 
@@ -43,4 +45,4 @@ To report a vulnerability, use GitHub's private vulnerability reporting on this 
 
 ## License
 
-By contributing, you agree that your code is licensed under the [MIT License](../LICENSE) and your content (the examples and the docs) under [CC BY 4.0](../LICENSE-CONTENT). The fonts in `fonts/` keep their own licenses.
+By contributing, you agree that your code is licensed under the [MIT License](../LICENSE) and your content (the examples and the docs) under [CC BY 4.0](../LICENSE-CONTENT). The fonts in `fonts/` keep their own licenses. Reuse of content is credited to [resume-generator contributors](https://github.com/edwardasilva/resume-generator).

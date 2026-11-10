@@ -13,9 +13,9 @@
     ]
   },
   "header": {
-    "name": "Sam Doe",
+    "name": "Alex Doe",
     "phone": "(555) 555-0123",
-    "email": "sam.doe@example.com",
+    "email": "alex.doe@example.com",
     "linkedin": "linkedin.com/in/your-name",
     "github": "github.com/your-username",
     "location": "Riverton, ST",
@@ -51,7 +51,7 @@
       "end": "Spring 2026",
       "bullets": [
         "Logged BME280 data every minute for 30 days over Wi-Fi and lost under 1% of samples",
-        "Calibrated temperature in C against a reference thermometer at 20 points, to within 0.5 °C",
+        "Wrote a C calibration routine checked against a reference thermometer at 20 points, to within 0.5 °C",
         "Wrote a Python plotting script that flagged gaps over 5 minutes and found 3 Wi-Fi outages"
       ]
     },
