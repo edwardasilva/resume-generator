@@ -155,9 +155,21 @@ def short_url(url):
     return url.rstrip("/")
 
 
+# The example handles nobody can own. They print as text, never as links.
+PLACEHOLDER_URL = re.compile(
+    r"^(github\.com/your-username|linkedin\.com/in/your-name)(?:[/?#]|$)"
+)
+
+
 def link(url, text):
-    """Wrap LaTeX text in a hyperlink to url, or return the text if url is blank."""
-    return rf"\href{{{esc_url(url)}}}{{{text}}}" if url else text
+    """Wrap LaTeX text in a hyperlink to url.
+
+    Returns the text alone if url is blank or is a placeholder such as
+    github.com/your-username.
+    """
+    if not url or PLACEHOLDER_URL.match(short_url(url).lower()):
+        return text
+    return rf"\href{{{esc_url(url)}}}{{{text}}}"
 
 
 # A Markdown-style inline link in bullet text: [text](url). The URL may hold
