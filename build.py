@@ -222,14 +222,19 @@ def check_date(value, style, where):
         )
 
 
-def date_range(start, end):
-    """Format a date range, using Present for a blank end and one date if equal."""
+def date_parts(start, end):
+    """Return the dates a range shows: Present for a blank end, one date if equal."""
     start, end = start or "", end or ""
     if start and not end:
         end = "Present"
     if not start or start == end:
-        return esc(start or end)
-    return f"{esc(start)} -- {esc(end)}"
+        return [start or end]
+    return [start, end]
+
+
+def date_range(start, end):
+    """Format a date range for LaTeX, joining two dates with an en dash."""
+    return " -- ".join(esc(d) for d in date_parts(start, end))
 
 
 def date_styles(data):
@@ -651,12 +656,22 @@ def expected_text(data):
     return [plain(x) for x in out if plain(x)]
 
 
+def expected_dates(data):
+    """Return every date and date range the PDF must contain."""
+    out = [e.get("gradDate") for e in shown(data.get("education"))]
+    for section in ("projects", "experience"):
+        for x in shown(data.get(section)):
+            out.append(" - ".join(date_parts(x.get("start"), x.get("end"))))
+    return [plain(x) for x in out if plain(x)]
+
+
 def check_text(pdf, data):
     """Return problems with the PDF's text layer, or [] if it reads cleanly.
 
     It extracts the text the way an applicant tracking system does, with
     pdftotext, and checks that every heading, header item, entry and bullet
-    is there in reading order, with no broken ligatures or unmapped glyphs.
+    is there in reading order, that every date is there, and that there are
+    no broken ligatures or unmapped glyphs.
     """
     result = subprocess.run(
         ["pdftotext", "-enc", "UTF-8", str(pdf), "-"],
@@ -679,6 +694,11 @@ def check_text(pdf, data):
             problems.append(f'out of reading order: "{want}"')
         else:
             problems.append(f'missing or garbled: "{want}"')
+    # Dates sit at the right margin, so their place in the text varies. Check
+    # only that each one is there.
+    for want in expected_dates(data):
+        if want not in text:
+            problems.append(f'missing or garbled date: "{want}"')
     return problems
 
 
