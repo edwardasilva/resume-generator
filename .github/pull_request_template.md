@@ -1,10 +1,10 @@
-## What changed and why
+## Description
 
-## How it was checked
+<!--
+A short description is all a pull request needs. Maintainers review the change.
 
-<!-- For example: ruff format --check, ruff check, ./run --yes examples/alex.json -->
-
-## Issue
-
-<!-- If there is an issue, write "Part of #N" on a line of its own. Remove this section if there is none. -->
-Part of #
+Optional, if they help:
+- What changed and why.
+- How you checked it, such as ruff check or ./run --yes examples/alex.json.
+- A related issue, such as "Closes #12".
+-->
