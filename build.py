@@ -879,6 +879,20 @@ def main():
         tex = body(data)
         (BUILD / "body.tex").write_text(tex, encoding="utf-8")
         layout, log = fit(typeface)
+        lost = sorted(
+            set(
+                re.findall(
+                    r"Missing character: There is no (\S+) \((U\+[0-9A-F]+)\)", log
+                )
+            )
+        )
+        if lost:
+            names = " ".join(f"{char} ({code})" for char, code in lost)
+            raise ResumeError(
+                f"The {typeface} font has no glyph for: {names}\n"
+                "These characters would be blank in the PDF. Rewrite them, "
+                "or see the limits in the README."
+            )
         if layout:
             font, margin, fill, free = layout
             shutil.copy(BUILD / "resume.pdf", output)
