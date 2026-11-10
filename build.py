@@ -72,7 +72,7 @@ FONTS = {
 }
 
 # Sections in their default order, and the date patterns for each style.
-SECTIONS = ("education", "projects", "experience", "skills")
+SECTIONS = ("education", "skills", "projects", "experience")
 SEMESTER = re.compile(r"^(Expected )?(Spring|Summer|Fall|Winter) \d{4}$")
 MONTH = re.compile(
     r"^(Expected )?(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec|"
