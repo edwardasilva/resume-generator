@@ -14,11 +14,11 @@
     ]
   },
   "header": {
-    "name": "Taylor Doe",
+    "name": "Alex Doe",
     "phone": "(555) 555-0158",
-    "email": "taylor.doe@example.com",
-    "linkedin": "linkedin.com/in/taylor-doe-example",
-    "github": "github.com/taylor-doe-example",
+    "email": "alex.doe@example.com",
+    "linkedin": "linkedin.com/in/alex-doe-example",
+    "github": "github.com/alex-doe-example",
     "location": "Brookfield, ST",
     "relocate": true
   },
@@ -121,7 +121,7 @@
       "Engineer in Training (EIT)",
       {
         "name": "IPC-A-610 Certified IPC Specialist",
-        "url": "example.com/verify?id=IPC-610_042&name=Taylor%20Doe"
+        "url": "example.com/verify?id=IPC-610_042&name=Alex%20Doe"
       }
     ]
   }

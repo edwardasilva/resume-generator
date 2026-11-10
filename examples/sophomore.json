@@ -13,11 +13,11 @@
     ]
   },
   "header": {
-    "name": "Sam Doe",
+    "name": "Alex Doe",
     "phone": "(555) 555-0123",
-    "email": "sam.doe@example.com",
-    "linkedin": "linkedin.com/in/sam-doe-example",
-    "github": "github.com/sam-doe-example",
+    "email": "alex.doe@example.com",
+    "linkedin": "linkedin.com/in/alex-doe-example",
+    "github": "github.com/alex-doe-example",
     "location": "Riverton, ST",
     "relocate": true
   },
@@ -40,7 +40,7 @@
   "projects": [
     {
       "title": "Weather Station with Wireless Logging",
-      "url": "github.com/sam-doe-example/weather-station",
+      "url": "github.com/alex-doe-example/weather-station",
       "tools": [
         "ESP32",
         "C",

@@ -12,7 +12,7 @@ Get the latest zip from the [releases page](https://github.com/edwardasilva/resu
 
 To work from the repository instead, clone it and run `./run`. The first run copies `examples/alex.json` to `resume.json`. Git ignores `resume.json` and the `*-Resume.pdf` file in the top folder, so your personal details stay out of the repository.
 
-To build any other file, pass it as an argument: `./run examples/new-grad.json` writes `examples/Taylor-Doe-Resume.pdf` next to it. The PDF is always named `[Name]-Resume.pdf` after the header name, or `Resume.pdf` if there is none.
+To build any other file, pass it as an argument: `./run examples/new-grad.json` writes `examples/Alex-Doe-Resume-new-grad.pdf` next to it. The PDF is named `[Name]-Resume.pdf` after the header name, or `Resume.pdf` if there is none. Any file other than `resume.json` and `alex.json` adds its own name, as in `[Name]-Resume-[file].pdf` (a leading `resume-` is dropped, so `resume-firmware.json` writes `[Name]-Resume-firmware.pdf`), so two files for one person don't overwrite each other.
 
 ## Examples
 
@@ -21,10 +21,10 @@ Each example in `examples/` is a made-up resume and the PDF built from it, from 
 | File | Who it describes | PDF |
 | --- | --- | --- |
 | `alex.json` | The starting point. It matches the finished example on eeprep's resume page. The student graduates in 2027 and has two projects, a one-line job and two skill lines. Every tool in the skill lines appears in a bullet. `[X]` marks a number you measure. | [Alex-Doe-Resume.pdf](examples/Alex-Doe-Resume.pdf) |
-| `first-year.json` | A first-year student with one class project, a one-line retail job and a few skills. The page has room left at the bottom. | [Jordan-Doe-Resume.pdf](examples/Jordan-Doe-Resume.pdf) |
-| `sophomore.json` | A second-year student with two projects, an electrical lead role in a robotics club and a one-line job. | [Sam-Doe-Resume.pdf](examples/Sam-Doe-Resume.pdf) |
-| `new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience and use the `times` font. | [Taylor-Doe-Resume.pdf](examples/Taylor-Doe-Resume.pdf) |
-| `packed.json` | A graduating student with three engineering roles, a one-line job, three projects and long skill lists, in the `arial` font. The script tightens it to fit. | [Casey-Doe-Resume.pdf](examples/Casey-Doe-Resume.pdf) |
+| `first-year.json` | A first-year student with one class project, a one-line retail job and a few skills. The page has room left at the bottom. | [Alex-Doe-Resume-first-year.pdf](examples/Alex-Doe-Resume-first-year.pdf) |
+| `sophomore.json` | A second-year student with two projects, an electrical lead role in a robotics club and a one-line job. | [Alex-Doe-Resume-sophomore.pdf](examples/Alex-Doe-Resume-sophomore.pdf) |
+| `new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience and use the `times` font. | [Alex-Doe-Resume-new-grad.pdf](examples/Alex-Doe-Resume-new-grad.pdf) |
+| `packed.json` | A graduating student with three engineering roles, a one-line job, three projects and long skill lists, in the `arial` font. The script tightens it to fit. | [Alex-Doe-Resume-packed.pdf](examples/Alex-Doe-Resume-packed.pdf) |
 
 ## Field guide
 

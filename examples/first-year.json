@@ -13,10 +13,10 @@
     ]
   },
   "header": {
-    "name": "Jordan Doe",
+    "name": "Alex Doe",
     "phone": "(555) 555-0107",
-    "email": "jordan.doe@example.com",
-    "linkedin": "linkedin.com/in/jordan-doe-example",
+    "email": "alex.doe@example.com",
+    "linkedin": "linkedin.com/in/alex-doe-example",
     "github": "",
     "location": "Lakeside, ST",
     "relocate": false
@@ -40,7 +40,7 @@
   "projects": [
     {
       "title": "Line-Following Robot",
-      "url": "github.com/jordan-doe-example/line-follower",
+      "url": "github.com/alex-doe-example/line-follower",
       "tools": [
         "Arduino",
         "C++",

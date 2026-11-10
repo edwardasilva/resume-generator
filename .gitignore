@@ -1,6 +1,8 @@
 build/
 /resume.json
 /*-Resume.pdf
+/*-Resume-*.pdf
 /Resume.pdf
+/Resume-*.pdf
 __pycache__/
 .claude/
