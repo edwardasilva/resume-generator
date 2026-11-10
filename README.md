@@ -172,5 +172,3 @@ Content is licensed under [CC BY 4.0](LICENSE-CONTENT). You may share and adapt 
 Code is licensed under the [MIT License](LICENSE). Code means everything else, including `build.py`, `resume.tex`, `run`, `pyproject.toml`, and the scripts and workflows in `.github/`.
 
 The fonts in `fonts/` keep their own licenses: Libertinus Serif is under the SIL Open Font License 1.1 ([fonts/OFL.txt](fonts/OFL.txt)), and TeX Gyre Termes and TeX Gyre Heros are under the GUST Font License ([fonts/GUST-FONT-LICENSE.txt](fonts/GUST-FONT-LICENSE.txt)). See [fonts/README.md](fonts/README.md) for where each file comes from.
-
-The skills in `.claude/skills/` keep their own licenses.
