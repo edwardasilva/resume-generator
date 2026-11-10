@@ -40,6 +40,8 @@ Only the repository owner can start either workflow. Both work on a branch and o
 
 Before cutting a release, run release-cut and land or close every `release-sweep` issue.
 
+Release notes are the notes GitHub generates from pull requests, plus a Breaking changes line written by hand when there is one. There is no CHANGELOG file. Put the Breaking changes text in `.github/breaking-changes.md` before cutting the tag; the release workflow prepends it to the generated notes. After the release, clear that file or replace it with the next breaking change.
+
 ## Conduct
 
 Be kind and assume good intent. To report a problem with someone's behavior, use GitHub's Report content feature or message the repository owner in private.
