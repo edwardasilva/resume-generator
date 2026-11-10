@@ -145,7 +145,7 @@ To look at the result, run `pdftoppm -png -r 80 Alex-Doe-Resume.pdf page` (it co
 
 ## Checking the text
 
-Applicant tracking systems read the PDF's text, not its look. When `pdftotext` is installed, each build extracts the text. Install poppler to get it, with `brew install poppler`, `sudo apt-get install poppler-utils` or `sudo dnf install poppler-utils`. The build checks that the name, contact items, section titles, entries, bullets and dates all come out whole and in reading order, with no broken ligatures or unreadable glyphs. Problems print as a warning. Set `RESUME_TEXT_CHECK=strict` to make them an error. Words never break with a hyphen across lines, because a split word can't be found by a keyword search.
+Applicant tracking systems read the PDF's text, not its look. The build checks its text with `pdftotext`, the way many applicant tracking systems read text. No applicant tracking system was tested. When `pdftotext` is installed, each build extracts the text. Install poppler to get it, with `brew install poppler`, `sudo apt-get install poppler-utils` or `sudo dnf install poppler-utils`. The build checks that the name, contact items, section titles, entries, bullets and dates all come out whole and in reading order, with no broken ligatures or unreadable glyphs. Problems print as a warning. Set `RESUME_TEXT_CHECK=strict` to make them an error. Words never break with a hyphen across lines, because a split word can't be found by a keyword search.
 
 ## Writing the content with an AI tool
 
