@@ -97,15 +97,25 @@ class ResumeError(Exception):
     """A problem with the resume file or the LaTeX run, shown to the user."""
 
 
-def esc(text):
+def esc(text, start=True):
     """Escape text for LaTeX in a single pass.
 
     Runs of spaces, tabs and line breaks become one space, so a blank line
     pasted into a bullet can't start a new paragraph. Control characters are
     dropped. A no-break space is kept.
+
+    A straight double quote becomes an opening or closing curly quote, or
+    stays straight after a digit as an inch mark. start is False when the
+    text follows a link, so a quote at its start closes. Runs of hyphens and of
+    apostrophes stay as typed: LaTeX would otherwise join them into a dash or
+    a double quote, and a search for --yes would not find it.
     """
     text = re.sub(r"[ \t\n\r\f\v]+", " ", CONTROL.sub("", str(text or "")))
-    return TEX_RE.sub(lambda m: TEX_SPECIAL[m.group()], text)
+    text = TEX_RE.sub(lambda m: TEX_SPECIAL[m.group()], text)
+    text = re.sub(r"(?<=\d)\"", r"\\textquotedbl{}", text)
+    opening = r"(?:^|(?<=[ \u00a0(]))\"" if start else r"(?<=[ \u00a0(])\""
+    text = re.sub(opening, "\u201c", text).replace('"', "\u201d")
+    return re.sub(r"([-'])(?=\1)", r"\1\\kern0pt{}", text)
 
 
 def esc_url(url):
@@ -153,9 +163,10 @@ def rich(text):
     """Escape bullet text, turning each [text](url) into a hyperlink."""
     text, out, last = str(text or ""), [], 0
     for m in INLINE_LINK.finditer(text):
-        out += [esc(text[last : m.start()]), link(m.group(2), esc(m.group(1)))]
+        before = esc(text[last : m.start()], last == 0)
+        out += [before, link(m.group(2), esc(m.group(1)))]
         last = m.end()
-    return "".join(out) + esc(text[last:])
+    return "".join(out) + esc(text[last:], last == 0)
 
 
 def present(items):
@@ -523,8 +534,7 @@ TEXT_PLAIN = str.maketrans(
 
 def plain(text):
     """Return text as a reader sees it: straight quotes, hyphens, single spaces."""
-    text = CONTROL.sub("", str(text or "")).replace("---", "-").replace("--", "-")
-    text = re.sub(r"``|''", '"', text).translate(TEXT_PLAIN)
+    text = CONTROL.sub("", str(text or "")).translate(TEXT_PLAIN)
     return " ".join(text.split())
 
 
