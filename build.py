@@ -499,8 +499,6 @@ def body(data):
     out = metadata(data) + header(data.get("header") or {})
     order = (data.get("settings") or {}).get("sectionOrder") or list(SECTIONS)
     for name in order:
-        if name not in RENDER:
-            raise ResumeError(f'settings.sectionOrder: unknown section "{name}"')
         lines = RENDER[name](data)
         if lines:
             if lines[-1] == r"\entrygap":
