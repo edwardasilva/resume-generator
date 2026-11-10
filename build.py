@@ -102,15 +102,25 @@ class ResumeError(Exception):
     """A problem with the resume file or the LaTeX run, shown to the user."""
 
 
-def esc(text):
+def esc(text, start=True):
     """Escape text for LaTeX in a single pass.
 
     Runs of spaces, tabs and line breaks become one space, so a blank line
     pasted into a bullet can't start a new paragraph. Control characters are
     dropped. A no-break space is kept.
+
+    A straight double quote becomes an opening or closing curly quote, or
+    stays straight after a digit as an inch mark. start is False when the
+    text follows a link, so a quote at its start closes. Runs of hyphens and of
+    apostrophes stay as typed: LaTeX would otherwise join them into a dash or
+    a double quote, and a search for --yes would not find it.
     """
     text = re.sub(r"[ \t\n\r\f\v]+", " ", CONTROL.sub("", str(text or "")))
-    return TEX_RE.sub(lambda m: TEX_SPECIAL[m.group()], text)
+    text = TEX_RE.sub(lambda m: TEX_SPECIAL[m.group()], text)
+    text = re.sub(r"(?<=\d)\"", r"\\textquotedbl{}", text)
+    opening = r"(?:^|(?<=[ \u00a0(]))\"" if start else r"(?<=[ \u00a0(])\""
+    text = re.sub(opening, "\u201c", text).replace('"', "\u201d")
+    return re.sub(r"([-'])(?=\1)", r"\1\\kern0pt{}", text)
 
 
 def esc_url(url):
@@ -158,9 +168,10 @@ def rich(text):
     """Escape bullet text, turning each [text](url) into a hyperlink."""
     text, out, last = str(text or ""), [], 0
     for m in INLINE_LINK.finditer(text):
-        out += [esc(text[last : m.start()]), link(m.group(2), esc(m.group(1)))]
+        before = esc(text[last : m.start()], last == 0)
+        out += [before, link(m.group(2), esc(m.group(1)))]
         last = m.end()
-    return "".join(out) + esc(text[last:])
+    return "".join(out) + esc(text[last:], last == 0)
 
 
 def present(items):
@@ -198,14 +209,19 @@ def check_date(value, style, where):
         )
 
 
-def date_range(start, end):
-    """Format a date range, using Present for a blank end and one date if equal."""
+def date_parts(start, end):
+    """Return the dates a range shows: Present for a blank end, one date if equal."""
     start, end = start or "", end or ""
     if start and not end:
         end = "Present"
     if not start or start == end:
-        return esc(start or end)
-    return f"{esc(start)} -- {esc(end)}"
+        return [start or end]
+    return [start, end]
+
+
+def date_range(start, end):
+    """Format a date range for LaTeX, joining two dates with an en dash."""
+    return " -- ".join(esc(d) for d in date_parts(start, end))
 
 
 def date_styles(data):
@@ -528,8 +544,7 @@ TEXT_PLAIN = str.maketrans(
 
 def plain(text):
     """Return text as a reader sees it: straight quotes, hyphens, single spaces."""
-    text = CONTROL.sub("", str(text or "")).replace("---", "-").replace("--", "-")
-    text = re.sub(r"``|''", '"', text).translate(TEXT_PLAIN)
+    text = CONTROL.sub("", str(text or "")).translate(TEXT_PLAIN)
     return " ".join(text.split())
 
 
@@ -574,12 +589,21 @@ def expected_text(data):
     return [plain(x) for x in out if plain(x)]
 
 
+def expected_dates(data):
+    """Return every date and date range the PDF must contain."""
+    out = [e.get("gradDate") for e in shown(data.get("education"))]
+    for section in ("projects", "experience"):
+        for x in shown(data.get(section)):
+            out.append(" - ".join(date_parts(x.get("start"), x.get("end"))))
+    return [plain(x) for x in out if plain(x)]
+
+
 def check_text(pdf, data):
     """Return problems with the PDF's text layer, or [] if it reads cleanly.
 
     It extracts the text the way an applicant tracking system does, with
     pdftotext, and checks that every heading, header item, entry and bullet
-    is there in reading order, with no broken ligatures or unmapped glyphs.
+    is there in reading order, and every date is there, with no broken ligatures or unmapped glyphs.
     """
     result = subprocess.run(
         ["pdftotext", "-enc", "UTF-8", str(pdf), "-"],
@@ -602,6 +626,11 @@ def check_text(pdf, data):
             problems.append(f'out of reading order: "{want}"')
         else:
             problems.append(f'missing or garbled: "{want}"')
+    # Dates sit at the right margin, so their place in the text varies. Check
+    # only that each one is there.
+    for want in expected_dates(data):
+        if want not in text:
+            problems.append(f'missing or garbled date: "{want}"')
     return problems
 
 
@@ -921,6 +950,15 @@ def main():
             return
     except ResumeError as e:
         sys.exit(str(e))
+    except OSError as e:
+        # A folder that can't be written to, or a full disk.
+        sys.exit(f"Can't write {e.filename or 'the PDF'}: {e.strerror or e}")
+    except UnicodeEncodeError:
+        # A lone surrogate, such as "\ud800" in the JSON, can't be saved as UTF-8.
+        sys.exit(
+            f"{source.name} holds a character that isn't valid text. "
+            "Retype the field near it."
+        )
     end = measure(log, "END")
     lines = 1
     if end:
