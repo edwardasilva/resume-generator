@@ -670,7 +670,8 @@ def check_text(pdf, data):
 
     It extracts the text the way an applicant tracking system does, with
     pdftotext, and checks that every heading, header item, entry and bullet
-    is there in reading order, and every date is there, with no broken ligatures or unmapped glyphs.
+    is there in reading order, that every date is there, and that there are
+    no broken ligatures or unmapped glyphs.
     """
     result = subprocess.run(
         ["pdftotext", "-enc", "UTF-8", str(pdf), "-"],
