@@ -16,7 +16,7 @@
     "name": "Jordan Doe",
     "phone": "(555) 555-0107",
     "email": "jordan.doe@example.com",
-    "linkedin": "linkedin.com/in/jordan-doe-example",
+    "linkedin": "linkedin.com/in/your-name",
     "github": "",
     "location": "Lakeside, ST",
     "relocate": false
@@ -40,7 +40,7 @@
   "projects": [
     {
       "title": "Line-Following Robot",
-      "url": "github.com/jordan-doe-example/line-follower",
+      "url": "github.com/your-username/line-follower",
       "tools": [
         "Arduino",
         "C++",

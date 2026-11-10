@@ -17,8 +17,8 @@
     "name": "Casey Doe",
     "phone": "(555) 555-0191",
     "email": "casey.doe@example.com",
-    "linkedin": "linkedin.com/in/casey-doe-example",
-    "github": "github.com/casey-doe-example",
+    "linkedin": "linkedin.com/in/your-name",
+    "github": "github.com/your-username",
     "location": "Hillcrest, ST",
     "relocate": true
   },
@@ -115,7 +115,7 @@
     },
     {
       "title": "Software-Defined Radio FM Receiver",
-      "url": "github.com/casey-doe-example/sdr_fm_receiver#readme",
+      "url": "github.com/your-username/sdr_fm_receiver#readme",
       "tools": [
         "Python",
         "GNU Radio",

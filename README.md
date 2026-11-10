@@ -30,11 +30,11 @@ Each example in `examples/` is a made-up resume and the PDF built from it, from 
 
 JSON doesn't allow comments, so this section explains each field. A blank field (`""`) or an empty list (`[]`) is left out of the PDF. Text goes in quotes, `true` and `false` go without them, and lists such as `bullets` go in brackets, even with one item. The build stops and names any field with the wrong kind of value.
 
-The phone, email, LinkedIn, GitHub and website in the header are links. The email opens a new message and the phone number dials. Any entry can also have a link:
+The phone, email, LinkedIn, GitHub and website in the header are links, except the example values `linkedin.com/in/your-name` and `github.com/your-username` (and any address under them), which print as plain text so they never point at a real account. Replace them with your own. The email opens a new message and the phone number dials. Any entry can also have a link:
 
 | Field | What to put | Example |
 | --- | --- | --- |
-| `url` | Optional on any education, project or experience entry. The school, project title or employer becomes a link, shown in the normal text color. To link a skill, coursework or activity item, write it as `{"name": "...", "url": "..."}`. Inside a bullet, `[text](url)` links the text. The URL may contain parentheses, as in `en.wikipedia.org/wiki/Buck_(converter)`. Links must be web addresses (`https://` is added if missing), `mailto:` or `tel:`. | `github.com/alex-doe-example/cubesat-buck-converter` |
+| `url` | Optional on any education, project or experience entry. The school, project title or employer becomes a link, shown in the normal text color. To link a skill, coursework or activity item, write it as `{"name": "...", "url": "..."}`. Inside a bullet, `[text](url)` links the text. The URL may contain parentheses, as in `en.wikipedia.org/wiki/Buck_(converter)`. Links must be web addresses (`https://` is added if missing), `mailto:` or `tel:`. | `github.com/your-username/cubesat-buck-converter` |
 
 ### `settings`
 
@@ -61,8 +61,8 @@ Acceptable fonts for `settings.font`:
 | `name` | The name you want recruiters to use. It also fills the PDF's title (`Alex Doe Resume`) and author properties. | `Alex Doe` |
 | `phone` | Your phone number. No label such as "Cell:". | `(555) 555-0142` |
 | `email` | An address you check every day. A school address is fine. | `alex.doe@example.com` |
-| `linkedin` | Your profile URL without `https://`. | `linkedin.com/in/alex-doe-example` |
-| `github` | Only if it holds work you're proud of. | `github.com/alex-doe-example` |
+| `linkedin` | Your profile URL without `https://`. | `linkedin.com/in/your-name` |
+| `github` | Only if it holds work you're proud of. | `github.com/your-username` |
 | `website` | A personal site or portfolio, if you have one. | `example.com/~alex-doe` |
 | `location` | City and state. | `Springfield, ST` |
 | `relocate` | `true` adds "Willing to relocate". | `true` |
