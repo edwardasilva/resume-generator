@@ -33,4 +33,4 @@ To report a vulnerability, use GitHub's private vulnerability reporting on this 
 
 ## License
 
-By contributing, you agree that code is licensed under the [MIT License](../LICENSE). The fonts in `fonts/` keep their own licenses.
+By contributing, you agree that your code is licensed under the [MIT License](../LICENSE) and your content (the examples and the docs) under [CC BY 4.0](../LICENSE-CONTENT). The fonts in `fonts/` keep their own licenses.
