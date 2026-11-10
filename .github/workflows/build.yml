@@ -25,7 +25,10 @@ jobs:
   # One gate: lint, the release zip check, then the PDF builds. The protect-main ruleset
   # requires this job by its id, build. Keep it.
   build:
-    runs-on: ubuntu-latest
+    # Pinned on purpose. This is the oldest setup this job tests: Ubuntu 24.04 with
+    # TeX Live 2023 and Python 3.12. minimal-tex covers the newest TeX Live. When the
+    # README states a tested version, move this pin and that line together.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       # Depth 2 fetches a pull request's merge commit and its first parent, the base
