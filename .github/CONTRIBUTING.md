@@ -19,7 +19,7 @@ ruff check
 ./run examples/alex.json
 ```
 
-If you change a file in `examples/`, commit its rebuilt PDF. Otherwise discard the rebuilt PDFs with `git restore examples/`.
+If you change a file in `examples/`, commit its rebuilt PDF. Otherwise discard the rebuilt PDFs with `git restore examples/`. If `examples/Alex-Doe-Resume.pdf` changes, rebuild `examples/alex-doe-resume.png` with `pdftoppm -png -r 80 -singlefile examples/Alex-Doe-Resume.pdf examples/alex-doe-resume`.
 
 Every PDF in `examples/` must stay exactly one page. If you skip the checks, maintainers run them before merging.
 
