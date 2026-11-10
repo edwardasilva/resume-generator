@@ -4,7 +4,7 @@ body:
   - type: textarea
     id: idea
     attributes:
-      label: What would you like, and why?
-      description: Describe the change and the problem it solves.
+      label: Description
+      description: What would you like, and why?
     validations:
-      required: true
+      required: false
