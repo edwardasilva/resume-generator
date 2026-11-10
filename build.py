@@ -72,7 +72,7 @@ FONTS = {
 }
 
 # Sections in their default order, and the date patterns for each style.
-SECTIONS = ("education", "projects", "experience", "skills")
+SECTIONS = ("education", "skills", "projects", "experience")
 SEMESTER = re.compile(r"^(Expected )?(Spring|Summer|Fall|Winter) \d{4}$")
 MONTH = re.compile(
     r"^(Expected )?(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec|"
@@ -155,9 +155,21 @@ def short_url(url):
     return url.rstrip("/")
 
 
+# The example handles nobody can own. They print as text, never as links.
+PLACEHOLDER_URL = re.compile(
+    r"^(github\.com/your-username|linkedin\.com/in/your-name)(?:[/?#]|$)"
+)
+
+
 def link(url, text):
-    """Wrap LaTeX text in a hyperlink to url, or return the text if url is blank."""
-    return rf"\href{{{esc_url(url)}}}{{{text}}}" if url else text
+    """Wrap LaTeX text in a hyperlink to url.
+
+    Returns the text alone if url is blank or is a placeholder such as
+    github.com/your-username.
+    """
+    if not url or PLACEHOLDER_URL.match(short_url(url).lower()):
+        return text
+    return rf"\href{{{esc_url(url)}}}{{{text}}}"
 
 
 # A Markdown-style inline link in bullet text: [text](url). The URL may hold
@@ -210,14 +222,19 @@ def check_date(value, style, where):
         )
 
 
-def date_range(start, end):
-    """Format a date range, using Present for a blank end and one date if equal."""
+def date_parts(start, end):
+    """Return the dates a range shows: Present for a blank end, one date if equal."""
     start, end = start or "", end or ""
     if start and not end:
         end = "Present"
     if not start or start == end:
-        return esc(start or end)
-    return f"{esc(start)} -- {esc(end)}"
+        return [start or end]
+    return [start, end]
+
+
+def date_range(start, end):
+    """Format a date range for LaTeX, joining two dates with an en dash."""
+    return " -- ".join(esc(d) for d in date_parts(start, end))
 
 
 def date_styles(data):
@@ -422,7 +439,9 @@ def header(h):
     ]
     contact = []
     if h.get("phone"):
-        digits = re.sub(r"[^\d+]", "", h["phone"])
+        # Dial only the number: drop a trailing extension such as "ext. 12".
+        number = re.split(r"(?i)\s*(?:ext\.?|x|#)\s*\d+\s*$", h["phone"])[0]
+        digits = re.sub(r"[^\d+]", "", number)
         contact.append(link(f"tel:{digits}", esc(h["phone"])))
     if h.get("email"):
         contact.append(link(f"mailto:{h['email']}", esc(h["email"])))
@@ -637,12 +656,22 @@ def expected_text(data):
     return [plain(x) for x in out if plain(x)]
 
 
+def expected_dates(data):
+    """Return every date and date range the PDF must contain."""
+    out = [e.get("gradDate") for e in shown(data.get("education"))]
+    for section in ("projects", "experience"):
+        for x in shown(data.get(section)):
+            out.append(" - ".join(date_parts(x.get("start"), x.get("end"))))
+    return [plain(x) for x in out if plain(x)]
+
+
 def check_text(pdf, data):
     """Return problems with the PDF's text layer, or [] if it reads cleanly.
 
     It extracts the text the way an applicant tracking system does, with
     pdftotext, and checks that every heading, header item, entry and bullet
-    is there in reading order, with no broken ligatures or unmapped glyphs.
+    is there in reading order, that every date is there, and that there are
+    no broken ligatures or unmapped glyphs.
     """
     result = subprocess.run(
         ["pdftotext", "-enc", "UTF-8", str(pdf), "-"],
@@ -665,6 +694,11 @@ def check_text(pdf, data):
             problems.append(f'out of reading order: "{want}"')
         else:
             problems.append(f'missing or garbled: "{want}"')
+    # Dates sit at the right margin, so their place in the text varies. Check
+    # only that each one is there.
+    for want in expected_dates(data):
+        if want not in text:
+            problems.append(f'missing or garbled date: "{want}"')
     return problems
 
 

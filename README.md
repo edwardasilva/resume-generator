@@ -2,7 +2,7 @@
 
 Turn one JSON file into a one-page PDF resume. You write the content in `resume.json`, and the script does the layout and fits it onto a single page.
 
-This project is a companion to [eeprep.com](https://eeprep.com). It was built for engineering students and follows the advice on [eeprep's resume page](https://eeprep.com/advice/resume/), but it works for any field. See a sample: [examples/Alex-Doe-Resume.pdf](examples/Alex-Doe-Resume.pdf).
+This project is a companion to [eeprep.com](https://eeprep.com). It was built for engineering students and follows the advice on [eeprep's resume page](https://eeprep.com/advice/resume/), but it works for any field.
 
 ## Download
 
@@ -20,7 +20,7 @@ Each example in `examples/` is a made-up resume and the PDF built from it, from 
 
 | File | Who it describes | PDF |
 | --- | --- | --- |
-| `alex.json` | The starting point. It matches the finished example on eeprep's resume page. The student graduates in 2027 and has two projects, a one-line job and two skill lines. Every tool in the skill lines appears in a bullet. `[X]` marks a number you measure. | [Alex-Doe-Resume.pdf](examples/Alex-Doe-Resume.pdf) |
+| `alex.json` | The starting point. It follows the finished example on eeprep's resume page. The student graduates in 2027 and has two projects, a one-line job and two skill lines. Every tool in the skill lines appears in a bullet. `[X]` marks a number you measure. | [Alex-Doe-Resume.pdf](examples/Alex-Doe-Resume.pdf) |
 | `first-year.json` | A first-year student with one class project, a one-line retail job and a few skills. The page has room left at the bottom. | [Alex-Doe-Resume-first-year.pdf](examples/Alex-Doe-Resume-first-year.pdf) |
 | `sophomore.json` | A second-year student with two projects, an electrical lead role in a robotics club and a one-line job. | [Alex-Doe-Resume-sophomore.pdf](examples/Alex-Doe-Resume-sophomore.pdf) |
 | `new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience and use the `times` font. | [Alex-Doe-Resume-new-grad.pdf](examples/Alex-Doe-Resume-new-grad.pdf) |
@@ -30,21 +30,21 @@ Each example in `examples/` is a made-up resume and the PDF built from it, from 
 
 JSON doesn't allow comments, so this section explains each field. A blank field (`""`) or an empty list (`[]`) is left out of the PDF. Text goes in quotes, `true` and `false` go without them, and lists such as `bullets` go in brackets, even with one item. The build stops and names any field with the wrong kind of value. It prints a note for any field name it doesn't read, such as a misspelled one, and for any section with content that `sectionOrder` leaves out.
 
-The phone, email, LinkedIn, GitHub and website in the header are links. The email opens a new message and the phone number dials. Any entry can also have a link:
+The phone, email, LinkedIn, GitHub and website in the header are links, except the example values `linkedin.com/in/your-name` and `github.com/your-username` (and any address under them), which print as plain text so they never point at a real account. Replace them with your own. The email opens a new message and the phone number dials. Any entry can also have a link:
 
 | Field | What to put | Example |
 | --- | --- | --- |
-| `url` | Optional on any education, project or experience entry. The school, project title or employer becomes a link, shown in the normal text color. To link a skill, coursework or activity item, write it as `{"name": "...", "url": "..."}`. Inside a bullet, `[text](url)` links the text. The URL may contain parentheses, as in `en.wikipedia.org/wiki/Buck_(converter)`. Links must be web addresses (`https://` is added if missing), `mailto:` or `tel:`. | `github.com/alex-doe-example/cubesat-buck-converter` |
+| `url` | Optional on any education, project or experience entry. The school, project title or employer becomes a link, shown in the normal text color. To link a skill, coursework or activity item, write it as `{"name": "...", "url": "..."}`. Inside a bullet, `[text](url)` links the text. The URL may contain parentheses, as in `en.wikipedia.org/wiki/Buck_(converter)`. Links must be web addresses (`https://` is added if missing), `mailto:` or `tel:`. | `github.com/your-username/cubesat-buck-converter` |
 
 ### `settings`
 
 | Field | What to put | Example |
 | --- | --- | --- |
-| `sectionOrder` | Order of the sections. Lead with your strongest one. A section left out of the list is left off the page. | `["education", "projects", "experience", "skills"]` |
+| `sectionOrder` | Order of the sections. Lead with your strongest one. A section left out of the list is left off the page. | `["education", "skills", "projects", "experience"]` |
 | `font` | `libertinus`, `times` or `arial`. Leave it out to use `libertinus`. | `"libertinus"` |
 | `dateStyle` | The date style for each section: `semester` (Fall 2025) or `month` (Sep 2025, Sept 2025 or September 2025; pick one spelling and keep it). Every date in a section must use that section's style. The build stops if one doesn't. A section left out uses `semester`. | `{"education": "semester", "projects": "semester", "experience": "semester"}` |
 
-Common orders: students with no engineering job usually go education, projects, experience, skills. Once you have an engineering internship, try experience first. Give every section the same date style, so the page never mixes Fall 2025 with Sep 2025.
+Common orders: students with no engineering job usually go education, skills, projects, experience. Skills stays right under Education in every order. Once you have an engineering internship, try experience first. Give every section the same date style, so the page never mixes Fall 2025 with Sep 2025.
 
 Acceptable fonts for `settings.font`:
 
@@ -61,8 +61,8 @@ Acceptable fonts for `settings.font`:
 | `name` | The name you want recruiters to use. It also fills the PDF's title (`Alex Doe Resume`) and author properties. | `Alex Doe` |
 | `phone` | Your phone number. No label such as "Cell:". | `(555) 555-0142` |
 | `email` | An address you check every day. A school address is fine. | `alex.doe@example.com` |
-| `linkedin` | Your profile URL without `https://`. | `linkedin.com/in/alex-doe-example` |
-| `github` | Only if it holds work you're proud of. | `github.com/alex-doe-example` |
+| `linkedin` | Your profile URL without `https://`. | `linkedin.com/in/your-name` |
+| `github` | Only if it holds work you're proud of. | `github.com/your-username` |
 | `website` | A personal site or portfolio, if you have one. | `example.com/~alex-doe` |
 | `location` | City and state. | `Springfield, ST` |
 | `relocate` | `true` adds "Willing to relocate". | `true` |
@@ -145,7 +145,7 @@ To look at the result, run `pdftoppm -png -r 80 Alex-Doe-Resume.pdf page` (it co
 
 ## Checking the text
 
-Applicant tracking systems read the PDF's text, not its look. When `pdftotext` is installed, each build extracts the text. Install poppler to get it, with `brew install poppler`, `sudo apt-get install poppler-utils` or `sudo dnf install poppler-utils`. The build checks that the name, contact items, section titles, entries and bullets all come out whole and in reading order, with no broken ligatures or unreadable glyphs. Problems print as a warning. Set `RESUME_TEXT_CHECK=strict` to make them an error. Words never break with a hyphen across lines, because a split word can't be found by a keyword search.
+Applicant tracking systems read the PDF's text, not its look. When `pdftotext` is installed, each build extracts the text. Install poppler to get it, with `brew install poppler`, `sudo apt-get install poppler-utils` or `sudo dnf install poppler-utils`. The build checks that the name, contact items, section titles, entries, bullets and dates all come out whole and in reading order, with no broken ligatures or unreadable glyphs. Problems print as a warning. Set `RESUME_TEXT_CHECK=strict` to make them an error. Words never break with a hyphen across lines, because a split word can't be found by a keyword search.
 
 ## Writing the content with an AI tool
 
@@ -155,11 +155,20 @@ If you draft `resume.json` with Claude Code, Cursor, or another coding agent, gi
 
 A referral helps more than a good resume. Before you apply, ask someone who knows your work for one. For more on resumes, referrals and applying for engineering jobs, see [eeprep.com](https://eeprep.com) and its [resume page](https://eeprep.com/advice/resume/).
 
+## Limits
+
+- The paper is US Letter. There is no A4 setting.
+- The resume is one page. If the content does not fit, the build stops. There is no second page.
+- The sections are `education`, `projects`, `experience` and `skills`, with those titles. You can reorder them in `settings.sectionOrder`, but you cannot add or rename one. Any other name stops the build with `unknown section`.
+- A job with `"engineering": false` prints as one line, and its bullets are left out.
+- The `libertinus` font covers Latin, Greek and Cyrillic. No font covers Chinese, Japanese or Korean. `times` and `arial` also lack Cyrillic and accented Greek letters. The build stops and names any character the font cannot draw.
+- `./run` installs missing tools only on Fedora, Debian, Ubuntu (including WSL) and macOS. On other systems, install Python and LuaLaTeX yourself.
+
 ## Contributing
 
 To suggest an idea or open a pull request, see [CONTRIBUTING](.github/CONTRIBUTING.md).
 
-`v0.1.0` is the public release. Tags are created only when Edward says so. Every merge is a squash merge.
+Only the repository owner cuts releases.
 
 To report a vulnerability, use GitHub's private vulnerability reporting on this repository. Do not open a public issue.
 

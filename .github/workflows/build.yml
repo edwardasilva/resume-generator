@@ -25,7 +25,10 @@ jobs:
   # One gate: lint, the release zip check, then the PDF builds. The protect-main ruleset
   # requires this job by its id, build. Keep it.
   build:
-    runs-on: ubuntu-latest
+    # Pinned on purpose. This is the oldest setup this job tests: Ubuntu 24.04 with
+    # TeX Live 2023 and Python 3.12. minimal-tex covers the newest TeX Live. When the
+    # README states a tested version, move this pin and that line together.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       # Depth 2 fetches a pull request's merge commit and its first parent, the base
@@ -60,7 +63,7 @@ jobs:
           test -f fonts/LibertinusSerif-Regular.otf
           test -f examples/alex.json
           test -f resume.json
-      # A pull request that changes only docs, such as CLAUDE.md or CONTRIBUTING.md,
+      # A pull request that changes only docs, such as CONTRIBUTING.md or an issue template,
       # skips the TeX build. The build job still reports, so the ruleset is
       # satisfied. Every other event builds.
       - name: Find what the pull request changes
@@ -74,7 +77,7 @@ jobs:
           files="$(git diff --name-only HEAD^1 HEAD)"
           printf '%s\n' "$files"
           if [ -n "$files" ] && ! printf '%s\n' "$files" | grep -Evq \
-            '^(CLAUDE\.md|AGENTS\.md|CONTRIBUTING\.md|\.github/(CONTRIBUTING\.md|ISSUE_TEMPLATE/.*|pull_request_template\.md))$'; then
+            '^\.github/(CONTRIBUTING\.md|ISSUE_TEMPLATE/.*|pull_request_template\.md)$'; then
             echo "code=false" >> "$GITHUB_OUTPUT"
             echo "Only docs changed, so the TeX build is skipped." | tee -a "$GITHUB_STEP_SUMMARY"
           else
@@ -188,17 +191,24 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: resumes
       - name: Create or update the GitHub release
         run: |
           assets=("resume-generator-${GITHUB_REF_NAME}.zip" "examples/Alex-Doe-Resume.pdf#Sample resume (Alex-Doe-Resume.pdf)")
+          notes=()
+          if [ -s .github/breaking-changes.md ]; then
+            notes=(--notes "$(cat .github/breaking-changes.md)")
+          fi
           if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release upload "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --clobber "${assets[@]}"
           else
             gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" \
-              --title "$GITHUB_REF_NAME" --generate-notes "${assets[@]}"
+              --title "$GITHUB_REF_NAME" --generate-notes "${notes[@]}" "${assets[@]}"
           fi
         env:
           GH_TOKEN: ${{ github.token }}
