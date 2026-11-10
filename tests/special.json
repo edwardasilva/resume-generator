@@ -1,0 +1,100 @@
+{
+  "settings": {
+    "font": "libertinus",
+    "dateStyle": {
+      "education": "semester",
+      "projects": "semester",
+      "experience": "semester"
+    },
+    "sectionOrder": [
+      "education",
+      "projects",
+      "experience",
+      "skills"
+    ]
+  },
+  "header": {
+    "name": "Alex Doe",
+    "phone": "(555) 555-0142",
+    "email": "alex_doe+jobs@example.com",
+    "linkedin": "linkedin.com/in/alex-doe-example",
+    "github": "github.com/alex-doe-example",
+    "website": "example.com/~alex_doe?a=1&b=2#top",
+    "location": "Springfield, ST",
+    "relocate": true
+  },
+  "education": [
+    {
+      "degree": "B.S. Electrical Engineering",
+      "gpa": "[X.XX]/4.00",
+      "school": "[University]",
+      "gradDate": "Expected Spring 2027",
+      "coursework": [
+        "Embedded Systems",
+        "Power Electronics",
+        "Digital Design"
+      ],
+      "activities": [
+        "IEEE student branch",
+        "Tau Beta Pi"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "title": "CubeSat Power Board",
+      "tools": [
+        "KiCad",
+        "LTspice"
+      ],
+      "start": "Fall 2025",
+      "end": "Spring 2026",
+      "bullets": [
+        "Escapes: R&D at 50% of $5 cost, item #3, snake_case, ~approx, 2^8, C:\\path, {braces}, a < b > c | d",
+        "Symbols: 10 kΩ ±5% pull-up, 2 µA, 25 °C, ≤ 1 mV, ≥ 3 dB, 2 × 4, 90° phase, λ/4, π, Δf, η = 92%",
+        "Accents: José Müller, Zürich, São Paulo, Gdańsk, Łódź, naïve café, Ångström, Dvořák",
+        "See [the Buck_(converter) page](en.wikipedia.org/wiki/Buck_(converter)) and [a_b](https://example.com/a_b%20c?x=1&y=2#f~g)"
+      ]
+    },
+    {
+      "title": "Bench Data Logger",
+      "tools": [
+        "STM32",
+        "C",
+        "Python"
+      ],
+      "start": "Spring 2025",
+      "end": "Spring 2025",
+      "bullets": [
+        "Wrote STM32 firmware in C to sample a 4-channel SPI ADC at [X] kHz and stream it to a Python logger",
+        "Moved UART writes to DMA after a logic analyzer showed dropped samples, cutting losses to [X]%"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "title": "Sales Associate",
+      "company": "[Retail store]",
+      "location": "",
+      "start": "Summer 2023",
+      "end": "Summer 2024",
+      "engineering": false,
+      "bullets": []
+    }
+  ],
+  "skills": {
+    "software": [
+      "KiCad",
+      "LTspice",
+      "C",
+      "Python"
+    ],
+    "hardwareLab": [
+      "STM32",
+      "Oscilloscope",
+      "Electronic load",
+      "Logic analyzer"
+    ],
+    "certifications": []
+  }
+}

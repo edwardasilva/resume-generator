@@ -15,6 +15,7 @@ fits on a single page. It uses only the Python standard library. Run it
 through ./run, which installs Python and TeX first if they are missing.
 """
 
+import difflib
 import html
 import json
 import os
@@ -102,15 +103,25 @@ class ResumeError(Exception):
     """A problem with the resume file or the LaTeX run, shown to the user."""
 
 
-def esc(text):
+def esc(text, start=True):
     """Escape text for LaTeX in a single pass.
 
     Runs of spaces, tabs and line breaks become one space, so a blank line
     pasted into a bullet can't start a new paragraph. Control characters are
     dropped. A no-break space is kept.
+
+    A straight double quote becomes an opening or closing curly quote, or
+    stays straight after a digit as an inch mark. start is False when the
+    text follows a link, so a quote at its start closes. Runs of hyphens and of
+    apostrophes stay as typed: LaTeX would otherwise join them into a dash or
+    a double quote, and a search for --yes would not find it.
     """
     text = re.sub(r"[ \t\n\r\f\v]+", " ", CONTROL.sub("", str(text or "")))
-    return TEX_RE.sub(lambda m: TEX_SPECIAL[m.group()], text)
+    text = TEX_RE.sub(lambda m: TEX_SPECIAL[m.group()], text)
+    text = re.sub(r"(?<=\d)\"", r"\\textquotedbl{}", text)
+    opening = r"(?:^|(?<=[ \u00a0(]))\"" if start else r"(?<=[ \u00a0(])\""
+    text = re.sub(opening, "\u201c", text).replace('"', "\u201d")
+    return re.sub(r"([-'])(?=\1)", r"\1\\kern0pt{}", text)
 
 
 def esc_url(url):
@@ -144,9 +155,21 @@ def short_url(url):
     return url.rstrip("/")
 
 
+# The example handles nobody can own. They print as text, never as links.
+PLACEHOLDER_URL = re.compile(
+    r"^(github\.com/your-username|linkedin\.com/in/your-name)(?:[/?#]|$)"
+)
+
+
 def link(url, text):
-    """Wrap LaTeX text in a hyperlink to url, or return the text if url is blank."""
-    return rf"\href{{{esc_url(url)}}}{{{text}}}" if url else text
+    """Wrap LaTeX text in a hyperlink to url.
+
+    Returns the text alone if url is blank or is a placeholder such as
+    github.com/your-username.
+    """
+    if not url or PLACEHOLDER_URL.match(short_url(url).lower()):
+        return text
+    return rf"\href{{{esc_url(url)}}}{{{text}}}"
 
 
 # A Markdown-style inline link in bullet text: [text](url). The URL may hold
@@ -158,9 +181,10 @@ def rich(text):
     """Escape bullet text, turning each [text](url) into a hyperlink."""
     text, out, last = str(text or ""), [], 0
     for m in INLINE_LINK.finditer(text):
-        out += [esc(text[last : m.start()]), link(m.group(2), esc(m.group(1)))]
+        before = esc(text[last : m.start()], last == 0)
+        out += [before, link(m.group(2), esc(m.group(1)))]
         last = m.end()
-    return "".join(out) + esc(text[last:])
+    return "".join(out) + esc(text[last:], last == 0)
 
 
 def present(items):
@@ -198,14 +222,19 @@ def check_date(value, style, where):
         )
 
 
-def date_range(start, end):
-    """Format a date range, using Present for a blank end and one date if equal."""
+def date_parts(start, end):
+    """Return the dates a range shows: Present for a blank end, one date if equal."""
     start, end = start or "", end or ""
     if start and not end:
         end = "Present"
     if not start or start == end:
-        return esc(start or end)
-    return f"{esc(start)} -- {esc(end)}"
+        return [start or end]
+    return [start, end]
+
+
+def date_range(start, end):
+    """Format a date range for LaTeX, joining two dates with an en dash."""
+    return " -- ".join(esc(d) for d in date_parts(start, end))
 
 
 def date_styles(data):
@@ -283,6 +312,7 @@ def check_field(value, kind, where):
             if isinstance(x, str) or x is None:
                 continue
             if kind == "items" and isinstance(x, dict):
+                note_unknown(x, ("name", "url"), f"{where}[{i}].")
                 for key in ("name", "url"):
                     check_field(x.get(key), "text", f"{where}[{i}].{key}")
                 continue
@@ -298,13 +328,39 @@ def check_object(value, where):
         raise ResumeError(f"{where} must be an object in braces, like {{...}}")
 
 
+def note_unknown(value, known, where=""):
+    """Print a note for each key of a JSON object that this tool doesn't read.
+
+    A misspelled key is otherwise skipped in silence, and what it holds never
+    reaches the page. The note suggests the closest known key, if one is near.
+    """
+    if not isinstance(value, dict):
+        return
+    lowered = {name.lower(): name for name in known}
+    for key in value:
+        if key in known:
+            continue
+        close = difflib.get_close_matches(key.lower(), lowered, n=1)
+        hint = f" Did you mean {lowered[close[0]]}?" if close else ""
+        print(
+            f"Note: {where}{key} isn't a field this tool reads.{hint}",
+            file=sys.stderr,
+        )
+
+
 def check_types(data):
-    """Check that every field has the type the layout expects."""
+    """Check that every field has the type the layout expects.
+
+    A key this tool doesn't read gets a note, not an error.
+    """
     if not isinstance(data, dict):
         raise ResumeError("The resume file must hold one object in braces, {...}")
+    note_unknown(data, ("settings", "header", *SECTIONS))
     settings = data.get("settings")
     check_object(settings, "settings")
     settings = settings or {}
+    note_unknown(settings, ("sectionOrder", "font", "dateStyle"), "settings.")
+    note_unknown(settings.get("dateStyle"), ENTRY_FIELDS, "settings.dateStyle.")
     check_field(settings.get("font"), "text", "settings.font")
     order = settings.get("sectionOrder")
     check_field(order, "lines", "settings.sectionOrder")
@@ -314,9 +370,11 @@ def check_types(data):
         if order.count(name) > 1:
             raise ResumeError(f'settings.sectionOrder lists "{name}" twice')
     check_object(data.get("header"), "header")
+    note_unknown(data.get("header"), HEADER_FIELDS, "header.")
     for key, kind in HEADER_FIELDS.items():
         check_field((data.get("header") or {}).get(key), kind, f"header.{key}")
     check_object(data.get("skills"), "skills")
+    note_unknown(data.get("skills"), SKILL_FIELDS, "skills.")
     for key, kind in SKILL_FIELDS.items():
         check_field((data.get("skills") or {}).get(key), kind, f"skills.{key}")
     for section, fields in ENTRY_FIELDS.items():
@@ -325,13 +383,36 @@ def check_types(data):
             raise ResumeError(f"{section} must be a list in brackets, like [{{...}}]")
         for i, entry in enumerate(entries or []):
             check_object(entry, f"{section}[{i}]")
+            note_unknown(entry, fields, f"{section}[{i}].")
             for key, kind in fields.items():
                 check_field((entry or {}).get(key), kind, f"{section}[{i}].{key}")
+
+
+def note_left_out(data):
+    """Print a note for each section with content that sectionOrder leaves out."""
+    order = (data.get("settings") or {}).get("sectionOrder")
+    if not order:
+        return
+    skills = data.get("skills") or {}
+    for section in SECTIONS:
+        if section in order:
+            continue
+        if section == "skills":
+            filled = any(present(skills.get(key)) for key in SKILL_FIELDS)
+        else:
+            filled = bool(shown(data.get(section)))
+        if filled:
+            print(
+                f"Note: {section} has content, but it's left off the page "
+                "because settings.sectionOrder doesn't list it.",
+                file=sys.stderr,
+            )
 
 
 def validate(data):
     """Check field types, the font, and each visible date against its style."""
     check_types(data)
+    note_left_out(data)
     font_name(data)
     styles = date_styles(data)
     for section in ("education", "projects", "experience"):
@@ -358,7 +439,9 @@ def header(h):
     ]
     contact = []
     if h.get("phone"):
-        digits = re.sub(r"[^\d+]", "", h["phone"])
+        # Dial only the number: drop a trailing extension such as "ext. 12".
+        number = re.split(r"(?i)\s*(?:ext\.?|x|#)\s*\d+\s*$", h["phone"])[0]
+        digits = re.sub(r"[^\d+]", "", number)
         contact.append(link(f"tel:{digits}", esc(h["phone"])))
     if h.get("email"):
         contact.append(link(f"mailto:{h['email']}", esc(h["email"])))
@@ -528,8 +611,7 @@ TEXT_PLAIN = str.maketrans(
 
 def plain(text):
     """Return text as a reader sees it: straight quotes, hyphens, single spaces."""
-    text = CONTROL.sub("", str(text or "")).replace("---", "-").replace("--", "-")
-    text = re.sub(r"``|''", '"', text).translate(TEXT_PLAIN)
+    text = CONTROL.sub("", str(text or "")).translate(TEXT_PLAIN)
     return " ".join(text.split())
 
 
@@ -574,12 +656,22 @@ def expected_text(data):
     return [plain(x) for x in out if plain(x)]
 
 
+def expected_dates(data):
+    """Return every date and date range the PDF must contain."""
+    out = [e.get("gradDate") for e in shown(data.get("education"))]
+    for section in ("projects", "experience"):
+        for x in shown(data.get(section)):
+            out.append(" - ".join(date_parts(x.get("start"), x.get("end"))))
+    return [plain(x) for x in out if plain(x)]
+
+
 def check_text(pdf, data):
     """Return problems with the PDF's text layer, or [] if it reads cleanly.
 
     It extracts the text the way an applicant tracking system does, with
     pdftotext, and checks that every heading, header item, entry and bullet
-    is there in reading order, with no broken ligatures or unmapped glyphs.
+    is there in reading order, that every date is there, and that there are
+    no broken ligatures or unmapped glyphs.
     """
     result = subprocess.run(
         ["pdftotext", "-enc", "UTF-8", str(pdf), "-"],
@@ -602,6 +694,11 @@ def check_text(pdf, data):
             problems.append(f'out of reading order: "{want}"')
         else:
             problems.append(f'missing or garbled: "{want}"')
+    # Dates sit at the right margin, so their place in the text varies. Check
+    # only that each one is there.
+    for want in expected_dates(data):
+        if want not in text:
+            problems.append(f'missing or garbled date: "{want}"')
     return problems
 
 

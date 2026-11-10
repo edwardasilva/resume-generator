@@ -17,7 +17,10 @@ pip install ruff==0.16.9
 ruff format
 ruff check
 ./run examples/alex.json
+bash tests/check.sh
 ```
+
+`tests/check.sh` needs LuaLaTeX and poppler-utils. If you change `run` or a script, also run `shellcheck` on it.
 
 If you change a file in `examples/`, commit its rebuilt PDF. Otherwise discard the rebuilt PDFs with `git restore examples/`. If `examples/Alex-Doe-Resume.pdf` changes, rebuild `examples/alex-doe-resume.png` with `pdftoppm -png -r 80 -singlefile examples/Alex-Doe-Resume.pdf examples/alex-doe-resume`.
 
