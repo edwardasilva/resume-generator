@@ -434,7 +434,9 @@ def header(h):
     ]
     contact = []
     if h.get("phone"):
-        digits = re.sub(r"[^\d+]", "", h["phone"])
+        # Dial only the number: drop a trailing extension such as "ext. 12".
+        number = re.split(r"(?i)\s*(?:ext\.?|x|#)\s*\d+\s*$", h["phone"])[0]
+        digits = re.sub(r"[^\d+]", "", number)
         contact.append(link(f"tel:{digits}", esc(h["phone"])))
     if h.get("email"):
         contact.append(link(f"mailto:{h['email']}", esc(h["email"])))
