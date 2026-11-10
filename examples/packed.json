@@ -127,7 +127,7 @@
       "bullets": [
         "Demodulated stereo FM in real time at 2.4 MS/s in GNU Radio on Linux and tested it on 6 local stations",
         "Cut CPU use 40% by decimating earlier and replacing 2 blocks with a NumPy polyphase filter",
-        "Measured 55 dB stereo separation with a test tone, 5 dB short of a commercial receiver on the same antenna"
+        "Measured stereo separation with a test tone and compared it with a commercial receiver on the same antenna"
       ]
     },
     {
