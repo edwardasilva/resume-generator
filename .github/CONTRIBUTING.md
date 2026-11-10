@@ -21,6 +21,10 @@ ruff check
 
 CI builds every file in `examples/` and fails if any PDF is not exactly one page. Merges are squash merges.
 
+## Releases
+
+Before cutting a release, run release-cut and land or close every `release-sweep` issue.
+
 ## Conduct
 
 Be kind and assume good intent. To report a problem with someone's behavior, use GitHub's Report content feature or message the repository owner in private.
