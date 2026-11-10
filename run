@@ -71,8 +71,8 @@ install_tools() {
   echo "Missing: $what. This will run:"
   echo "  $cmd"
   if [[ $assume_yes -ne 1 ]]; then
-    read -r -p "Install now? It uses sudo. [y/N] " answer
-    [[ "$answer" =~ ^[Yy]$ ]] || { echo "Not installed. Nothing was changed."; exit 1; }
+    read -r -p "Install now? It uses sudo. [y/N] " answer || answer=""
+    [[ "$answer" =~ ^[Yy]$ ]] || { echo "Not installed. Nothing was changed. Run ./run --yes to install without the question."; exit 1; }
   fi
   bash -c "$cmd"
   export PATH="/Library/TeX/texbin:$PATH"
@@ -97,8 +97,8 @@ if [[ ${#needed[@]} -gt 0 ]]; then
   echo "Missing LaTeX packages: ${needed[*]}. This will run:"
   echo "  $cmd"
   if [[ $assume_yes -ne 1 ]]; then
-    read -r -p "Install now? [y/N] " answer
-    [[ "$answer" =~ ^[Yy]$ ]] || { echo "Not installed. Nothing was changed."; exit 1; }
+    read -r -p "Install now? [y/N] " answer || answer=""
+    [[ "$answer" =~ ^[Yy]$ ]] || { echo "Not installed. Nothing was changed. Run ./run --yes to install without the question."; exit 1; }
   fi
   $cmd
 fi
