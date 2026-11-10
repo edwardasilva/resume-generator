@@ -433,10 +433,12 @@ def experience(data):
     """Return LaTeX lines for experience, with bullets only for engineering jobs."""
     out = []
     for x in shown(data.get("experience")):
+        title = esc(x.get("title"))
         if x.get("company"):
-            name = esc(x.get("title")) + ", " + link(x.get("url"), esc(x["company"]))
+            company = link(x.get("url"), esc(x["company"]))
+            name = ", ".join(p for p in (title, company) if p)
         else:
-            name = link(x.get("url"), esc(x.get("title")))
+            name = link(x.get("url"), title)
         place = f", {esc(x['location'])}" if x.get("location") else ""
         dates = date_range(x.get("start"), x.get("end"))
         out.append(rf"\entry{{\textbf{{{name}}}{place}}}{{{dates}}}")
