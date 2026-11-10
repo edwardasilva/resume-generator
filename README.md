@@ -157,6 +157,15 @@ If you draft `resume.json` with Claude Code, Cursor, or another coding agent, gi
 
 A referral helps more than a good resume. Before you apply, ask someone who knows your work for one. For more on resumes, referrals and applying for engineering jobs, see [eeprep.com](https://eeprep.com) and its [resume page](https://eeprep.com/advice/resume/).
 
+## Limits
+
+- The paper is US Letter. There is no A4 setting.
+- The resume is one page. If the content does not fit, the build stops. There is no second page.
+- The sections are `education`, `projects`, `experience` and `skills`, with those titles. You can reorder them in `settings.sectionOrder`, but you cannot add or rename one. Any other name stops the build with `unknown section`.
+- A job with `"engineering": false` prints as one line, and its bullets are left out.
+- The `libertinus` font covers Latin, Greek and Cyrillic. No font covers Chinese, Japanese or Korean. `times` and `arial` also lack Cyrillic and accented Greek letters. The build stops and names any character the font cannot draw.
+- `./run` installs missing tools only on Fedora, Debian, Ubuntu (including WSL) and macOS. On other systems, install Python and LuaLaTeX yourself.
+
 ## Contributing
 
 To suggest an idea or open a pull request, see [CONTRIBUTING](.github/CONTRIBUTING.md).
