@@ -4,8 +4,10 @@
 Usage: build.py [file.json]
 
 The default input is resume.json. The PDF is written next to the input file
-and named after the header name, so a resume for Taylor Doe in
-examples/new-grad.json becomes examples/Taylor-Doe-Resume.pdf.
+and named after the header name: resume.json becomes Alex-Doe-Resume.pdf.
+Any other input adds its file name, so examples/new-grad.json becomes
+examples/Alex-Doe-Resume-new-grad.pdf. examples/alex.json is the exception and
+keeps Alex-Doe-Resume.pdf.
 
 The script reads the JSON file, writes the LaTeX body and layout settings into
 build/, runs LuaLaTeX, and tries layouts from roomiest to tightest until one
@@ -55,6 +57,9 @@ EMPTY_LINES_NOTE = 3
 # A bullet whose last line fills less than this share of the line gets a
 # note. eeprep's page says a bullet fills one line or most of two.
 SHORT_LAST_LINE = 0.5
+
+# Input file names (without .json) that add nothing to the PDF name.
+PLAIN_STEMS = ("resume", "alex")
 
 # Fonts allowed in settings.font: font files in fonts/, loaded by path so the
 # build doesn't depend on the fonts installed on the system. The first one is
@@ -852,11 +857,19 @@ def report_text(pdf, data):
         sys.exit(1)
 
 
-def pdf_name(data):
-    """Return [Name]-Resume.pdf from the header name, or Resume.pdf without one."""
+def pdf_name(data, source):
+    """Return the PDF name: [Name]-Resume.pdf, or Resume.pdf without a name.
+
+    The input's file name is added ([Name]-Resume-[file].pdf) so two files for
+    one person don't overwrite each other. resume.json and alex.json add
+    nothing, because they are the main file and the starting example.
+    """
     name = str((data.get("header") or {}).get("name") or "")
     words = re.sub(r"[^\w]+", " ", name).split()
-    return "-".join(words + ["Resume"]) + ".pdf"
+    words.append("Resume")
+    if source.stem not in PLAIN_STEMS:
+        words += re.sub(r"[^\w]+", " ", source.stem).split()
+    return "-".join(words) + ".pdf"
 
 
 def main():
@@ -873,7 +886,7 @@ def main():
         sys.exit(f"{source.name} isn't valid JSON: {e}")
     try:
         validate(data)
-        output = source.with_name(pdf_name(data))
+        output = source.with_name(pdf_name(data, source))
         typeface = font_name(data)
         BUILD.mkdir(exist_ok=True)
         tex = body(data)

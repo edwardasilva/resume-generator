@@ -14,11 +14,11 @@
     ]
   },
   "header": {
-    "name": "Casey Doe",
+    "name": "Alex Doe",
     "phone": "(555) 555-0191",
-    "email": "casey.doe@example.com",
-    "linkedin": "linkedin.com/in/casey-doe-example",
-    "github": "github.com/casey-doe-example",
+    "email": "alex.doe@example.com",
+    "linkedin": "linkedin.com/in/alex-doe-example",
+    "github": "github.com/alex-doe-example",
     "location": "Hillcrest, ST",
     "relocate": true
   },
@@ -115,7 +115,7 @@
     },
     {
       "title": "Software-Defined Radio FM Receiver",
-      "url": "github.com/casey-doe-example/sdr_fm_receiver#readme",
+      "url": "github.com/alex-doe-example/sdr_fm_receiver#readme",
       "tools": [
         "Python",
         "GNU Radio",
