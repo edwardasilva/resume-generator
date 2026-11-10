@@ -893,6 +893,15 @@ def main():
             return
     except ResumeError as e:
         sys.exit(str(e))
+    except OSError as e:
+        # A folder that can't be written to, or a full disk.
+        sys.exit(f"Can't write {e.filename or 'the PDF'}: {e.strerror or e}")
+    except UnicodeEncodeError:
+        # A lone surrogate, such as "\ud800" in the JSON, can't be saved as UTF-8.
+        sys.exit(
+            f"{source.name} holds a character that isn't valid text. "
+            "Retype the field near it."
+        )
     end = measure(log, "END")
     lines = 1
     if end:
