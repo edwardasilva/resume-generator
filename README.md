@@ -4,8 +4,6 @@ Turn one JSON file into a one-page PDF resume. You write the content in `resume.
 
 This project is a companion to [eeprep.com](https://eeprep.com). It was built for engineering students and follows the advice on [eeprep's resume page](https://eeprep.com/advice/resume/), but it works for any field.
 
-[![Sample resume for Alex Doe](examples/alex-doe-resume.png)](examples/Alex-Doe-Resume.pdf)
-
 ## Download
 
 Get the latest zip from the [releases page](https://github.com/edwardasilva/resume-generator/releases/latest), unzip it, edit `resume.json` (see the field guide below) and run `./run`. It writes the PDF named after the `name` in `header`, such as `Alex-Doe-Resume.pdf`.
