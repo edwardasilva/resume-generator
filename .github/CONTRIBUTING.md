@@ -23,7 +23,7 @@ If you change a file in `examples/`, commit its rebuilt PDF. Otherwise discard t
 
 Every PDF in `examples/` must stay exactly one page. If you skip the checks, maintainers run them before merging.
 
-4. Open a pull request into `main` with a short description of what changed and why. That is all a pull request needs. An issue link is optional. Maintainers review the change. Merges are squash merges.
+4. Open a pull request into `main` with a short description of what changed and why. That is all a pull request needs. An issue link is optional. Maintainers review the change.
 
 ## Coding agents
 
@@ -35,7 +35,7 @@ Only the repository owner can start either workflow. Both work on a branch and o
 
 ## Releases
 
-Before cutting a release, run release-cut and land or close every `release-sweep` issue.
+Only the repository owner cuts releases.
 
 ## Conduct
 
