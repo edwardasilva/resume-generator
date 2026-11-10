@@ -135,7 +135,7 @@ The layout follows the rules on [eeprep's resume page](https://eeprep.com/advice
 
 `build.py` finds the largest text that fits. It starts at 11 pt text with 0.5 in margins, steps the text down to 10 pt while the margins stay at 0.5 in, and keeps the first layout that fits on one page. It then fills the page. Line spacing, section gaps and entry gaps grow together, in proportion, until the page is full. They go from compact (1.07 line spacing, 7 pt section gaps) up to roomy (1.15 and 10 pt). Spacing never shrinks below compact to fit more.
 
-If the page still has more than 3 empty lines at roomy spacing, the build notes it. eeprep's page counts empty space as wasted, so add a class project, lab work or a bullet instead. The build also notes any bullet whose second line fills less than half the line. Cut it to one line, or add a detail that fills most of the second.
+If the page still has more than 3 empty lines at roomy spacing, the build notes it. eeprep's page counts empty space as wasted, so add a class project, lab work or a bullet instead. The build also notes any wrapped bullet whose last line fills less than half the line. Cut the bullet by a line, or add a detail that fills most of the last one.
 
 If the resume doesn't fit at 10 pt, the build stops and says about how many lines to cut. Drop a coursework item first, then the weakest bullet, or add `"hide": true` to an older project.
 
