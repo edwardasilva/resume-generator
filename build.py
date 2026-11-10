@@ -6,8 +6,8 @@ Usage: build.py [file.json]
 The default input is resume.json. The PDF is written next to the input file
 and named after the header name: resume.json becomes Alex-Doe-Resume.pdf.
 Any other input adds its file name, so examples/new-grad.json becomes
-examples/Alex-Doe-Resume-new-grad.pdf. examples/alex.json is the exception and
-keeps Alex-Doe-Resume.pdf.
+examples/Alex-Doe-Resume-new-grad.pdf, and resume-firmware.json becomes
+Alex-Doe-Resume-firmware.pdf. A file named alex.json keeps Alex-Doe-Resume.pdf.
 
 The script reads the JSON file, writes the LaTeX body and layout settings into
 build/, runs LuaLaTeX, and tries layouts from roomiest to tightest until one
@@ -868,7 +868,8 @@ def pdf_name(data, source):
     words = re.sub(r"[^\w]+", " ", name).split()
     words.append("Resume")
     if source.stem not in PLAIN_STEMS:
-        words += re.sub(r"[^\w]+", " ", source.stem).split()
+        stem = re.sub(r"^resume[-_ ]+", "", source.stem, flags=re.I)
+        words += re.sub(r"[^\w]+", " ", stem).split()
     return "-".join(words) + ".pdf"
 
 
