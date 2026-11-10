@@ -167,7 +167,7 @@ To report a vulnerability, use GitHub's private vulnerability reporting on this 
 
 The repo has two licenses, one for content and one for code.
 
-Content is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (full text in [LICENSE-CONTENT](LICENSE-CONTENT)). You may share and adapt it if you credit "resume-generator contributors", link https://github.com/edwardasilva/resume-generator and link the license. Content means the example resumes and sample data in `examples/`, and the docs: `README.md` and the Markdown files in `.github/`.
+Content is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (full text in [LICENSE-CONTENT](LICENSE-CONTENT)). You may share and adapt it if you credit [resume-generator contributors](https://github.com/edwardasilva/resume-generator) and link the license. Content means the example resumes and sample data in `examples/`, and the docs: `README.md` and the Markdown files in `.github/`.
 
 Code is licensed under the [MIT License](LICENSE). Code means everything else, including `build.py`, `resume.tex`, `run`, `pyproject.toml`, and the scripts and workflows in `.github/`.
 
