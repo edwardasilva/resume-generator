@@ -19,6 +19,8 @@ ruff check
 ./run examples/alex.json
 ```
 
+If you change a file in `examples/`, commit its rebuilt PDF. Otherwise discard the rebuilt PDFs with `git restore examples/`.
+
 CI builds every file in `examples/` and fails if any PDF is not exactly one page. Merges are squash merges.
 
 ## Coding agents
