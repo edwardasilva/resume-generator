@@ -24,7 +24,7 @@ bash tests/check.sh
 
 If you change a file in `examples/`, commit its rebuilt PDF. Otherwise discard the rebuilt PDFs with `git restore examples/`. If `examples/Alex-Doe-Resume.pdf` changes, rebuild `examples/alex-doe-resume.png` with `pdftoppm -png -r 80 -singlefile examples/Alex-Doe-Resume.pdf examples/alex-doe-resume`.
 
-Every PDF in `examples/` must stay exactly one page. If you skip the checks, maintainers run them before merging.
+Every resume PDF in `examples/` must stay exactly one page. A CV PDF (`*-CV.pdf`) may take one or two, and `examples/Alex-Doe-CV.pdf` must stay exactly two. If you skip the checks, maintainers run them before merging.
 
 4. Open a pull request into `main` with a short description of what changed and why. That is all a pull request needs. An issue link is optional. Maintainers review the change.
 

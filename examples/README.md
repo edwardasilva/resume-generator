@@ -1,6 +1,6 @@
 # Examples
 
-This folder holds five made-up example resumes, each as a JSON source and the PDF built from it.
+This folder holds five made-up example resumes and one made-up two-page CV, each as a JSON source and the PDF built from it.
 
 | Example    | Source                             | PDF                                                              | Description                                                                                                                                                                                                                  |
 | ---------- | ---------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -9,5 +9,6 @@ This folder holds five made-up example resumes, each as a JSON source and the PD
 | Sophomore  | [sophomore.json](sophomore.json)   | [Alex-Doe-Resume-sophomore.pdf](Alex-Doe-Resume-sophomore.pdf)   | Alex Doe as a second-year electrical engineering student expected to graduate in Spring 2029, with two projects, an electrical lead role in a robotics club, and a one-line barista job.                                     |
 | New grad   | [new-grad.json](new-grad.json)     | [Alex-Doe-Resume-new-grad.pdf](Alex-Doe-Resume-new-grad.pdf)     | Alex Doe as a new graduate (Spring 2026) with two engineering internships, two projects, and certifications. Experience comes first, and the resume uses the Times font.                                                     |
 | Packed     | [packed.json](packed.json)         | [Alex-Doe-Resume-packed.pdf](Alex-Doe-Resume-packed.pdf)         | Alex Doe as a graduating student (Spring 2026) with three engineering roles, a one-line tutor job, three projects, and long skill lists, using the Arial font.                                                               |
+| CV         | [alex-cv.json](alex-cv.json)       | [Alex-Doe-CV.pdf](Alex-Doe-CV.pdf)                               | Alex Doe's two-page CV, set with `"document": "cv"`. It adds honors, scholarships, four jobs with bullets, four projects, certifications, activities, and organizations, with section titles and labels set in the JSON.      |
 
-To rebuild a PDF, from the repository root run `./run examples/alex.json`. The PDF is written next to the JSON file. The same command works for the other four files.
+To rebuild a PDF, from the repository root run `./run examples/alex.json`. The PDF is written next to the JSON file. The same command works for the other five files.

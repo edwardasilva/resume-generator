@@ -6,7 +6,7 @@ set -euo pipefail
 name="$1"
 rm -rf "$name" "$name.zip"
 mkdir "$name"
-cp -r run build.py resume.tex README.md LICENSE LICENSE-CONTENT examples fonts "$name/"
+cp -r run build.py resume.tex cv.tex README.md LICENSE LICENSE-CONTENT examples fonts "$name/"
 cp examples/alex.json "$name/resume.json"
 echo "$name" > "$name/VERSION"
 zip -qr "$name.zip" "$name"
