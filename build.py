@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a one-page PDF resume from a JSON file.
+"""Build a one-page PDF resume, or a two-page CV, from a JSON file.
 
 Usage: build.py [file.json]
 
@@ -9,9 +9,14 @@ Any other input adds its file name, so examples/new-grad.json becomes
 examples/Alex-Doe-Resume-new-grad.pdf, and resume-firmware.json becomes
 Alex-Doe-Resume-firmware.pdf. A file named alex.json keeps Alex-Doe-Resume.pdf.
 
+A file with "settings": {"document": "cv"} builds a CV instead, from cv.tex:
+up to two pages, every section and entry printed, and the extra sections for
+honors, scholarships, activities, organizations and certifications. It is
+named Alex-Doe-CV.pdf. Without that setting the file is a one-page resume.
+
 The script reads the JSON file, writes the LaTeX body and layout settings into
 build/, runs LuaLaTeX, and tries layouts from roomiest to tightest until one
-fits on a single page. It uses only the Python standard library. Run it
+fits within the page cap. It uses only the Python standard library. Run it
 through ./run, which installs Python and TeX first if they are missing.
 """
 
@@ -52,6 +57,9 @@ ENTRY_GAP = (6.3, 8.55)
 # Room left at the bottom of a filled page, in lines, so rounding can't push
 # the last line onto a second page.
 FILL_RESERVE = 0.5
+# How many times to build with less fill when the spacing that should fill the
+# pages pushes content onto one more page.
+FILL_TRIES = 4
 # A page with more than this many empty lines at the roomy spacing gets a
 # note: the resume needs more content, not more space.
 EMPTY_LINES_NOTE = 3
@@ -73,7 +81,38 @@ FONTS = {
 
 # Sections in their default order, and the date patterns for each style.
 SECTIONS = ("education", "skills", "projects", "experience")
+# A CV adds sections of plain records: a title, who gave it or where, a date
+# and optional bullets.
+RECORD_SECTIONS = (
+    "honors",
+    "scholarships",
+    "certifications",
+    "activities",
+    "organizations",
+)
+CV_SECTIONS = (
+    "education",
+    "honors",
+    "scholarships",
+    "experience",
+    "projects",
+    "skills",
+    "certifications",
+    "activities",
+    "organizations",
+)
+
+# The two kinds of document. template is the TeX file, and its name is also
+# the LaTeX job name, so a resume and a CV never share build files. cap is the
+# most pages the document may take. A CV also prints every entry, bullets on
+# any job included.
+DOCUMENTS = {
+    "resume": {"template": "resume.tex", "job": "resume", "cap": 1, "noun": "resume"},
+    "cv": {"template": "cv.tex", "job": "cv", "cap": 2, "noun": "CV"},
+}
+PAGE_WORDS = {1: "one page", 2: "two pages"}
 SEMESTER = re.compile(r"^(Expected )?(Spring|Summer|Fall|Winter) \d{4}$")
+YEAR = re.compile(r"^(Expected )?\d{4}$")
 MONTH = re.compile(
     r"^(Expected )?(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec|"
     r"January|February|March|April|June|July|August|September|October|November|"
@@ -213,9 +252,9 @@ def check_date(value, style, where):
     """Raise ResumeError if a date doesn't match its section's date style."""
     if not value or value == "Present":
         return
-    pattern = SEMESTER if style == "semester" else MONTH
+    pattern = {"semester": SEMESTER, "month": MONTH, "year": YEAR}[style]
     if not pattern.match(value):
-        example = "Fall 2025" if style == "semester" else "Sep 2025"
+        example = {"semester": "Fall 2025", "month": "Sep 2025", "year": "2025"}[style]
         raise ResumeError(
             f'{where}: "{value}" doesn\'t match the {style} date style '
             f'(like "{example}")'
@@ -245,11 +284,72 @@ def date_styles(data):
             'settings.dateStyle must be an object, like {"projects": "semester"}'
         )
     for section, style in styles.items():
-        if style not in ("semester", "month"):
+        if style not in ("semester", "month", "year"):
             raise ResumeError(
-                f'settings.dateStyle.{section} must be "semester" or "month"'
+                f'settings.dateStyle.{section} must be "semester", "month" or "year"'
             )
     return styles
+
+
+def is_cv(data):
+    """Return True if the file asks for a CV with settings.document."""
+    settings = data.get("settings") if isinstance(data, dict) else None
+    return isinstance(settings, dict) and settings.get("document") == "cv"
+
+
+def document(data):
+    """Return the DOCUMENTS entry for the file: the resume unless it is a CV."""
+    return DOCUMENTS["cv" if is_cv(data) else "resume"]
+
+
+def sections_of(data):
+    """Return the section names this kind of document knows, in default order."""
+    return CV_SECTIONS if is_cv(data) else SECTIONS
+
+
+# Default words printed in the PDF. A CV can replace them in settings.labels
+# and settings.sectionTitles; a resume always uses these.
+TITLES = {
+    "education": "Education",
+    "projects": "Projects",
+    "experience": "Experience",
+    "skills": "Skills",
+    "honors": "Honors and Awards",
+    "scholarships": "Scholarships",
+    "certifications": "Certifications",
+    "activities": "Activities",
+    "organizations": "Organizations",
+}
+LABELS = {
+    "gpa": "GPA",
+    "coursework": "Relevant coursework",
+    "activities": "Activities",
+    "honors": "Honors",
+    "thesis": "Thesis",
+    "software": "Software",
+    "hardwareLab": "Hardware/Lab",
+    "skillsCertifications": "Certifications",
+    "relocate": "Willing to relocate",
+}
+
+
+def settings_text(data, key, defaults):
+    """Return defaults with the CV's own words from settings[key] laid over."""
+    words = dict(defaults)
+    if is_cv(data):
+        given = (data.get("settings") or {}).get(key) or {}
+        words.update({k: v for k, v in given.items() if v})
+    return words
+
+
+def titles(data):
+    """Return the title of each section, from settings.sectionTitles in a CV."""
+    return settings_text(data, "sectionTitles", TITLES)
+
+
+def labels(data):
+    """Return the label words, from settings.labels in a CV."""
+    return settings_text(data, "labels", LABELS)
 
 
 def font_name(data):
@@ -294,6 +394,29 @@ HEADER_FIELDS = {
     "relocate": "flag",
 }
 SKILL_FIELDS = dict.fromkeys(("software", "hardwareLab", "certifications"), "items")
+# The fields a CV reads: the same entries as a resume, plus a few more on an
+# education entry, and the record sections.
+RECORD_FIELDS = {
+    **dict.fromkeys(
+        ("title", "organization", "location", "url", "date", "start", "end"), "text"
+    ),
+    "bullets": "lines",
+    "hide": "flag",
+}
+CV_FIELDS = {
+    **ENTRY_FIELDS,
+    "education": {
+        **ENTRY_FIELDS["education"],
+        **dict.fromkeys(("location", "thesis"), "text"),
+        "honors": "items",
+    },
+    **dict.fromkeys(RECORD_SECTIONS, RECORD_FIELDS),
+}
+
+
+def entry_fields(data):
+    """Return the entry fields of each section for this kind of document."""
+    return CV_FIELDS if is_cv(data) else ENTRY_FIELDS
 
 
 def check_field(value, kind, where):
@@ -355,17 +478,33 @@ def check_types(data):
     """
     if not isinstance(data, dict):
         raise ResumeError("The resume file must hold one object in braces, {...}")
-    note_unknown(data, ("settings", "header", *SECTIONS))
     settings = data.get("settings")
     check_object(settings, "settings")
     settings = settings or {}
-    note_unknown(settings, ("sectionOrder", "font", "dateStyle"), "settings.")
-    note_unknown(settings.get("dateStyle"), ENTRY_FIELDS, "settings.dateStyle.")
+    check_field(settings.get("document"), "text", "settings.document")
+    if settings.get("document") not in (None, "resume", "cv"):
+        raise ResumeError(
+            f'settings.document must be "resume" or "cv", not "{settings["document"]}"'
+        )
+    cv = is_cv(data)
+    fields = entry_fields(data)
+    note_unknown(data, ("settings", "header", *sections_of(data)))
+    own = ("document", "sectionOrder", "font", "dateStyle")
+    note_unknown(
+        settings, own + (("sectionTitles", "labels") if cv else ()), "settings."
+    )
+    note_unknown(settings.get("dateStyle"), fields, "settings.dateStyle.")
+    if cv:
+        for key, known in (("sectionTitles", TITLES), ("labels", LABELS)):
+            check_object(settings.get(key), f"settings.{key}")
+            note_unknown(settings.get(key), known, f"settings.{key}.")
+            for name, value in (settings.get(key) or {}).items():
+                check_field(value, "text", f"settings.{key}.{name}")
     check_field(settings.get("font"), "text", "settings.font")
     order = settings.get("sectionOrder")
     check_field(order, "lines", "settings.sectionOrder")
     for name in order or []:
-        if name not in SECTIONS:
+        if name not in sections_of(data):
             raise ResumeError(f'settings.sectionOrder: unknown section "{name}"')
         if order.count(name) > 1:
             raise ResumeError(f'settings.sectionOrder lists "{name}" twice')
@@ -377,14 +516,14 @@ def check_types(data):
     note_unknown(data.get("skills"), SKILL_FIELDS, "skills.")
     for key, kind in SKILL_FIELDS.items():
         check_field((data.get("skills") or {}).get(key), kind, f"skills.{key}")
-    for section, fields in ENTRY_FIELDS.items():
+    for section, section_fields in fields.items():
         entries = data.get(section)
         if entries is not None and not isinstance(entries, list):
             raise ResumeError(f"{section} must be a list in brackets, like [{{...}}]")
         for i, entry in enumerate(entries or []):
             check_object(entry, f"{section}[{i}]")
-            note_unknown(entry, fields, f"{section}[{i}].")
-            for key, kind in fields.items():
+            note_unknown(entry, section_fields, f"{section}[{i}].")
+            for key, kind in section_fields.items():
                 check_field((entry or {}).get(key), kind, f"{section}[{i}].{key}")
 
 
@@ -394,7 +533,7 @@ def note_left_out(data):
     if not order:
         return
     skills = data.get("skills") or {}
-    for section in SECTIONS:
+    for section in sections_of(data):
         if section in order:
             continue
         if section == "skills":
@@ -415,14 +554,22 @@ def validate(data):
     note_left_out(data)
     font_name(data)
     styles = date_styles(data)
-    for section in ("education", "projects", "experience"):
+    cv = is_cv(data)
+    dated = ("education", "projects", "experience") + (RECORD_SECTIONS if cv else ())
+    for section in dated:
         style = styles.get(section, "semester")
         for i, entry in enumerate(data.get(section) or []):
             if not entry or entry.get("hide"):
                 continue
-            for key in ("gradDate", "start", "end"):
+            if cv and entry.get("date") and (entry.get("start") or entry.get("end")):
+                raise ResumeError(
+                    f'{section}[{i}] has "date" and "start" or "end". '
+                    "Use one date, or a range, not both."
+                )
+            for key in ("gradDate", "start", "end") + (("date",) if cv else ()):
                 check_date(entry.get(key), style, f"{section}[{i}].{key}")
-            if section == "experience" and present(entry.get("bullets")):
+            # A CV prints the bullets of every job, so none is left out.
+            if section == "experience" and present(entry.get("bullets")) and not cv:
                 if not entry.get("engineering"):
                     print(
                         f"Note: experience[{i}] has bullets, but they're left out "
@@ -431,7 +578,7 @@ def validate(data):
                     )
 
 
-def header(h):
+def header(h, relocate="Willing to relocate"):
     """Return LaTeX lines for the centered name, contact line and status line."""
     out = [
         r"\begin{resumeheader}",
@@ -455,7 +602,7 @@ def header(h):
         )
     status = [
         esc(h.get("location")),
-        "Willing to relocate" if h.get("relocate") else "",
+        esc(relocate) if h.get("relocate") else "",
     ]
     status = [s for s in status if s]
     if status:
@@ -483,22 +630,31 @@ def bullets(items):
 def education(data):
     """Return LaTeX lines for the education entries."""
     out = []
+    cv, lab = is_cv(data), labels(data)
+    # A CV also prints the thesis and honors, and the school's location.
+    lists = [(lab["coursework"], "coursework"), (lab["activities"], "activities")]
+    if cv:
+        lists.insert(0, (lab["honors"], "honors"))
     for e in shown(data.get("education")):
         title = rf"\textbf{{{esc(e.get('degree'))}}}"
         if e.get("gpa"):
-            title += f", GPA {esc(e['gpa'])}"
+            title += f", {esc(lab['gpa'])} {esc(e['gpa'])}"
         school = link(e.get("url"), esc(e["school"])) if e.get("school") else ""
+        if cv and e.get("location"):
+            school = ", ".join(p for p in (school, esc(e["location"])) if p)
         date = esc(e.get("gradDate"))
+        if cv and not date:
+            # A CV also shows a range of dates for study that has no graduation.
+            date = date_range(e.get("start"), e.get("end"))
         if school:
             out.append(rf"\eduentry{{{title}}}{{{date}}}{{{school}}}")
         else:
             out.append(rf"\entry{{{title}}}{{{date}}}")
-        for label, key in (
-            ("Relevant coursework", "coursework"),
-            ("Activities", "activities"),
-        ):
+        if cv and e.get("thesis"):
+            out.append(rf"\textbf{{{esc(lab['thesis'])}:}} {esc(e['thesis'])}\par")
+        for label, key in lists:
             if present(e.get(key)):
-                out.append(rf"\textbf{{{label}:}} {joined(e[key])}\par")
+                out.append(rf"\textbf{{{esc(label)}:}} {joined(e[key])}\par")
         out.append(r"\entrygap")
     return out
 
@@ -530,7 +686,8 @@ def experience(data):
         place = f", {esc(x['location'])}" if x.get("location") else ""
         dates = date_range(x.get("start"), x.get("end"))
         out.append(rf"\entry{{\textbf{{{name}}}{place}}}{{{dates}}}")
-        if x.get("engineering"):
+        # A resume prints bullets only for engineering jobs. A CV prints all.
+        if x.get("engineering") or is_cv(data):
             out += bullets(x.get("bullets"))
         out.append(r"\entrygap")
     return out
@@ -538,17 +695,44 @@ def experience(data):
 
 def skills(data):
     """Return one LaTeX line for each non-empty skill group."""
-    s = data.get("skills") or {}
+    s, lab = data.get("skills") or {}, labels(data)
     groups = (
-        ("Software", "software"),
-        ("Hardware/Lab", "hardwareLab"),
-        ("Certifications", "certifications"),
+        (lab["software"], "software"),
+        (lab["hardwareLab"], "hardwareLab"),
+        (lab["skillsCertifications"], "certifications"),
     )
     return [
-        rf"\textbf{{{label}:}} {joined(s.get(key))}\par"
+        rf"\textbf{{{esc(label)}:}} {joined(s.get(key))}\par"
         for label, key in groups
         if present(s.get(key))
     ]
+
+
+def records(section):
+    """Return the renderer for a CV section of plain records.
+
+    Each record is a bold title, then who gave it and where, with the date at
+    the right and optional bullets below. The date is one value in "date", or a
+    range in "start" and "end".
+    """
+
+    def render(data):
+        out = []
+        for r in shown(data.get(section)):
+            title = link(r.get("url"), esc(r.get("title"))) if r.get("title") else ""
+            parts = [rf"\textbf{{{title}}}"] if title else []
+            parts += [esc(r[k]) for k in ("organization", "location") if r.get(k)]
+            dates = (
+                esc(r["date"])
+                if r.get("date")
+                else date_range(r.get("start"), r.get("end"))
+            )
+            out.append(rf"\entry{{{', '.join(parts)}}}{{{dates}}}")
+            out += bullets(r.get("bullets"))
+            out.append(r"\entrygap")
+        return out
+
+    return render
 
 
 RENDER = {
@@ -556,39 +740,36 @@ RENDER = {
     "projects": projects,
     "experience": experience,
     "skills": skills,
-}
-TITLES = {
-    "education": "Education",
-    "projects": "Projects",
-    "experience": "Experience",
-    "skills": "Skills",
+    **{name: records(name) for name in RECORD_SECTIONS},
 }
 
 
 def metadata(data):
     """Return a hypersetup line for the PDF's document properties.
 
-    The title is "<name> Resume" and the author is the name, as eeprep's
-    resume page suggests. The subject is "Resume". A blank name leaves out the
-    title and author.
+    The title is "<name> Resume" (or "<name> CV") and the author is the name,
+    as eeprep's resume page suggests. The subject is "Resume" or "Curriculum
+    Vitae". A blank name leaves out the title and author.
     """
     name = esc((data.get("header") or {}).get("name"))
-    fields = [("pdfsubject", "Resume")]
+    noun, subject = ("CV", "Curriculum Vitae") if is_cv(data) else ("Resume",) * 2
+    fields = [("pdfsubject", subject)]
     if name:
-        fields = [("pdftitle", f"{name} Resume"), ("pdfauthor", name)] + fields
+        fields = [("pdftitle", f"{name} {noun}"), ("pdfauthor", name)] + fields
     return [r"\hypersetup{" + ", ".join(f"{k}={{{v}}}" for k, v in fields) + "}"]
 
 
 def body(data):
     """Return the LaTeX body: PDF properties, the header, then each section."""
-    out = metadata(data) + header(data.get("header") or {})
-    order = (data.get("settings") or {}).get("sectionOrder") or list(SECTIONS)
+    lab, words = labels(data), titles(data)
+    out = metadata(data) + header(data.get("header") or {}, lab["relocate"])
+    order = (data.get("settings") or {}).get("sectionOrder") or list(sections_of(data))
     for name in order:
         lines = RENDER[name](data)
         if lines:
             if lines[-1] == r"\entrygap":
                 lines.pop()
-            out += [rf"\resumesection{{{TITLES[name]}}}"] + lines
+            out += [rf"\resumesection{{{esc(words[name])}}}"] + lines
     return "\n".join(out) + "\n"
 
 
@@ -618,12 +799,13 @@ def plain(text):
 def expected_text(data):
     """Return the strings the PDF must contain, in reading order."""
     out = []
+    cv, lab, words = is_cv(data), labels(data), titles(data)
     h = data.get("header") or {}
     out.append(h.get("name"))
     out += [h.get("phone"), h.get("email")]
     out += [short_url(h[k]) for k in ("linkedin", "github", "website") if h.get(k)]
     out.append(h.get("location"))
-    out.append("Willing to relocate" if h.get("relocate") else "")
+    out.append(lab["relocate"] if h.get("relocate") else "")
 
     def names(items):
         return [x.get("name") if isinstance(x, dict) else x for x in present(items)]
@@ -631,13 +813,16 @@ def expected_text(data):
     def lines(items):
         return [INLINE_LINK.sub(r"\1", str(b)) for b in present(items)]
 
-    order = (data.get("settings") or {}).get("sectionOrder") or list(SECTIONS)
+    order = (data.get("settings") or {}).get("sectionOrder") or list(sections_of(data))
     for name in order:
         before = len(out)
         if name == "education":
             for e in shown(data.get("education")):
-                gpa = f", GPA {e['gpa']}" if e.get("gpa") else ""
+                gpa = f", {lab['gpa']} {e['gpa']}" if e.get("gpa") else ""
                 out += [f"{e.get('degree') or ''}{gpa}", e.get("school")]
+                if cv:
+                    out += [e.get("location"), e.get("thesis")]
+                    out += names(e.get("honors"))
                 out += names(e.get("coursework")) + names(e.get("activities"))
         elif name == "projects":
             for p in shown(data.get("projects")):
@@ -646,22 +831,35 @@ def expected_text(data):
         elif name == "experience":
             for x in shown(data.get("experience")):
                 out += [x.get("title"), x.get("company"), x.get("location")]
-                if x.get("engineering"):
+                if x.get("engineering") or cv:
                     out += lines(x.get("bullets"))
         elif name == "skills":
             for key in ("software", "hardwareLab", "certifications"):
                 out += names((data.get("skills") or {}).get(key))
+        elif name in RECORD_SECTIONS:
+            for r in shown(data.get(name)):
+                out += [r.get("title"), r.get("organization"), r.get("location")]
+                out += lines(r.get("bullets"))
         if any(out[before:]):
-            out.insert(before, TITLES[name])
+            out.insert(before, words[name])
     return [plain(x) for x in out if plain(x)]
 
 
 def expected_dates(data):
     """Return every date and date range the PDF must contain."""
-    out = [e.get("gradDate") for e in shown(data.get("education"))]
-    for section in ("projects", "experience"):
+    cv = is_cv(data)
+    out = []
+    for e in shown(data.get("education")):
+        if cv and not e.get("gradDate"):
+            out.append(" - ".join(date_parts(e.get("start"), e.get("end"))))
+        else:
+            out.append(e.get("gradDate"))
+    for section in ("projects", "experience") + (RECORD_SECTIONS if cv else ()):
         for x in shown(data.get(section)):
-            out.append(" - ".join(date_parts(x.get("start"), x.get("end"))))
+            if cv and x.get("date"):
+                out.append(x["date"])
+            else:
+                out.append(" - ".join(date_parts(x.get("start"), x.get("end"))))
     return [plain(x) for x in out if plain(x)]
 
 
@@ -734,13 +932,13 @@ def settings(typeface, font, margin, fill=0.0):
     )
 
 
-def compile_once(typeface, font, margin, fill=0.0):
+def compile_once(doc, typeface, font, margin, fill=0.0):
     """Build the PDF at one layout and return the page count and the log text."""
     (BUILD / "settings.tex").write_text(
         settings(typeface, font, margin, fill), encoding="utf-8"
     )
     env = dict(os.environ, SOURCE_DATE_EPOCH="0", FORCE_SOURCE_DATE="1")
-    log_file = BUILD / "resume.log"
+    log_file = BUILD / f"{doc['job']}.log"
     # A log left from an earlier run would hide why this one failed.
     log_file.unlink(missing_ok=True)
     try:
@@ -753,7 +951,7 @@ def compile_once(typeface, font, margin, fill=0.0):
                 # escape off keeps it that way whatever the TeX config says.
                 "-no-shell-escape",
                 "-output-directory=build",
-                "resume.tex",
+                doc["template"],
             ],
             cwd=ROOT,
             env=env,
@@ -772,16 +970,16 @@ def compile_once(typeface, font, margin, fill=0.0):
         )
     log = log_file.read_text(encoding="utf-8", errors="replace")
     if result.returncode != 0:
-        raise ResumeError(latex_error(log))
+        raise ResumeError(latex_error(log, log_file))
     pages = re.search(r"Output written on .*?\((\d+) pages?", log, re.S)
     if not pages:
         raise ResumeError(
-            "The resume has nothing to print. Fill in at least the header name."
+            f"The {doc['noun']} has nothing to print. Fill in at least the header name."
         )
     return int(pages.group(1)), log
 
 
-def latex_error(log):
+def latex_error(log, log_file):
     """Return a short message about a failed LaTeX run, from its first error."""
     lines = log.splitlines()
     first = next((i for i, x in enumerate(lines) if x.startswith("!")), None)
@@ -797,11 +995,11 @@ def latex_error(log):
         package = re.search(r"File `([^']+)\.sty'", error)
         name = package.group(1) if package else "the missing package"
         hint = f"Install {name}, for example with: tlmgr install {name}"
-    return f"LaTeX failed: {error}\n{hint}\nThe full log is in {BUILD / 'resume.log'}"
+    return f"LaTeX failed: {error}\n{hint}\nThe full log is in {log_file}"
 
 
 def measure(log, key):
-    """Read a measurement written by resume.tex from the log.
+    """Read a measurement written by resume.tex or cv.tex from the log.
 
     Returns (page, used, goal, line) in points, or None if it is missing.
     """
@@ -813,58 +1011,65 @@ def measure(log, key):
     return (int(m.group(1)), *map(float, m.groups()[1:])) if m else None
 
 
-def overflow(end):
-    """Return how many points of content don't fit on page 1 (negative: room).
+def overflow(end, cap=1):
+    """Return how many points of content don't fit in cap pages (negative: room).
 
-    The measurement can come before or after LaTeX breaks the page: on page 1
-    the overflow is used minus goal, and on page 2 it's what landed there.
-    used + (page - 2) * goal covers both.
+    The measurement can come before or after LaTeX breaks the page: on the last
+    page the overflow is used minus goal, and on the page after it's what landed
+    there. used + (page - cap - 1) * goal covers both, and an earlier page too.
     """
     page, used, goal, _ = end
-    return used + (page - 2) * goal
+    return used + (page - cap - 1) * goal
 
 
-def fit(typeface):
-    """Find the roomiest layout that fits on one page, then fill the page.
+def fit(doc, typeface):
+    """Find the roomiest layout that fits the page cap, then fill the pages.
 
-    Returns (font, margin, fill, free lines), or None and the log of the
-    tightest try when nothing fits.
+    Returns (font, margin, fill, free lines, pages), or None and the log of
+    the tightest try when nothing fits.
     """
     for font, margin in LAYOUTS:
-        pages, log = compile_once(typeface, font, margin)
-        if pages == 1:
-            return (font, margin, *fill_page(typeface, font, margin, log)), log
+        pages, log = compile_once(doc, typeface, font, margin)
+        if pages <= doc["cap"]:
+            fill, free = fill_page(doc, typeface, font, margin, log, pages)
+            return (font, margin, fill, free, pages), log
     return None, log
 
 
-def fill_page(typeface, font, margin, compact_log):
-    """Grow the spacing to fill a page that fits, and return (fill, free lines).
+def fill_page(doc, typeface, font, margin, compact_log, pages):
+    """Grow the spacing to fill the used pages, and return (fill, free lines).
 
-    Line breaks don't depend on vertical spacing, so the page's height grows in
-    a straight line with fill. One build at the roomy end gives the slope, and
-    one more lands on a full page.
+    pages is how many pages the compact layout takes. The fill never adds a
+    page, so a CV that fits on one page stays on one.
+
+    Line breaks don't depend on vertical spacing, so the height of the pages
+    grows in a straight line with fill. One build at the roomy end gives the
+    slope, and one more lands on full pages. A page break can still move when
+    the spacing grows, so a try that adds a page is retried with less fill.
     """
     compact = measure(compact_log, "END")
     if not compact:
         return 0.0, 0.0
     line = compact[3]
     reserve = FILL_RESERVE * line
-    room = -overflow(compact)
+    room = -overflow(compact, pages)
     if room <= reserve:
         return 0.0, room / line
-    pages, log = compile_once(typeface, font, margin, 1.0)
+    roomy_pages, log = compile_once(doc, typeface, font, margin, 1.0)
     roomy = measure(log, "END")
-    if pages == 1 and roomy and -overflow(roomy) >= reserve:
-        return 1.0, -overflow(roomy) / line
+    if roomy_pages == pages and roomy and -overflow(roomy, pages) >= reserve:
+        return 1.0, -overflow(roomy, pages) / line
     # How much room the full step from compact to roomy takes up.
-    slope = room + overflow(roomy) if roomy else 0.0
+    slope = room + overflow(roomy, pages) if roomy else 0.0
     fill = min(1.0, (room - reserve) / slope) if slope > 0 else 0.0
-    pages, log = compile_once(typeface, font, margin, fill)
-    end = measure(log, "END")
-    if pages != 1 or not end:
-        compile_once(typeface, font, margin)
-        return 0.0, room / line
-    return fill, -overflow(end) / line
+    for _ in range(FILL_TRIES if fill > 0 else 0):
+        built, log = compile_once(doc, typeface, font, margin, fill)
+        end = measure(log, "END")
+        if built <= pages and end:
+            return fill, -overflow(end, pages) / line
+        fill *= 0.75
+    compile_once(doc, typeface, font, margin)
+    return 0.0, room / line
 
 
 def short_bullets(pdf, margin):
@@ -963,6 +1168,15 @@ def pdf_name(data, source):
     """
     name = str((data.get("header") or {}).get("name") or "")
     words = re.sub(r"[^\w]+", " ", name).split()
+    if is_cv(data):
+        # [Name]-CV.pdf. The words "cv" and "resume" in the file name add
+        # nothing, so alex-cv.json and cv.json both write [Name]-CV.pdf.
+        words.append("CV")
+        stem = re.sub(r"[^\w]+", " ", source.stem).split()
+        stem = [w for w in stem if w.lower() not in ("cv", "resume")]
+        if stem != ["alex"]:
+            words += stem
+        return "-".join(words) + ".pdf"
     words.append("Resume")
     if source.stem not in PLAIN_STEMS:
         stem = re.sub(r"^resume[-_ ]+", "", source.stem, flags=re.I)
@@ -984,12 +1198,13 @@ def main():
         sys.exit(f"{source.name} isn't valid JSON: {e}")
     try:
         validate(data)
+        doc = document(data)
         output = source.with_name(pdf_name(data, source))
         typeface = font_name(data)
         BUILD.mkdir(exist_ok=True)
         tex = body(data)
         (BUILD / "body.tex").write_text(tex, encoding="utf-8")
-        layout, log = fit(typeface)
+        layout, log = fit(doc, typeface)
         lost = sorted(
             set(
                 re.findall(
@@ -1005,10 +1220,11 @@ def main():
                 "or see the limits in the README."
             )
         if layout:
-            font, margin, fill, free = layout
-            shutil.copy(BUILD / "resume.pdf", output)
+            font, margin, fill, free, pages = layout
+            shutil.copy(BUILD / f"{doc['job']}.pdf", output)
+            count = f"{pages} page{'s' if pages != 1 else ''}"
             print(
-                f"Wrote {output.name} (1 page, {typeface}, {font:g} pt text, "
+                f"Wrote {output.name} ({count}, {typeface}, {font:g} pt text, "
                 f"{margin:g} in margins, line spacing "
                 f"{grow(LINE_SPACING, fill):.2f}, section gap "
                 f"{grow(SECTION_GAP, fill):.1f} pt)."
@@ -1030,13 +1246,18 @@ def main():
     end = measure(log, "END")
     lines = 1
     if end:
-        lines = max(1, round(overflow(end) / end[3] + 0.5))
+        lines = max(1, round(overflow(end, doc["cap"]) / end[3] + 0.5))
     font, margin = LAYOUTS[-1]
+    advice = "Try dropping a coursework item first, then a bullet."
+    if doc["cap"] > 1:
+        advice = (
+            'A CV prints everything in the file, so add "hide": true to the '
+            "weakest entry, or cut a bullet."
+        )
     sys.exit(
-        f"{source.name} doesn't fit on one page, even at {font:g} pt with "
-        f"{margin:g} in margins.\n"
-        f"Cut about {lines} line(s). "
-        "Try dropping a coursework item first, then a bullet."
+        f"{source.name} doesn't fit on {PAGE_WORDS[doc['cap']]}, even at "
+        f"{font:g} pt with {margin:g} in margins.\n"
+        f"Cut about {lines} line(s). {advice}"
     )
 
 

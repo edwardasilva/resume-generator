@@ -6,3 +6,7 @@ build/
 /Resume-*.pdf
 __pycache__/
 .claude/
+/*-CV.pdf
+/*-CV-*.pdf
+/CV.pdf
+/CV-*.pdf

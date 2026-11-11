@@ -36,7 +36,7 @@ ruff format
 ruff check
 ```
 
-Run `shellcheck` on `run` and `.github/check-pdfs.sh` if you touch either script. CI builds every file in `examples/` and fails if any PDF is not exactly one page.
+Run `shellcheck` on `run` and `.github/check-pdfs.sh` if you touch either script. CI builds every file in `examples/` and fails if any resume PDF is not exactly one page. A CV PDF (`*-CV.pdf`) may be one or two pages.
 
 ## Secrets
 

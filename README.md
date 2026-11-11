@@ -5,7 +5,7 @@
 
 # resume-generator
 
-Turn one JSON file into a one-page PDF resume. You write the content in `resume.json`, and the script does the layout and fits it onto a single page.
+Turn one JSON file into a one-page PDF resume. You write the content in `resume.json`, and the script does the layout and fits it onto a single page. A file with `"document": "cv"` in its settings builds a CV of up to two pages instead (see [Building a CV](#building-a-cv)).
 
 This project is a companion to [eeprep.com](https://eeprep.com). It was built for engineering students and follows the advice on [eeprep's resume page](https://eeprep.com/advice/resume/), but it works for any field.
 
@@ -32,6 +32,7 @@ Each example in `examples/` is a made-up resume and the PDF built from it, from 
 | `sophomore.json` | A second-year student with two projects, an electrical lead role in a robotics club and a one-line job. | [Alex-Doe-Resume-sophomore.pdf](examples/Alex-Doe-Resume-sophomore.pdf) |
 | `new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience and use the `times` font. | [Alex-Doe-Resume-new-grad.pdf](examples/Alex-Doe-Resume-new-grad.pdf) |
 | `packed.json` | A graduating student with three engineering roles, a one-line job, three projects and long skill lists, in the `arial` font. The script tightens it to fit. | [Alex-Doe-Resume-packed.pdf](examples/Alex-Doe-Resume-packed.pdf) |
+| `alex-cv.json` | A two-page CV, not a resume. The same student with honors, scholarships, four jobs with bullets, four projects, certifications, activities and organizations. | [Alex-Doe-CV.pdf](examples/Alex-Doe-CV.pdf) |
 
 ## Field guide
 
@@ -126,6 +127,33 @@ The build prints every name as you write it and never changes capitalization, so
 
 Put every listed skill in a bullet or a project's `tools`. Leave out soft skills such as "communication". Show them in the bullets instead.
 
+## Building a CV
+
+A CV is a second kind of document built from the same kind of JSON file. Add `"document": "cv"` to `settings` and run `./run` on the file, as in `./run examples/alex-cv.json`. It writes `[Name]-CV.pdf` next to the file (a `cv` or `resume` in the file name adds nothing, so `alex-cv.json` writes `Alex-Doe-CV.pdf`, and `firmware-cv.json` writes `Alex-Doe-CV-firmware.pdf`). `settings.document` is `"resume"` when left out, and the one-page resume works as before. The CV has its own template, `cv.tex`.
+
+What differs from the resume:
+
+- **Two pages at most.** The build uses the same steps as the resume, 11 pt text down to 10 pt, but allows two pages. If the CV still doesn't fit at 10 pt, the build stops and says about how many lines to cut. If it fits with room left, the spacing grows until the used pages are full, and a CV that fits on one page stays on one.
+- **Everything in the file prints.** Nothing is dropped to make it fit. An entry with `"hide": true`, and a section that `sectionOrder` leaves out, are the only things left off. A job prints its bullets whether or not `engineering` is `true`.
+- **More sections.** The CV reads `education`, `experience`, `projects` and `skills` as the resume does, plus `honors`, `scholarships`, `certifications`, `activities` and `organizations`. An education entry also takes `location`, `thesis` and `honors` (a list). Without `sectionOrder`, the sections come in this order: education, honors, scholarships, experience, projects, skills, certifications, activities, organizations.
+- **Titles and labels come from the file.** `settings.sectionTitles` renames a section, such as `{"honors": "Honors and Awards"}`, and `settings.labels` changes the words before a list or a value: `gpa`, `coursework`, `activities`, `honors`, `thesis`, `software`, `hardwareLab`, `skillsCertifications` and `relocate`. A name left out keeps its default.
+- **A year date style.** `settings.dateStyle` also accepts `year` (2025), which suits honors, scholarships and certifications.
+
+The new sections are lists of records with the same fields:
+
+| Field | What to put | Example |
+| --- | --- | --- |
+| `title` | The name of the honor, scholarship, certification, activity or role. | `Example Foundation Engineering Scholarship` |
+| `organization` | Who gave it, or where it took place. | `Example Foundation` |
+| `location` | City and state, or blank. | `Springfield, ST` |
+| `date` | One date, in the section's date style. | `2026` |
+| `start`, `end` | A date range instead of `date`. A blank `end` or `Present` means ongoing. | `Fall 2024`, `Present` |
+| `url` | Makes the title a link. | `example.org/scholarship` |
+| `bullets` | Optional lines of detail. | |
+| `hide` | `true` leaves the record out. | |
+
+The text check, the notes about short bullets, the fonts and the link rules work as for the resume.
+
 ## Writing good bullets
 
 Start with a past-tense verb, say what you built or changed, and end with a result you measured:
@@ -165,9 +193,9 @@ A referral helps more than a good resume. Before you apply, ask someone who know
 ## Limits
 
 - The paper is US Letter. There is no A4 setting.
-- The resume is one page. If the content does not fit, the build stops. There is no second page.
-- The sections are `education`, `projects`, `experience` and `skills`, with those titles. You can reorder them in `settings.sectionOrder`, but you cannot add or rename one. Any other name stops the build with `unknown section`.
-- A job with `"engineering": false` prints as one line, and its bullets are left out.
+- The resume is one page. If the content does not fit, the build stops. There is no second page. A CV is the exception: it may take two, and no more.
+- The resume's sections are `education`, `projects`, `experience` and `skills`, with those titles. You can reorder them in `settings.sectionOrder`, but you cannot add or rename one. Any other name stops the build with `unknown section`. A CV has the five more sections above, and can rename them.
+- In a resume, a job with `"engineering": false` prints as one line, and its bullets are left out. A CV prints them.
 - The `libertinus` font covers Latin, Greek and Cyrillic. No font covers Chinese, Japanese or Korean. `times` and `arial` also lack Cyrillic and accented Greek letters. The build stops and names any character the font cannot draw.
 - `./run` installs missing tools only on Fedora, Debian, Ubuntu (including WSL) and macOS. On other systems, install Python and LuaLaTeX yourself.
 
@@ -187,6 +215,6 @@ Content is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.
 
 A resume you build with this tool, including one started from an example, is yours and needs no credit.
 
-Code is licensed under the [MIT License](LICENSE). Code means everything else, including `build.py`, `resume.tex`, `run`, `pyproject.toml`, and the scripts and workflows in `.github/`.
+Code is licensed under the [MIT License](LICENSE). Code means everything else, including `build.py`, `resume.tex`, `cv.tex`, `run`, `pyproject.toml`, and the scripts and workflows in `.github/`.
 
 The fonts in `fonts/` keep their own licenses: Libertinus Serif is under the SIL Open Font License 1.1 ([fonts/OFL.txt](fonts/OFL.txt)), and TeX Gyre Termes and TeX Gyre Heros are under the GUST Font License ([fonts/GUST-FONT-LICENSE.txt](fonts/GUST-FONT-LICENSE.txt)). See [fonts/README.md](fonts/README.md) for where each file comes from.
