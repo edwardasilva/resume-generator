@@ -3,8 +3,6 @@
   <img src="docs/brand/resume-generator-lockup-outlined.svg" alt="resume-generator" width="320">
 </picture>
 
-# resume-generator
-
 Turn one JSON file into a one-page PDF resume. You write the content in `resume.json`, and the script does the layout and fits it onto a single page. A file with `"document": "cv"` in its settings builds a CV of up to two pages instead (see [Building a CV](#building-a-cv)).
 
 This project is a companion to [eeprep.com](https://eeprep.com). It was built for engineering students and follows the advice on [eeprep's resume page](https://eeprep.com/advice/resume/), but it works for any field.
