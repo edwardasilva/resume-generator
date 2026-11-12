@@ -3,7 +3,7 @@
     "dateStyle": {
       "education": "semester",
       "projects": "semester",
-      "experience": "semester"
+      "experience": "month"
     },
     "sectionOrder": [
       "education",
@@ -60,10 +60,13 @@
       "title": "Cashier",
       "company": "Example Grocery",
       "location": "",
-      "start": "Summer 2025",
+      "start": "May 2025",
       "end": "Present",
       "engineering": false,
-      "bullets": []
+      "bullets": [
+        "Checked out about [X] customers a shift at the register",
+        "Wrote a closing checklist that [X] cashiers now follow at the end of each shift"
+      ]
     }
   ],
   "skills": {

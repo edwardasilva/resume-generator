@@ -46,6 +46,28 @@ for want in "Honors and Awards" "Example Foundation Engineering Scholarship" "Se
   case "$cv_text" in *"$want"*) ;; *) echo "The CV text is missing: $want" >&2; exit 1 ;; esac
 done
 
+# A resume prints a non-engineering job's bullets until the resume has an
+# engineering job. Then that job drops to one line.
+python3 -I -c '
+import json, sys
+cashier = {"title": "Cashier", "company": "Example Grocery", "start": "May 2025",
+           "end": "Present", "engineering": False,
+           "bullets": ["Balanced the cash drawer at close on [X] shifts"]}
+intern = {"title": "Test Intern", "company": "Example Co", "start": "May 2026",
+          "end": "Aug 2026", "engineering": True, "bullets": ["Wrote [X] test scripts"]}
+base = {"header": {"name": "Alex Doe"}, "settings": {"dateStyle": {"experience": "month"}}}
+json.dump(dict(base, experience=[cashier]), open(sys.argv[1], "w"))
+json.dump(dict(base, experience=[intern, cashier]), open(sys.argv[2], "w"))
+' "$tmp/nojob.json" "$tmp/withjob.json"
+python3 build.py "$tmp/nojob.json" 2>/dev/null
+case "$(pdftotext "$tmp/Alex-Doe-Resume-nojob.pdf" -)" in
+  *"Balanced the cash drawer"*) ;;
+  *) echo "A resume with no engineering job left out the other job's bullets" >&2; exit 1 ;;
+esac
+python3 build.py "$tmp/withjob.json" 2>/dev/null
+case "$(pdftotext "$tmp/Alex-Doe-Resume-withjob.pdf" -)" in
+  *"Balanced the cash drawer"*) echo "A resume with an engineering job printed the other job's bullets" >&2; exit 1 ;;
+esac
 # A CV that cannot fit on two pages stops the build and names the page cap.
 python3 -I -c '
 import json, sys
