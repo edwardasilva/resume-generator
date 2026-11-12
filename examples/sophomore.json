@@ -1,0 +1,110 @@
+{
+  "settings": {
+    "dateStyle": {
+      "education": "semester",
+      "projects": "semester",
+      "experience": "semester"
+    },
+    "sectionOrder": [
+      "education",
+      "skills",
+      "projects",
+      "experience"
+    ]
+  },
+  "header": {
+    "name": "Alex Doe",
+    "phone": "(555) 555-0123",
+    "email": "alex.doe@example.com",
+    "linkedin": "linkedin.com/in/your-name",
+    "github": "github.com/your-username",
+    "location": "Riverton, ST",
+    "relocate": true
+  },
+  "education": [
+    {
+      "degree": "B.S. Electrical Engineering",
+      "gpa": "3.45/4.00",
+      "school": "Example State University",
+      "gradDate": "Expected Spring 2029",
+      "coursework": [
+        "Electrical Circuits",
+        "Digital Logic",
+        "Foundational Programming Concepts and Design"
+      ],
+      "activities": [
+        "IEEE student branch"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "title": "Weather Station with Wireless Logging",
+      "url": "github.com/your-username/weather-station",
+      "tools": [
+        "ESP32",
+        "C",
+        "BME280",
+        "Python"
+      ],
+      "start": "Spring 2026",
+      "end": "Spring 2026",
+      "bullets": [
+        "Logged BME280 data every minute for 30 days over Wi-Fi and lost under 1% of samples",
+        "Wrote a C calibration routine checked against a reference thermometer at 20 points, to within 0.5 °C",
+        "Wrote a Python plotting script that flagged gaps over 5 minutes and found 3 Wi-Fi outages"
+      ]
+    },
+    {
+      "title": "4-Bit ALU on a Breadboard",
+      "tools": [
+        "74HC logic",
+        "Logisim"
+      ],
+      "start": "Fall 2026",
+      "end": "Fall 2026",
+      "bullets": [
+        "Built a 4-bit ALU out of 14 74HC-series chips that can add, subtract, AND, OR and XOR, and checked it against a Logisim model for all 256 input pairs of each operation with DIP switches and LEDs",
+        "Found 2 wiring faults in the carry chain by probing each stage with a logic analyzer"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "title": "Electrical Lead",
+      "company": "Example State Robotics Club",
+      "location": "Riverton, ST",
+      "start": "Fall 2026",
+      "end": "Present",
+      "engineering": true,
+      "bullets": [
+        "Designed and soldered a 2-layer power distribution board in KiCad with 6 fused outputs to replace the old hand-wired harness, so wiring before a match takes 45 minutes instead of 3 hours",
+        "Traced controller resets on hard turns to a 1.2 V dip on the 5 V rail with an oscilloscope and gave the controller its own 5 V regulator, with no resets in the 12 matches since the change"
+      ]
+    },
+    {
+      "title": "Barista",
+      "company": "Example Coffee Co.",
+      "location": "Riverton, ST",
+      "start": "Summer 2025",
+      "end": "Present",
+      "engineering": false,
+      "bullets": []
+    }
+  ],
+  "skills": {
+    "software": [
+      "C",
+      "Python",
+      "KiCad",
+      "Logisim"
+    ],
+    "hardwareLab": [
+      "Oscilloscope",
+      "Logic analyzer",
+      "Soldering",
+      "ESP32"
+    ],
+    "certifications": []
+  }
+}

@@ -1,0 +1,41 @@
+# Rules for the coding agent
+
+This repo builds one-page resume PDFs from a JSON file. Read `README.md` and `.github/CONTRIBUTING.md` before you change anything, and follow them. The rules below are the same ones that apply to every coding agent in this repo.
+
+## Routing
+
+Use the `claude` label, or comment `@claude`, to hand an issue or pull request to the coding agent.
+
+Only the repository owner can start the workflow. It works on a branch and opens a pull request. It never pushes to `main`, merges, tags, or cuts a release.
+
+## Git
+
+- Work on a branch. Never push to `main`.
+- Every change reaches `main` through a pull request, and every merge is a squash merge. Only the repository owner merges.
+- When you work from an issue, name it in the pull request body on its own line, as `Part of #N`, and add `Closes #N` when the pull request finishes the issue. Outside contributors do not need an issue link. A short description is enough.
+- Keep each pull request to one change.
+- Do not create tags. Do not force-push or rewrite pushed history.
+- A release is cut only when the repository owner says so.
+
+## Writing and data
+
+- No emoji anywhere: files, commits, pull requests, comments, or output.
+- Do not put bot or tool names in repo text or commit messages.
+- Keep examples neutral, such as Alex Doe with they and them.
+- Never invent resume content. The examples use made-up people.
+
+## Checks
+
+Before you push:
+
+```bash
+pip install ruff==0.16.9
+ruff format
+ruff check
+```
+
+Run `shellcheck` on `run` and `.github/check-pdfs.sh` if you touch either script. CI builds every file in `examples/` and fails if any resume PDF is not exactly one page. A CV PDF (`*-CV.pdf`) may be one or two pages.
+
+## Secrets
+
+Never print or commit secrets, tokens, or environment variables.

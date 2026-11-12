@@ -1,0 +1,25 @@
+name: Fix something
+description: Report a bug or something that does not work.
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Description
+      description: What happened? Saying what you expected, the command you ran and any error message helps, but is optional.
+    validations:
+      required: false
+  - type: textarea
+    id: input
+    attributes:
+      label: JSON input (optional)
+      description: Paste your JSON, or a trimmed copy that still shows the problem. Remove personal data and use made-up details.
+      render: json
+    validations:
+      required: false
+  - type: input
+    id: environment
+    attributes:
+      label: OS and TeX distribution (optional)
+      description: For example, Ubuntu 24.04 with TeX Live 2023, or macOS with BasicTeX.
+    validations:
+      required: false
