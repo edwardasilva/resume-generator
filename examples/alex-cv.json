@@ -5,7 +5,7 @@
       "education": "semester",
       "honors": "year",
       "scholarships": "year",
-      "experience": "semester",
+      "experience": "month",
       "projects": "semester",
       "certifications": "year",
       "activities": "semester",
@@ -129,7 +129,7 @@
       "title": "Power Electronics Research Assistant",
       "company": "[University] Power Lab",
       "location": "Springfield, ST",
-      "start": "Summer 2025",
+      "start": "May 2025",
       "end": "Present",
       "engineering": true,
       "bullets": [
@@ -143,8 +143,8 @@
       "title": "Embedded Firmware Intern",
       "company": "[Engineering company]",
       "location": "Springfield, ST",
-      "start": "Summer 2024",
-      "end": "Summer 2024",
+      "start": "May 2024",
+      "end": "Aug 2024",
       "engineering": true,
       "bullets": [
         "Ported a sensor driver from a vendor library to bare-metal C on an ARM Cortex-M4, saving [X] KB of flash",
@@ -156,8 +156,8 @@
       "title": "Teaching Assistant, Digital Design",
       "company": "[University] Department of Electrical Engineering",
       "location": "Springfield, ST",
-      "start": "Fall 2025",
-      "end": "Spring 2026",
+      "start": "Sept 2025",
+      "end": "May 2026",
       "engineering": false,
       "bullets": [
         "Led two lab sections of [X] students each and held weekly office hours",
@@ -168,8 +168,8 @@
     {
       "title": "Sales Associate",
       "company": "[Retail store]",
-      "start": "Summer 2022",
-      "end": "Summer 2023",
+      "start": "May 2022",
+      "end": "Aug 2023",
       "engineering": false,
       "bullets": [
         "Handled about [X] customers a shift and closed the register to within [X] dollars each night"

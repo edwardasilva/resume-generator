@@ -297,6 +297,18 @@ def is_cv(data):
     return isinstance(settings, dict) and settings.get("document") == "cv"
 
 
+def prints_bullets(job, data):
+    """Return True if a job's bullets print.
+
+    A CV prints every job's bullets. A resume prints an engineering job's
+    bullets, and a non-engineering job's bullets only while the resume has no
+    engineering job to show.
+    """
+    if is_cv(data) or job.get("engineering"):
+        return True
+    return not any(x.get("engineering") for x in shown(data.get("experience")))
+
+
 def document(data):
     """Return the DOCUMENTS entry for the file: the resume unless it is a CV."""
     return DOCUMENTS["cv" if is_cv(data) else "resume"]
@@ -568,12 +580,14 @@ def validate(data):
                 )
             for key in ("gradDate", "start", "end") + (("date",) if cv else ()):
                 check_date(entry.get(key), style, f"{section}[{i}].{key}")
-            # A CV prints the bullets of every job, so none is left out.
-            if section == "experience" and present(entry.get("bullets")) and not cv:
-                if not entry.get("engineering"):
+            # A non-engineering job loses its bullets once the resume has an
+            # engineering job. A CV prints the bullets of every job.
+            if section == "experience" and present(entry.get("bullets")):
+                if not prints_bullets(entry, data):
                     print(
                         f"Note: experience[{i}] has bullets, but they're left out "
-                        'because it doesn\'t have "engineering": true.',
+                        'because it doesn\'t have "engineering": true and the '
+                        "resume already has an engineering job.",
                         file=sys.stderr,
                     )
 
@@ -674,7 +688,7 @@ def projects(data):
 
 
 def experience(data):
-    """Return LaTeX lines for experience, with bullets only for engineering jobs."""
+    """Return LaTeX lines for experience, with bullets where prints_bullets allows."""
     out = []
     for x in shown(data.get("experience")):
         title = esc(x.get("title"))
@@ -686,8 +700,7 @@ def experience(data):
         place = f", {esc(x['location'])}" if x.get("location") else ""
         dates = date_range(x.get("start"), x.get("end"))
         out.append(rf"\entry{{\textbf{{{name}}}{place}}}{{{dates}}}")
-        # A resume prints bullets only for engineering jobs. A CV prints all.
-        if x.get("engineering") or is_cv(data):
+        if prints_bullets(x, data):
             out += bullets(x.get("bullets"))
         out.append(r"\entrygap")
     return out
@@ -831,7 +844,7 @@ def expected_text(data):
         elif name == "experience":
             for x in shown(data.get("experience")):
                 out += [x.get("title"), x.get("company"), x.get("location")]
-                if x.get("engineering") or cv:
+                if prints_bullets(x, data):
                     out += lines(x.get("bullets"))
         elif name == "skills":
             for key in ("software", "hardwareLab", "certifications"):
