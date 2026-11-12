@@ -80,7 +80,7 @@ FONTS = {
 }
 
 # Sections in their default order, and the date patterns for each style.
-SECTIONS = ("education", "skills", "projects", "experience")
+SECTIONS = ("education", "projects", "experience", "skills")
 # A CV adds sections of plain records: a title, who gave it or where, a date
 # and optional bullets.
 RECORD_SECTIONS = (

@@ -7,9 +7,9 @@
     },
     "sectionOrder": [
       "education",
-      "skills",
       "projects",
-      "experience"
+      "experience",
+      "skills"
     ]
   },
   "header": {

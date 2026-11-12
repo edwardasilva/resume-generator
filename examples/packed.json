@@ -7,9 +7,9 @@
       "experience": "month"
     },
     "sectionOrder": [
+      "education",
       "experience",
       "projects",
-      "education",
       "skills"
     ]
   },
