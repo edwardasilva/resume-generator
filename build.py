@@ -587,10 +587,34 @@ def note_left_out(data):
             )
 
 
+def note_education_range(data):
+    """Print a note for each education entry on a resume with a start or end.
+
+    A resume shows only gradDate. The build still checks start and end, which
+    a CV prints when gradDate is blank, so without a note a resume would drop
+    them in silence.
+    """
+    if is_cv(data):
+        return
+    for i, entry in enumerate(data.get("education") or []):
+        if not entry or entry.get("hide"):
+            continue
+        keys = [key for key in ("start", "end") if entry.get(key)]
+        if keys:
+            them = "them" if len(keys) > 1 else "it"
+            print(
+                f"Note: education[{i}] has {' and '.join(keys)}, but a resume "
+                f"leaves {them} out and shows only gradDate. A CV prints start "
+                "and end when gradDate is blank.",
+                file=sys.stderr,
+            )
+
+
 def validate(data):
     """Check field types, the font, and each visible date against its style."""
     check_types(data)
     note_left_out(data)
+    note_education_range(data)
     font_name(data)
     styles = date_styles(data)
     cv = is_cv(data)
