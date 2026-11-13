@@ -89,7 +89,10 @@
       "start": "May 2025",
       "end": "Present",
       "engineering": false,
-      "bullets": []
+      "bullets": [
+        "Served about [X] customers a shift at the counter during the morning rush",
+        "Trained [X] new baristas on the opening checklist and the espresso machine"
+      ]
     }
   ],
   "skills": {

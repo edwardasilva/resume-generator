@@ -107,11 +107,11 @@ A list, most recent first.
 | `title`, `company` | Your role and where you worked. | `Power Subsystem Lead`, `Example State CubeSat Team` |
 | `location` | City and state, or blank. | `Springfield, ST` |
 | `start`, `end` | Dates in the experience date style. A blank `end` or `Present` means ongoing. | `Sep 2024`, `Present` |
-| `engineering` | `true` for engineering work. `false` marks another job: its bullets print while the resume has no engineering job, and it drops to one line once the resume has one. The build notes any bullets it leaves out. | `false` |
+| `engineering` | `true` for engineering work. `false` marks another job: its bullets print unless the resume has an engineering job and the rest of the resume fills the page. Then it drops to one line, and the build notes the bullets it leaves out. | `false` |
 | `bullets` | Same rules as project bullets. | |
 | `hide` | `true` leaves the entry out. | |
 
-A non-engineering job still shows you can hold a job. Before your first engineering job, give it one or two bullets with a number in them. After that, one line is enough.
+A non-engineering job still shows you can hold a job. Give it one or two bullets with a number in them. Once your engineering work fills the page, one line is enough. The build checks this for you: it first fits the page without that job's bullets, and keeps them if the page still fits with them at the same text size.
 
 ### `skills`
 
@@ -193,7 +193,7 @@ A referral helps more than a good resume. Before you apply, ask someone who know
 - The paper is US Letter. There is no A4 setting.
 - The resume is one page. If the content does not fit, the build stops. There is no second page. A CV is the exception: it may take two, and no more.
 - The resume's sections are `education`, `projects`, `experience` and `skills`, with those titles. You can reorder them in `settings.sectionOrder`, but you cannot add or rename one. Any other name stops the build with `unknown section`. A CV has the five more sections above, and can rename them.
-- In a resume that has an engineering job, a job with `"engineering": false` prints as one line, and its bullets are left out. A CV prints them.
+- In a resume that has an engineering job, a job with `"engineering": false` prints as one line when the rest of the resume fills the page, and its bullets are left out. A CV always prints them. The build keeps or drops the bullets of every such job together, never some of them.
 - The `libertinus` font covers Latin, Greek and Cyrillic. No font covers Chinese, Japanese or Korean. `times` and `arial` also lack Cyrillic and accented Greek letters. The build stops and names any character the font cannot draw.
 - `./run` installs missing tools only on Fedora, Debian, Ubuntu (including WSL) and macOS. On other systems, install Python and LuaLaTeX yourself.
 

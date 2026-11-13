@@ -297,16 +297,43 @@ def is_cv(data):
     return isinstance(settings, dict) and settings.get("document") == "cv"
 
 
-def prints_bullets(job, data):
-    """Return True if a job's bullets print.
+def keeps_bullets(job, data):
+    """Return True if a job's bullets print however full the page is.
 
-    A CV prints every job's bullets. A resume prints an engineering job's
-    bullets, and a non-engineering job's bullets only while the resume has no
-    engineering job to show.
+    A CV prints every job's bullets. A resume always prints an engineering
+    job's bullets, and every job's bullets while it has no engineering job to
+    show. On a resume that has one, a non-engineering job keeps its bullets
+    only while the page has room for them (see fit_resume).
     """
     if is_cv(data) or job.get("engineering"):
         return True
     return not any(x.get("engineering") for x in shown(data.get("experience")))
+
+
+def spare_jobs(data):
+    """Return (index, job) for each shown job whose bullets a full page drops."""
+    return [
+        (i, x)
+        for i, x in enumerate(data.get("experience") or [])
+        if x
+        and not x.get("hide")
+        and present(x.get("bullets"))
+        and not keeps_bullets(x, data)
+    ]
+
+
+def without_spare_bullets(data):
+    """Return a copy of data without the bullets of spare_jobs, or data itself."""
+    spare = {i for i, _ in spare_jobs(data)}
+    if not spare:
+        return data
+    jobs = data.get("experience") or []
+    return dict(
+        data,
+        experience=[
+            dict(x, bullets=[]) if i in spare else x for i, x in enumerate(jobs)
+        ],
+    )
 
 
 def document(data):
@@ -580,16 +607,6 @@ def validate(data):
                 )
             for key in ("gradDate", "start", "end") + (("date",) if cv else ()):
                 check_date(entry.get(key), style, f"{section}[{i}].{key}")
-            # A non-engineering job loses its bullets once the resume has an
-            # engineering job. A CV prints the bullets of every job.
-            if section == "experience" and present(entry.get("bullets")):
-                if not prints_bullets(entry, data):
-                    print(
-                        f"Note: experience[{i}] has bullets, but they're left out "
-                        'because it doesn\'t have "engineering": true and the '
-                        "resume already has an engineering job.",
-                        file=sys.stderr,
-                    )
 
 
 def header(h, relocate="Willing to relocate"):
@@ -688,7 +705,10 @@ def projects(data):
 
 
 def experience(data):
-    """Return LaTeX lines for experience, with bullets where prints_bullets allows."""
+    """Return LaTeX lines for experience, with each job's bullets.
+
+    fit_resume passes a copy without the bullets a full page drops.
+    """
     out = []
     for x in shown(data.get("experience")):
         title = esc(x.get("title"))
@@ -700,8 +720,7 @@ def experience(data):
         place = f", {esc(x['location'])}" if x.get("location") else ""
         dates = date_range(x.get("start"), x.get("end"))
         out.append(rf"\entry{{\textbf{{{name}}}{place}}}{{{dates}}}")
-        if prints_bullets(x, data):
-            out += bullets(x.get("bullets"))
+        out += bullets(x.get("bullets"))
         out.append(r"\entrygap")
     return out
 
@@ -844,8 +863,7 @@ def expected_text(data):
         elif name == "experience":
             for x in shown(data.get("experience")):
                 out += [x.get("title"), x.get("company"), x.get("location")]
-                if prints_bullets(x, data):
-                    out += lines(x.get("bullets"))
+                out += lines(x.get("bullets"))
         elif name == "skills":
             for key in ("software", "hardwareLab", "certifications"):
                 out += names((data.get("skills") or {}).get(key))
@@ -1049,6 +1067,40 @@ def fit(doc, typeface):
     return None, log
 
 
+def fit_resume(doc, typeface, data):
+    """Fit the page, and keep spare bullets only while the page has room.
+
+    A non-engineering job on a resume with an engineering job drops to one line
+    only when the rest of the resume fills the page. So the build first fits
+    the page without those bullets. If the page with them still fits at that
+    text size, they stay.
+
+    Returns (layout, log, built), where built is the data that was printed.
+    """
+    short = without_spare_bullets(data)
+    (BUILD / "body.tex").write_text(body(short), encoding="utf-8")
+    layout, log = fit(doc, typeface)
+    if short is data or not layout:
+        return layout, log, short
+    font, margin = layout[0], layout[1]
+    (BUILD / "body.tex").write_text(body(data), encoding="utf-8")
+    pages, full_log = compile_once(doc, typeface, font, margin)
+    if pages <= doc["cap"]:
+        fill, free = fill_page(doc, typeface, font, margin, full_log, pages)
+        return (font, margin, fill, free, pages), full_log, data
+    for i, _ in spare_jobs(data):
+        print(
+            f"Note: experience[{i}] has bullets, but they're left out because "
+            'it doesn\'t have "engineering": true and the rest of the resume '
+            "fills the page.",
+            file=sys.stderr,
+        )
+    (BUILD / "body.tex").write_text(body(short), encoding="utf-8")
+    pages, log = compile_once(doc, typeface, font, margin)
+    fill, free = fill_page(doc, typeface, font, margin, log, pages)
+    return (font, margin, fill, free, pages), log, short
+
+
 def fill_page(doc, typeface, font, margin, compact_log, pages):
     """Grow the spacing to fill the used pages, and return (fill, free lines).
 
@@ -1215,9 +1267,7 @@ def main():
         output = source.with_name(pdf_name(data, source))
         typeface = font_name(data)
         BUILD.mkdir(exist_ok=True)
-        tex = body(data)
-        (BUILD / "body.tex").write_text(tex, encoding="utf-8")
-        layout, log = fit(doc, typeface)
+        layout, log, built = fit_resume(doc, typeface, data)
         lost = sorted(
             set(
                 re.findall(
@@ -1243,7 +1293,7 @@ def main():
                 f"{grow(SECTION_GAP, fill):.1f} pt)."
             )
             report_layout(output, margin, free)
-            report_text(output, data)
+            report_text(output, built)
             return
     except ResumeError as e:
         sys.exit(str(e))
