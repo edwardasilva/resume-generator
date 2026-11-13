@@ -2,7 +2,7 @@
   "settings": {
     "font": "arial",
     "dateStyle": {
-      "education": "semester",
+      "education": "month",
       "projects": "semester",
       "experience": "month"
     },
@@ -27,7 +27,7 @@
       "degree": "B.S. Electrical Engineering, Minor in Computer Science",
       "gpa": "3.88/4.00",
       "school": "Example State University",
-      "gradDate": "Spring 2026",
+      "gradDate": "May 2026",
       "coursework": [
         "Embedded Systems",
         "Digital Signal Processing",

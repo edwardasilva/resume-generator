@@ -2,7 +2,7 @@
   "settings": {
     "font": "times",
     "dateStyle": {
-      "education": "semester",
+      "education": "month",
       "projects": "semester",
       "experience": "month"
     },
@@ -28,7 +28,7 @@
       "gpa": "3.71/4.00",
       "school": "Example State University",
       "url": "example.com",
-      "gradDate": "Spring 2026",
+      "gradDate": "May 2026",
       "coursework": [
         "Embedded Systems",
         "Power Electronics",
