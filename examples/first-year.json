@@ -1,7 +1,7 @@
 {
   "settings": {
     "dateStyle": {
-      "education": "semester",
+      "education": "month",
       "projects": "semester",
       "experience": "month"
     },
@@ -26,7 +26,7 @@
       "degree": "B.S. Electrical Engineering",
       "gpa": "",
       "school": "Example State University",
-      "gradDate": "Expected Spring 2030",
+      "gradDate": "Expected May 2030",
       "coursework": [
         "Cornerstone Design I",
         "Physics I: Mechanics",

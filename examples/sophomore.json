@@ -1,7 +1,7 @@
 {
   "settings": {
     "dateStyle": {
-      "education": "semester",
+      "education": "month",
       "projects": "semester",
       "experience": "month"
     },
@@ -26,7 +26,7 @@
       "degree": "B.S. Electrical Engineering",
       "gpa": "3.45/4.00",
       "school": "Example State University",
-      "gradDate": "Expected Spring 2029",
+      "gradDate": "Expected May 2029",
       "coursework": [
         "Electrical Circuits",
         "Digital Logic",

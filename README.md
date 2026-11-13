@@ -48,7 +48,7 @@ The phone, email, LinkedIn, GitHub and website in the header are links, except t
 | --- | --- | --- |
 | `sectionOrder` | Order of the sections. A section left out of the list is left off the page. | `["education", "projects", "experience", "skills"]` |
 | `font` | `libertinus`, `times` or `arial`. Leave it out to use `libertinus`. | `"libertinus"` |
-| `dateStyle` | The date style for each section: `semester` (Fall 2025) or `month` (Sep 2025, Sept 2025 or September 2025; pick one spelling and keep it). Every date in a section must use that section's style. The build stops if one doesn't. A section left out uses `semester`. | `{"education": "semester", "projects": "semester", "experience": "month"}` |
+| `dateStyle` | The date style for each section: `semester` (Fall 2025) or `month` (Sep 2025, Sept 2025 or September 2025; pick one spelling and keep it). Every date in a section must use that section's style. The build stops if one doesn't. A section left out uses `semester`. | `{"education": "month", "projects": "semester", "experience": "month"}` |
 
 Common orders, from the [r/EngineeringResumes wiki](https://www.reddit.com/r/EngineeringResumes/wiki/index/): a student or new graduate with no technical work experience goes education, projects, experience, skills. One with an internship or other technical work goes education, experience, projects, skills. Once you start a full-time job, go experience, skills, education. Inside each section, put the most relevant or impressive entry first. Use one date style inside each section. Date jobs by month. Projects can use semesters, but use months if a project runs longer than a year.
 
@@ -82,7 +82,7 @@ A list. Most students have one entry. Add a second for a master's degree.
 | `degree` | Degree and major. | `B.S. Electrical Engineering` |
 | `gpa` | `N.NN/4.00`. List it when a posting sets a minimum you meet. | `3.62/4.00` |
 | `school` | Your university. | `Example State University` |
-| `gradDate` | Your graduation date, in the education date style. Add "Expected" if you haven't graduated. It goes at the right of the degree line. If the degree line is too long to share it, the build moves the date to the school line. | `Expected Spring 2027` |
+| `gradDate` | Your graduation date, in the education date style. Use a month, with `education` set to `month` in `dateStyle`, and add "Expected" if you haven't graduated. It goes at the right of the degree line. If the degree line is too long to share it, the build moves the date to the school line. | `Expected May 2027` |
 | `coursework` | Upper-level courses that match the jobs you want. | `["Power Electronics", "Embedded Systems"]` |
 | `activities` | Clubs and honor societies. Put real build work in `projects`. | `["IEEE student branch"]` |
 

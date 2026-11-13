@@ -1,7 +1,7 @@
 {
   "settings": {
     "dateStyle": {
-      "education": "semester",
+      "education": "month",
       "projects": "semester",
       "experience": "month"
     },
@@ -26,7 +26,7 @@
       "degree": "B.S. Electrical Engineering",
       "gpa": "[X.XX]/4.00",
       "school": "[University]",
-      "gradDate": "Expected Spring 2027",
+      "gradDate": "Expected May 2027",
       "coursework": [
         "Embedded Systems",
         "Power Electronics",

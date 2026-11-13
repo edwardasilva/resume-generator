@@ -2,7 +2,7 @@
   "settings": {
     "document": "cv",
     "dateStyle": {
-      "education": "semester",
+      "education": "month",
       "honors": "year",
       "scholarships": "year",
       "experience": "month",
@@ -47,7 +47,7 @@
       "gpa": "[X.XX]/4.00",
       "school": "[University]",
       "location": "Springfield, ST",
-      "gradDate": "Expected Spring 2027",
+      "gradDate": "Expected May 2027",
       "thesis": "Efficiency Limits of a Small Buck Converter at High Switching Frequency",
       "honors": [
         "Dean's List, six semesters",
@@ -72,7 +72,7 @@
       "degree": "Associate of Science, Pre-Engineering",
       "school": "[Community college]",
       "location": "Springfield, ST",
-      "gradDate": "Spring 2024",
+      "gradDate": "May 2024",
       "coursework": [
         "Calculus I to III",
         "Physics with Calculus",
