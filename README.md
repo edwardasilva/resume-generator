@@ -209,10 +209,10 @@ To report a vulnerability, use GitHub's private vulnerability reporting on this 
 
 The repo has two licenses, one for content and one for code.
 
-Content is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (full text in [LICENSE-CONTENT](LICENSE-CONTENT)). You may share and adapt it if you credit [resume-generator contributors](https://github.com/edwardasilva/resume-generator) and link the license. Content means the example resumes and sample data in `examples/`, and the docs: `README.md` and the Markdown files in `.github/`.
+Content is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (full text in [LICENSE-CONTENT](LICENSE-CONTENT)). You may share and adapt it if you credit [resume-generator contributors](https://github.com/edwardasilva/resume-generator) and link the license. Content means the example resumes and sample data in `examples/`, the docs, and the logo. The docs are every Markdown file in the repo: `README.md`, `AGENTS.md`, `examples/README.md`, `fonts/README.md` and the Markdown files in `.github/`. The logo is the two SVG files in `docs/brand/`.
 
 A resume you build with this tool, including one started from an example, is yours and needs no credit.
 
-Code is licensed under the [MIT License](LICENSE). Code means everything else, including `build.py`, `resume.tex`, `cv.tex`, `run`, `pyproject.toml`, and the scripts and workflows in `.github/`.
+Code is licensed under the [MIT License](LICENSE). Code means everything else, including `build.py`, `resume.tex`, `cv.tex`, `run`, `pyproject.toml`, `tests/`, and the scripts and workflows in `.github/`.
 
-The fonts in `fonts/` keep their own licenses: Libertinus Serif is under the SIL Open Font License 1.1 ([fonts/OFL.txt](fonts/OFL.txt)), and TeX Gyre Termes and TeX Gyre Heros are under the GUST Font License ([fonts/GUST-FONT-LICENSE.txt](fonts/GUST-FONT-LICENSE.txt)). See [fonts/README.md](fonts/README.md) for where each file comes from.
+The fonts in `fonts/` keep their own licenses: Libertinus Serif is under the SIL Open Font License 1.1 ([fonts/OFL.txt](fonts/OFL.txt)), and TeX Gyre Termes and TeX Gyre Heros are under the GUST Font License ([fonts/GUST-FONT-LICENSE.txt](fonts/GUST-FONT-LICENSE.txt)), which is the LaTeX Project Public License 1.3c or later ([fonts/lppl.txt](fonts/lppl.txt)). The license texts and upstream notices in `fonts/` are their authors' own and fall under neither license above. See [fonts/README.md](fonts/README.md) for where each file comes from and who holds its copyright.
