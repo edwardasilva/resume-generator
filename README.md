@@ -27,7 +27,7 @@ Each example in `examples/` is a made-up resume and the PDF built from it, from 
 | --- | --- | --- |
 | `alex.json` | The starting point. It follows the finished example on eeprep's resume page. The student graduates in 2027 and has two projects, a sales job with two bullets and two skill lines. Every tool in the skill lines appears in a bullet. `[X]` marks a number you measure. | [Alex-Doe-Resume.pdf](examples/Alex-Doe-Resume.pdf) |
 | `first-year.json` | A first-year student with one class project, a grocery job with two bullets and a few skills. The page has room left at the bottom. | [Alex-Doe-Resume-first-year.pdf](examples/Alex-Doe-Resume-first-year.pdf) |
-| `sophomore.json` | A second-year student with two projects, an electrical lead role in a robotics club and a one-line job. | [Alex-Doe-Resume-sophomore.pdf](examples/Alex-Doe-Resume-sophomore.pdf) |
+| `sophomore.json` | A second-year student with two projects, an electrical lead role in a robotics club and a barista job with two bullets, because the page has room. | [Alex-Doe-Resume-sophomore.pdf](examples/Alex-Doe-Resume-sophomore.pdf) |
 | `new-grad.json` | A new graduate with two internships, two projects and certifications. Experience comes right after Education, and the resume uses the `times` font. | [Alex-Doe-Resume-new-grad.pdf](examples/Alex-Doe-Resume-new-grad.pdf) |
 | `packed.json` | A graduating student with three engineering roles, a one-line job, three projects and long skill lists, in the `arial` font. The script tightens it to fit. | [Alex-Doe-Resume-packed.pdf](examples/Alex-Doe-Resume-packed.pdf) |
 | `alex-cv.json` | A two-page CV, not a resume. The same student with honors, scholarships, four jobs with bullets, four projects, certifications, activities and organizations. | [Alex-Doe-CV.pdf](examples/Alex-Doe-CV.pdf) |
@@ -48,7 +48,7 @@ The phone, email, LinkedIn, GitHub and website in the header are links, except t
 | --- | --- | --- |
 | `sectionOrder` | Order of the sections. A section left out of the list is left off the page. | `["education", "projects", "experience", "skills"]` |
 | `font` | `libertinus`, `times` or `arial`. Leave it out to use `libertinus`. | `"libertinus"` |
-| `dateStyle` | The date style for each section: `semester` (Fall 2025) or `month` (Sep 2025, Sept 2025 or September 2025; pick one spelling and keep it). Every date in a section must use that section's style. The build stops if one doesn't. A section left out uses `semester`. | `{"education": "month", "projects": "semester", "experience": "month"}` |
+| `dateStyle` | The date style for each section: `semester` (Fall 2025), `month` (Sep 2025, Sept 2025 or September 2025; pick one spelling and keep it) or `year` (2025), which suits a CV's honors, scholarships and certifications. Every date in a section must use that section's style. The build stops if one doesn't. A section left out uses `semester`. | `{"education": "month", "projects": "semester", "experience": "month"}` |
 
 Common orders, from the [r/EngineeringResumes wiki](https://www.reddit.com/r/EngineeringResumes/wiki/index/): a student or new graduate with no technical work experience goes education, projects, experience, skills. One with an internship or other technical work goes education, experience, projects, skills. Once you start a full-time job, go experience, skills, education. Inside each section, put the most relevant or impressive entry first. Use one date style inside each section. Date jobs by month. Projects can use semesters, but use months if a project runs longer than a year.
 
@@ -135,7 +135,6 @@ What differs from the resume:
 - **Everything in the file prints.** Nothing is dropped to make it fit. An entry with `"hide": true`, and a section that `sectionOrder` leaves out, are the only things left off. A job prints its bullets whether or not `engineering` is `true`.
 - **More sections.** The CV reads `education`, `experience`, `projects` and `skills` as the resume does, plus `honors`, `scholarships`, `certifications`, `activities` and `organizations`. An education entry also takes `location`, `thesis` and `honors` (a list). Without `sectionOrder`, the sections come in this order: education, honors, scholarships, experience, projects, skills, certifications, activities, organizations.
 - **Titles and labels come from the file.** `settings.sectionTitles` renames a section, such as `{"honors": "Honors and Awards"}`, and `settings.labels` changes the words before a list or a value: `gpa`, `coursework`, `activities`, `honors`, `thesis`, `software`, `hardwareLab`, `skillsCertifications` and `relocate`. A name left out keeps its default.
-- **A year date style.** `settings.dateStyle` also accepts `year` (2025), which suits honors, scholarships and certifications.
 
 The new sections are lists of records with the same fields:
 
