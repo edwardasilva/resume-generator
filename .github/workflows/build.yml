@@ -103,6 +103,13 @@ jobs:
       - name: Check that every PDF is one page and uses the bundled fonts
         if: steps.scope.outputs.code == 'true'
         run: .github/check-pdfs.sh *-Resume.pdf examples/*.pdf
+      # tests/check.sh covers what the examples don't: LaTeX special characters
+      # in every font, exact link targets, the message for each kind of bad
+      # input, the CV page cap and the rule for a non-engineering job's bullets.
+      # It needs the poppler-utils installed above.
+      - name: Run tests/check.sh
+        if: steps.scope.outputs.code == 'true'
+        run: bash tests/check.sh
       - name: Package the release zip
         if: startsWith(github.ref, 'refs/tags/v')
         run: .github/package.sh "resume-generator-${GITHUB_REF_NAME}"
