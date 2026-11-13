@@ -48,4 +48,4 @@ To report a vulnerability, use GitHub's private vulnerability reporting on this 
 
 ## License
 
-By contributing, you agree that your code is licensed under the [MIT License](../LICENSE) and your content (the examples and the docs) under [CC BY 4.0](../LICENSE-CONTENT). The fonts in `fonts/` keep their own licenses. Reuse of content is credited to [resume-generator contributors](https://github.com/edwardasilva/resume-generator).
+By contributing, you agree that your code is licensed under the [MIT License](../LICENSE) and your content (the examples, the docs and the logo) under [CC BY 4.0](../LICENSE-CONTENT). The fonts in `fonts/`, and their license texts and notices, keep their own licenses. Reuse of content is credited to [resume-generator contributors](https://github.com/edwardasilva/resume-generator).
