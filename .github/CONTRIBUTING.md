@@ -20,7 +20,7 @@ ruff check
 bash tests/check.sh
 ```
 
-`tests/check.sh` needs LuaLaTeX and poppler-utils. If you change `run` or a script, also run `shellcheck` on it.
+`tests/check.sh` needs LuaLaTeX and poppler-utils. If you change a shell script (`run`, `.github/check-pdfs.sh`, `.github/package.sh` or `tests/check.sh`), also run `shellcheck` on it.
 
 If you change a file in `examples/`, commit its rebuilt PDF. Otherwise discard the rebuilt PDFs with `git restore examples/`. If `examples/Alex-Doe-Resume.pdf` changes, rebuild `examples/alex-doe-resume.png` with `pdftoppm -png -r 80 -singlefile examples/Alex-Doe-Resume.pdf examples/alex-doe-resume`.
 
@@ -48,4 +48,4 @@ To report a vulnerability, use GitHub's private vulnerability reporting on this 
 
 ## License
 
-By contributing, you agree that your code is licensed under the [MIT License](../LICENSE) and your content (the examples and the docs) under [CC BY 4.0](../LICENSE-CONTENT). The fonts in `fonts/` keep their own licenses. Reuse of content is credited to [resume-generator contributors](https://github.com/edwardasilva/resume-generator).
+By contributing, you agree that your code is licensed under the [MIT License](../LICENSE) and your content (the examples, the docs and the logo) under [CC BY 4.0](../LICENSE-CONTENT). The fonts in `fonts/`, and their license texts and notices, keep their own licenses. Reuse of content is credited to [resume-generator contributors](https://github.com/edwardasilva/resume-generator).
