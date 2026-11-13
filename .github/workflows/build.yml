@@ -65,6 +65,7 @@ jobs:
           ./run --help
           python3 -c "import ast, sys; ast.parse(open('build.py').read())"
           test -f fonts/LibertinusSerif-Regular.otf
+          test -f docs/brand/resume-generator-lockup-outlined.svg
           test -f examples/alex.json
           test -f resume.json
       # Only a pull request that changes only docs, such as CONTRIBUTING.md or an
