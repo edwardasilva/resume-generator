@@ -1,6 +1,6 @@
 # Rules for the coding agent
 
-This repo builds one-page resume PDFs from a JSON file. Read `README.md` and `.github/CONTRIBUTING.md` before you change anything, and follow them. The rules below are the same ones that apply to every coding agent in this repo.
+This repo builds a one-page PDF resume, or a two-page CV, from a JSON file. Read `README.md` and `.github/CONTRIBUTING.md` before you change anything, and follow them. The rules below are the same ones that apply to every coding agent in this repo.
 
 ## Routing
 
@@ -34,7 +34,7 @@ ruff format
 ruff check
 ```
 
-Run `shellcheck` on `run` and `.github/check-pdfs.sh` if you touch either script. CI builds every file in `examples/` and fails if any resume PDF is not exactly one page. A CV PDF (`*-CV.pdf`) may be one or two pages.
+Run `shellcheck` on `run`, `.github/check-pdfs.sh`, `.github/package.sh` and `tests/check.sh` if you touch any of them. CI runs only on release tags and when started by hand, not on pull requests, so run these checks yourself. On those runs it builds every file in `examples/` and fails if any resume PDF is not exactly one page. A CV PDF (`*-CV.pdf`) may be one or two pages.
 
 ## Secrets
 

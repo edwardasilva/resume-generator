@@ -1,15 +1,15 @@
 {
   "settings": {
     "dateStyle": {
-      "education": "semester",
+      "education": "month",
       "projects": "semester",
-      "experience": "semester"
+      "experience": "month"
     },
     "sectionOrder": [
       "education",
-      "skills",
+      "experience",
       "projects",
-      "experience"
+      "skills"
     ]
   },
   "header": {
@@ -26,7 +26,7 @@
       "degree": "B.S. Electrical Engineering",
       "gpa": "3.45/4.00",
       "school": "Example State University",
-      "gradDate": "Expected Spring 2029",
+      "gradDate": "Expected May 2029",
       "coursework": [
         "Electrical Circuits",
         "Digital Logic",
@@ -74,7 +74,7 @@
       "title": "Electrical Lead",
       "company": "Example State Robotics Club",
       "location": "Riverton, ST",
-      "start": "Fall 2026",
+      "start": "Sept 2026",
       "end": "Present",
       "engineering": true,
       "bullets": [
@@ -86,10 +86,13 @@
       "title": "Barista",
       "company": "Example Coffee Co.",
       "location": "Riverton, ST",
-      "start": "Summer 2025",
+      "start": "May 2025",
       "end": "Present",
       "engineering": false,
-      "bullets": []
+      "bullets": [
+        "Served about [X] customers a shift at the counter during the morning rush",
+        "Trained [X] new baristas on the opening checklist and the espresso machine"
+      ]
     }
   ],
   "skills": {

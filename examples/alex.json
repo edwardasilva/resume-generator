@@ -1,15 +1,15 @@
 {
   "settings": {
     "dateStyle": {
-      "education": "semester",
+      "education": "month",
       "projects": "semester",
-      "experience": "semester"
+      "experience": "month"
     },
     "sectionOrder": [
       "education",
-      "skills",
       "projects",
-      "experience"
+      "experience",
+      "skills"
     ]
   },
   "header": {
@@ -26,7 +26,7 @@
       "degree": "B.S. Electrical Engineering",
       "gpa": "[X.XX]/4.00",
       "school": "[University]",
-      "gradDate": "Expected Spring 2027",
+      "gradDate": "Expected May 2027",
       "coursework": [
         "Embedded Systems",
         "Power Electronics",
@@ -72,10 +72,13 @@
       "title": "Sales Associate",
       "company": "[Retail store]",
       "location": "",
-      "start": "Summer 2023",
-      "end": "Summer 2024",
+      "start": "May 2023",
+      "end": "Aug 2024",
       "engineering": false,
-      "bullets": []
+      "bullets": [
+        "Processed about [X] sales and returns a shift at the register",
+        "Trained [X] new hires on the register and the closing checklist"
+      ]
     }
   ],
   "skills": {

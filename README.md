@@ -3,8 +3,6 @@
   <img src="docs/brand/resume-generator-lockup-outlined.svg" alt="resume-generator" width="320">
 </picture>
 
-# resume-generator
-
 Turn one JSON file into a one-page PDF resume. You write the content in `resume.json`, and the script does the layout and fits it onto a single page. A file with `"document": "cv"` in its settings builds a CV of up to two pages instead (see [Building a CV](#building-a-cv)).
 
 This project is a companion to [eeprep.com](https://eeprep.com). It was built for engineering students and follows the advice on [eeprep's resume page](https://eeprep.com/advice/resume/), but it works for any field.
@@ -27,10 +25,10 @@ Each example in `examples/` is a made-up resume and the PDF built from it, from 
 
 | File | Who it describes | PDF |
 | --- | --- | --- |
-| `alex.json` | The starting point. It follows the finished example on eeprep's resume page. The student graduates in 2027 and has two projects, a one-line job and two skill lines. Every tool in the skill lines appears in a bullet. `[X]` marks a number you measure. | [Alex-Doe-Resume.pdf](examples/Alex-Doe-Resume.pdf) |
-| `first-year.json` | A first-year student with one class project, a one-line retail job and a few skills. The page has room left at the bottom. | [Alex-Doe-Resume-first-year.pdf](examples/Alex-Doe-Resume-first-year.pdf) |
-| `sophomore.json` | A second-year student with two projects, an electrical lead role in a robotics club and a one-line job. | [Alex-Doe-Resume-sophomore.pdf](examples/Alex-Doe-Resume-sophomore.pdf) |
-| `new-grad.json` | A new graduate with two internships, two projects and certifications. They lead with experience and use the `times` font. | [Alex-Doe-Resume-new-grad.pdf](examples/Alex-Doe-Resume-new-grad.pdf) |
+| `alex.json` | The starting point. It follows the finished example on eeprep's resume page. The student graduates in 2027 and has two projects, a sales job with two bullets and two skill lines. Every tool in the skill lines appears in a bullet. `[X]` marks a number you measure. | [Alex-Doe-Resume.pdf](examples/Alex-Doe-Resume.pdf) |
+| `first-year.json` | A first-year student with one class project, a grocery job with two bullets and a few skills. The page has room left at the bottom. | [Alex-Doe-Resume-first-year.pdf](examples/Alex-Doe-Resume-first-year.pdf) |
+| `sophomore.json` | A second-year student with two projects, an electrical lead role in a robotics club and a barista job with two bullets, because the page has room. | [Alex-Doe-Resume-sophomore.pdf](examples/Alex-Doe-Resume-sophomore.pdf) |
+| `new-grad.json` | A new graduate with two internships, two projects and certifications. Experience comes right after Education, and the resume uses the `times` font. | [Alex-Doe-Resume-new-grad.pdf](examples/Alex-Doe-Resume-new-grad.pdf) |
 | `packed.json` | A graduating student with three engineering roles, a one-line job, three projects and long skill lists, in the `arial` font. The script tightens it to fit. | [Alex-Doe-Resume-packed.pdf](examples/Alex-Doe-Resume-packed.pdf) |
 | `alex-cv.json` | A two-page CV, not a resume. The same student with honors, scholarships, four jobs with bullets, four projects, certifications, activities and organizations. | [Alex-Doe-CV.pdf](examples/Alex-Doe-CV.pdf) |
 
@@ -48,11 +46,11 @@ The phone, email, LinkedIn, GitHub and website in the header are links, except t
 
 | Field | What to put | Example |
 | --- | --- | --- |
-| `sectionOrder` | Order of the sections. Lead with your strongest one. A section left out of the list is left off the page. | `["education", "skills", "projects", "experience"]` |
+| `sectionOrder` | Order of the sections. A section left out of the list is left off the page. | `["education", "projects", "experience", "skills"]` |
 | `font` | `libertinus`, `times` or `arial`. Leave it out to use `libertinus`. | `"libertinus"` |
-| `dateStyle` | The date style for each section: `semester` (Fall 2025) or `month` (Sep 2025, Sept 2025 or September 2025; pick one spelling and keep it). Every date in a section must use that section's style. The build stops if one doesn't. A section left out uses `semester`. | `{"education": "semester", "projects": "semester", "experience": "semester"}` |
+| `dateStyle` | The date style for each section: `semester` (Fall 2025), `month` (Sep 2025, Sept 2025 or September 2025; pick one spelling and keep it) or `year` (2025), which suits a CV's honors, scholarships and certifications. Every date in a section must use that section's style. The build stops if one doesn't. A section left out uses `semester`. | `{"education": "month", "projects": "semester", "experience": "month"}` |
 
-Common orders: students with no engineering job usually go education, skills, projects, experience. Skills stays right under Education in every order. Once you have an engineering internship, try experience first. Give every section the same date style, so the page never mixes Fall 2025 with Sep 2025.
+Common orders, from the [r/EngineeringResumes wiki](https://www.reddit.com/r/EngineeringResumes/wiki/index/): a student or new graduate with no technical work experience goes education, projects, experience, skills. One with an internship or other technical work goes education, experience, projects, skills. Once you start a full-time job, go experience, skills, education. Inside each section, put the most relevant or impressive entry first. Use one date style inside each section. Date jobs by month. Projects can use semesters, but use months if a project runs longer than a year.
 
 Acceptable fonts for `settings.font`:
 
@@ -84,7 +82,8 @@ A list. Most students have one entry. Add a second for a master's degree.
 | `degree` | Degree and major. | `B.S. Electrical Engineering` |
 | `gpa` | `N.NN/4.00`. List it when a posting sets a minimum you meet. | `3.62/4.00` |
 | `school` | Your university. | `Example State University` |
-| `gradDate` | Your graduation date, in the education date style. Add "Expected" if you haven't graduated. It goes at the right of the degree line. If the degree line is too long to share it, the build moves the date to the school line. | `Expected Spring 2027` |
+| `gradDate` | Your graduation date, in the education date style. Use a month, with `education` set to `month` in `dateStyle`, and add "Expected" if you haven't graduated. It goes at the right of the degree line. If the degree line is too long to share it, the build moves the date to the school line. | `Expected May 2027` |
+| `start`, `end` | CV only. A range of dates for study with no graduation, in the education date style. A CV prints it when `gradDate` is blank. A resume shows only `gradDate`, so the build notes a `start` or `end` it leaves out. | `Sep 2023`, `May 2025` |
 | `coursework` | Upper-level courses that match the jobs you want. | `["Power Electronics", "Embedded Systems"]` |
 | `activities` | Clubs and honor societies. Put real build work in `projects`. | `["IEEE student branch"]` |
 
@@ -109,11 +108,11 @@ A list, most recent first.
 | `title`, `company` | Your role and where you worked. | `Power Subsystem Lead`, `Example State CubeSat Team` |
 | `location` | City and state, or blank. | `Springfield, ST` |
 | `start`, `end` | Dates in the experience date style. A blank `end` or `Present` means ongoing. | `Sep 2024`, `Present` |
-| `engineering` | `true` for engineering work with bullets. `false` gives a one-line entry for other jobs, and the build notes any bullets it leaves out. | `false` |
+| `engineering` | `true` for engineering work. `false` marks another job: its bullets print unless the resume has an engineering job and the rest of the resume fills the page. Then it drops to one line, and the build notes the bullets it leaves out. | `false` |
 | `bullets` | Same rules as project bullets. | |
 | `hide` | `true` leaves the entry out. | |
 
-A non-engineering job still shows you can hold a job. One line is enough.
+A non-engineering job still shows you can hold a job. Give it one or two bullets with a number in them. Once your engineering work fills the page, one line is enough. The build checks this for you: it first fits the page without that job's bullets, and keeps them if the page still fits with them at the same text size.
 
 ### `skills`
 
@@ -137,7 +136,6 @@ What differs from the resume:
 - **Everything in the file prints.** Nothing is dropped to make it fit. An entry with `"hide": true`, and a section that `sectionOrder` leaves out, are the only things left off. A job prints its bullets whether or not `engineering` is `true`.
 - **More sections.** The CV reads `education`, `experience`, `projects` and `skills` as the resume does, plus `honors`, `scholarships`, `certifications`, `activities` and `organizations`. An education entry also takes `location`, `thesis` and `honors` (a list). Without `sectionOrder`, the sections come in this order: education, honors, scholarships, experience, projects, skills, certifications, activities, organizations.
 - **Titles and labels come from the file.** `settings.sectionTitles` renames a section, such as `{"honors": "Honors and Awards"}`, and `settings.labels` changes the words before a list or a value: `gpa`, `coursework`, `activities`, `honors`, `thesis`, `software`, `hardwareLab`, `skillsCertifications` and `relocate`. A name left out keeps its default.
-- **A year date style.** `settings.dateStyle` also accepts `year` (2025), which suits honors, scholarships and certifications.
 
 The new sections are lists of records with the same fields:
 
@@ -195,13 +193,13 @@ A referral helps more than a good resume. Before you apply, ask someone who know
 - The paper is US Letter. There is no A4 setting.
 - The resume is one page. If the content does not fit, the build stops. There is no second page. A CV is the exception: it may take two, and no more.
 - The resume's sections are `education`, `projects`, `experience` and `skills`, with those titles. You can reorder them in `settings.sectionOrder`, but you cannot add or rename one. Any other name stops the build with `unknown section`. A CV has the five more sections above, and can rename them.
-- In a resume, a job with `"engineering": false` prints as one line, and its bullets are left out. A CV prints them.
+- In a resume that has an engineering job, a job with `"engineering": false` prints as one line when the rest of the resume fills the page, and its bullets are left out. A CV always prints them. The build keeps or drops the bullets of every such job together, never some of them.
 - The `libertinus` font covers Latin, Greek and Cyrillic. No font covers Chinese, Japanese or Korean. `times` and `arial` also lack Cyrillic and accented Greek letters. The build stops and names any character the font cannot draw.
 - `./run` installs missing tools only on Fedora, Debian, Ubuntu (including WSL) and macOS. On other systems, install Python and LuaLaTeX yourself.
 
 ## Contributing
 
-To suggest an idea or open a pull request, see [CONTRIBUTING](.github/CONTRIBUTING.md).
+To suggest an idea or open a pull request, see [CONTRIBUTING](https://github.com/edwardasilva/resume-generator/blob/main/.github/CONTRIBUTING.md).
 
 Only the repository owner cuts releases.
 
@@ -211,10 +209,10 @@ To report a vulnerability, use GitHub's private vulnerability reporting on this 
 
 The repo has two licenses, one for content and one for code.
 
-Content is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (full text in [LICENSE-CONTENT](LICENSE-CONTENT)). You may share and adapt it if you credit [resume-generator contributors](https://github.com/edwardasilva/resume-generator) and link the license. Content means the example resumes and sample data in `examples/`, and the docs: `README.md` and the Markdown files in `.github/`.
+Content is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (full text in [LICENSE-CONTENT](LICENSE-CONTENT)). You may share and adapt it if you credit [resume-generator contributors](https://github.com/edwardasilva/resume-generator) and link the license. Content means the example resumes and sample data in `examples/`, the docs, and the logo. The docs are every Markdown file in the repo: `README.md`, `AGENTS.md`, `examples/README.md`, `fonts/README.md` and the Markdown files in `.github/`. The logo is the two SVG files in `docs/brand/`.
 
 A resume you build with this tool, including one started from an example, is yours and needs no credit.
 
-Code is licensed under the [MIT License](LICENSE). Code means everything else, including `build.py`, `resume.tex`, `cv.tex`, `run`, `pyproject.toml`, and the scripts and workflows in `.github/`.
+Code is licensed under the [MIT License](LICENSE). Code means everything else, including `build.py`, `resume.tex`, `cv.tex`, `run`, `pyproject.toml`, `tests/`, and the scripts and workflows in `.github/`.
 
-The fonts in `fonts/` keep their own licenses: Libertinus Serif is under the SIL Open Font License 1.1 ([fonts/OFL.txt](fonts/OFL.txt)), and TeX Gyre Termes and TeX Gyre Heros are under the GUST Font License ([fonts/GUST-FONT-LICENSE.txt](fonts/GUST-FONT-LICENSE.txt)). See [fonts/README.md](fonts/README.md) for where each file comes from.
+The fonts in `fonts/` keep their own licenses: Libertinus Serif is under the SIL Open Font License 1.1 ([fonts/OFL.txt](fonts/OFL.txt)), and TeX Gyre Termes and TeX Gyre Heros are under the GUST Font License ([fonts/GUST-FONT-LICENSE.txt](fonts/GUST-FONT-LICENSE.txt)), which is the LaTeX Project Public License 1.3c or later ([fonts/lppl.txt](fonts/lppl.txt)). The license texts and upstream notices in `fonts/` are their authors' own and fall under neither license above. See [fonts/README.md](fonts/README.md) for where each file comes from and who holds its copyright.

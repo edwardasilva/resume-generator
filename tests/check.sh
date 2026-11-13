@@ -34,6 +34,11 @@ fails 'has no glyph for' '{"header": {"name": "张 Doe"}}'
 fails "doesn't match the year date style" '{"settings": {"document": "cv", "dateStyle": {"honors": "year"}}, "honors": [{"title": "A", "date": "Fall 2025"}]}'
 fails 'Use one date, or a range, not both' '{"settings": {"document": "cv"}, "honors": [{"title": "A", "date": "Fall 2025", "start": "Fall 2024"}]}'
 
+# A resume shows only gradDate on an education entry, so it notes a start or end it leaves out.
+printf '%s' '{"header": {"name": "Alex Doe"}, "education": [{"degree": "B.S. Electrical Engineering", "start": "Fall 2023", "end": "Spring 2027"}]}' > "$tmp/edu.json"
+out="$(python3 build.py "$tmp/edu.json" 2>&1)"
+case "$out" in *"a resume leaves them out"*) ;; *) echo "Expected a note about education start and end, got: $out" >&2; exit 1 ;; esac
+
 # A CV builds to two pages, with every section from the JSON in the text. A job
 # with "engineering": false still prints its bullets.
 cp examples/alex-cv.json "$tmp/cv.json"
@@ -46,6 +51,45 @@ for want in "Honors and Awards" "Example Foundation Engineering Scholarship" "Se
   case "$cv_text" in *"$want"*) ;; *) echo "The CV text is missing: $want" >&2; exit 1 ;; esac
 done
 
+# A resume prints a non-engineering job's bullets unless it has an engineering
+# job and the rest of the resume fills the page. Then that job drops to one line.
+python3 -I -c '
+import json, sys
+cashier = {"title": "Cashier", "company": "Example Grocery", "start": "May 2025",
+           "end": "Present", "engineering": False,
+           "bullets": ["Balanced the cash drawer at close on [X] shifts"]}
+intern = {"title": "Test Intern", "company": "Example Co", "start": "May 2026",
+          "end": "Aug 2026", "engineering": True, "bullets": ["Wrote [X] test scripts"]}
+# About 35 lines of engineering bullets fill most of the page, and 30 cashier
+# lines cannot fit beside them at any text size.
+busy = dict(intern, bullets=["Wrote test script %d for the board bring-up plan" % i
+                             for i in range(35)])
+crowded = dict(cashier, bullets=["Balanced the cash drawer at close, shift %d" % i
+                                 for i in range(30)])
+base = {"header": {"name": "Alex Doe"}, "settings": {"dateStyle": {"experience": "month"}}}
+json.dump(dict(base, experience=[cashier]), open(sys.argv[1], "w"))
+json.dump(dict(base, experience=[intern, cashier]), open(sys.argv[2], "w"))
+json.dump(dict(base, experience=[busy, crowded]), open(sys.argv[3], "w"))
+' "$tmp/nojob.json" "$tmp/withjob.json" "$tmp/fulljob.json"
+python3 build.py "$tmp/nojob.json" 2>/dev/null
+case "$(pdftotext "$tmp/Alex-Doe-Resume-nojob.pdf" -)" in
+  *"Balanced the cash drawer"*) ;;
+  *) echo "A resume with no engineering job left out the other job's bullets" >&2; exit 1 ;;
+esac
+python3 build.py "$tmp/withjob.json" 2>/dev/null
+case "$(pdftotext "$tmp/Alex-Doe-Resume-withjob.pdf" -)" in
+  *"Balanced the cash drawer"*) ;;
+  *) echo "A resume with room left out the other job's bullets" >&2; exit 1 ;;
+esac
+out="$(python3 build.py "$tmp/fulljob.json" 2>&1)"
+case "$(pdftotext "$tmp/Alex-Doe-Resume-fulljob.pdf" -)" in
+  *"Balanced the cash drawer"*) echo "A full resume printed the other job's bullets" >&2; exit 1 ;;
+esac
+case "$(pdftotext "$tmp/Alex-Doe-Resume-fulljob.pdf" -)" in
+  *"test script 34"*) ;;
+  *) echo "A full resume left out an engineering bullet" >&2; exit 1 ;;
+esac
+case "$out" in *"the rest of the resume fills the page"*) ;; *) echo "Expected a note about the left-out bullets, got: $out" >&2; exit 1 ;; esac
 # A CV that cannot fit on two pages stops the build and names the page cap.
 python3 -I -c '
 import json, sys

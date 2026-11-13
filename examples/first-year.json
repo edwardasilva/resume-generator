@@ -1,15 +1,15 @@
 {
   "settings": {
     "dateStyle": {
-      "education": "semester",
+      "education": "month",
       "projects": "semester",
-      "experience": "semester"
+      "experience": "month"
     },
     "sectionOrder": [
       "education",
-      "skills",
       "projects",
-      "experience"
+      "experience",
+      "skills"
     ]
   },
   "header": {
@@ -26,7 +26,7 @@
       "degree": "B.S. Electrical Engineering",
       "gpa": "",
       "school": "Example State University",
-      "gradDate": "Expected Spring 2030",
+      "gradDate": "Expected May 2030",
       "coursework": [
         "Cornerstone Design I",
         "Physics I: Mechanics",
@@ -60,10 +60,13 @@
       "title": "Cashier",
       "company": "Example Grocery",
       "location": "",
-      "start": "Summer 2025",
+      "start": "May 2025",
       "end": "Present",
       "engineering": false,
-      "bullets": []
+      "bullets": [
+        "Checked out about [X] customers a shift at the register",
+        "Wrote a closing checklist that [X] cashiers now follow at the end of each shift"
+      ]
     }
   ],
   "skills": {

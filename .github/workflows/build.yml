@@ -1,10 +1,14 @@
 name: Build resume
 
-# Release tags run every job, and the release waits for all of them. A manual
-# run starts the same workflow. The two install-path jobs, minimal-tex and macos-basictex, are the
-# slowest (a TeX Live install and a macOS runner) and test Homebrew, CTAN and Ubuntu's archive
-# more than this repo, so they run on release tags and by hand.
-# Run them by hand before a release:
+# This workflow runs only on release tags and by hand. It doesn't run on pull
+# requests or on pushes to main, so a pull request gets no check from it: run
+# the checks in .github/CONTRIBUTING.md before you push. Its pull request parts,
+# such as the scope step in the build job, never match, so every run builds
+# everything. A release tag runs every job, and the release waits for all of
+# them. The two install-path jobs, minimal-tex and macos-basictex, are the
+# slowest (a TeX Live install and a macOS runner) and test Homebrew, CTAN and
+# Ubuntu's archive more than this repo.
+# Run the workflow by hand before a release:
 #   gh workflow run build.yml --ref main
 on:
   push:
@@ -15,15 +19,15 @@ on:
 permissions:
   contents: read
 
-# A newer push to the same pull request or branch cancels the older run. The
-# event is in the group, so a manual run and a tag push don't cancel each other.
+# A newer run on the same tag or branch cancels the older one. The event is in
+# the group, so a manual run and a tag push don't cancel each other.
 concurrency:
   group: build-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  # One gate: lint, the release zip check, then the PDF builds. The protect-main ruleset
-  # requires this job by its id, build. Keep it.
+  # One job for lint, the release zip check, then the PDF builds. The release
+  # job waits for it by its id, build.
   build:
     # Pinned on purpose. This is the oldest setup this job tests: Ubuntu 24.04 with
     # TeX Live 2023 and Python 3.12. minimal-tex covers the newest TeX Live. When the
@@ -48,7 +52,7 @@ jobs:
       # run ships in the release zip, so it gets the same treatment as build.py.
       # shellcheck comes with the Ubuntu runner.
       - name: Lint the shell scripts
-        run: shellcheck run .github/check-pdfs.sh .github/package.sh
+        run: shellcheck run .github/check-pdfs.sh .github/package.sh tests/check.sh
       # A zip that is missing a file ships broken, and nobody notices until a
       # user runs it. Build the release zip the same way the release job does
       # and check that it runs from an empty folder.
@@ -61,11 +65,12 @@ jobs:
           ./run --help
           python3 -c "import ast, sys; ast.parse(open('build.py').read())"
           test -f fonts/LibertinusSerif-Regular.otf
+          test -f docs/brand/resume-generator-lockup-outlined.svg
           test -f examples/alex.json
           test -f resume.json
-      # A pull request that changes only docs, such as CONTRIBUTING.md or an issue template,
-      # skips the TeX build. The build job still reports, so the ruleset is
-      # satisfied. Every other event builds.
+      # Only a pull request that changes only docs, such as CONTRIBUTING.md or an
+      # issue template, would skip the TeX build. This workflow has no
+      # pull_request trigger, so this step always says to build.
       - name: Find what the pull request changes
         id: scope
         run: |
@@ -103,6 +108,13 @@ jobs:
       - name: Check that every PDF is one page and uses the bundled fonts
         if: steps.scope.outputs.code == 'true'
         run: .github/check-pdfs.sh *-Resume.pdf examples/*.pdf
+      # tests/check.sh covers what the examples don't: LaTeX special characters
+      # in every font, exact link targets, the message for each kind of bad
+      # input, the CV page cap and the rule for a non-engineering job's bullets.
+      # It needs the poppler-utils installed above.
+      - name: Run tests/check.sh
+        if: steps.scope.outputs.code == 'true'
+        run: bash tests/check.sh
       - name: Package the release zip
         if: startsWith(github.ref, 'refs/tags/v')
         run: .github/package.sh "resume-generator-${GITHUB_REF_NAME}"
