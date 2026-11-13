@@ -34,6 +34,11 @@ fails 'has no glyph for' '{"header": {"name": "张 Doe"}}'
 fails "doesn't match the year date style" '{"settings": {"document": "cv", "dateStyle": {"honors": "year"}}, "honors": [{"title": "A", "date": "Fall 2025"}]}'
 fails 'Use one date, or a range, not both' '{"settings": {"document": "cv"}, "honors": [{"title": "A", "date": "Fall 2025", "start": "Fall 2024"}]}'
 
+# A resume shows only gradDate on an education entry, so it notes a start or end it leaves out.
+printf '%s' '{"header": {"name": "Alex Doe"}, "education": [{"degree": "B.S. Electrical Engineering", "start": "Fall 2023", "end": "Spring 2027"}]}' > "$tmp/edu.json"
+out="$(python3 build.py "$tmp/edu.json" 2>&1)"
+case "$out" in *"a resume leaves them out"*) ;; *) echo "Expected a note about education start and end, got: $out" >&2; exit 1 ;; esac
+
 # A CV builds to two pages, with every section from the JSON in the text. A job
 # with "engineering": false still prints its bullets.
 cp examples/alex-cv.json "$tmp/cv.json"

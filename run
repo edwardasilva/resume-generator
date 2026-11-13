@@ -13,7 +13,7 @@ for arg in "$@"; do
   case "$arg" in
     -y|--yes) assume_yes=1 ;;
     -h|--help) sed -n '2,4p' "$0" | sed 's/^# //'; exit 0 ;;
-    -V|--version) cat "$(dirname "$0")/VERSION" 2>/dev/null || echo "development copy"; exit 0 ;;
+    -V|--version) cat "$here/VERSION" 2>/dev/null || echo "development copy"; exit 0 ;;
     -*) echo "Unknown option: $arg" >&2; exit 2 ;;
     *)
       [[ -z "$input" ]] || { echo "Give one JSON file at a time." >&2; exit 2; }

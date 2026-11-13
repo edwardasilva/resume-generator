@@ -83,6 +83,7 @@ A list. Most students have one entry. Add a second for a master's degree.
 | `gpa` | `N.NN/4.00`. List it when a posting sets a minimum you meet. | `3.62/4.00` |
 | `school` | Your university. | `Example State University` |
 | `gradDate` | Your graduation date, in the education date style. Use a month, with `education` set to `month` in `dateStyle`, and add "Expected" if you haven't graduated. It goes at the right of the degree line. If the degree line is too long to share it, the build moves the date to the school line. | `Expected May 2027` |
+| `start`, `end` | CV only. A range of dates for study with no graduation, in the education date style. A CV prints it when `gradDate` is blank. A resume shows only `gradDate`, so the build notes a `start` or `end` it leaves out. | `Sep 2023`, `May 2025` |
 | `coursework` | Upper-level courses that match the jobs you want. | `["Power Electronics", "Embedded Systems"]` |
 | `activities` | Clubs and honor societies. Put real build work in `projects`. | `["IEEE student branch"]` |
 
