@@ -199,7 +199,7 @@ A referral helps more than a good resume. Before you apply, ask someone who know
 
 ## Contributing
 
-To suggest an idea or open a pull request, see [CONTRIBUTING](.github/CONTRIBUTING.md).
+To suggest an idea or open a pull request, see [CONTRIBUTING](https://github.com/edwardasilva/resume-generator/blob/main/.github/CONTRIBUTING.md).
 
 Only the repository owner cuts releases.
 
