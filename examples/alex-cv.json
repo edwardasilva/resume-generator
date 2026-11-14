@@ -140,19 +140,6 @@
       ]
     },
     {
-      "title": "Embedded Firmware Intern",
-      "company": "[Engineering company]",
-      "location": "Springfield, ST",
-      "start": "May 2024",
-      "end": "Aug 2024",
-      "engineering": true,
-      "bullets": [
-        "Ported a sensor driver from a vendor library to bare-metal C on an ARM Cortex-M4, saving [X] KB of flash",
-        "Found a missed interrupt with a logic analyzer and fixed it by moving the handler to a higher priority, removing a dropped-sample bug that had stayed open for [X] weeks and that two engineers had missed in earlier reviews",
-        "Added unit tests for the driver and ran them on every commit"
-      ]
-    },
-    {
       "title": "Teaching Assistant, Digital Design",
       "company": "[University] Department of Electrical Engineering",
       "location": "Springfield, ST",
@@ -163,6 +150,19 @@
         "Led two lab sections of [X] students each and held weekly office hours",
         "Wrote three Verilog lab handouts, and students raised the average lab score by [X] points",
         "Graded [X] lab reports a week and returned each one with written comments within [X] days"
+      ]
+    },
+    {
+      "title": "Embedded Firmware Intern",
+      "company": "[Engineering company]",
+      "location": "Springfield, ST",
+      "start": "May 2024",
+      "end": "Aug 2024",
+      "engineering": true,
+      "bullets": [
+        "Ported a sensor driver from a vendor library to bare-metal C on an ARM Cortex-M4, saving [X] KB of flash",
+        "Found a missed interrupt with a logic analyzer and fixed it by moving the handler to a higher priority, removing a dropped-sample bug that had stayed open for [X] weeks and that two engineers had missed in earlier reviews",
+        "Added unit tests for the driver and ran them on every commit"
       ]
     },
     {
