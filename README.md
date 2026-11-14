@@ -46,7 +46,7 @@ The phone, email, LinkedIn, GitHub and website in the header are links, except t
 
 | Field | What to put | Example |
 | --- | --- | --- |
-| `sectionOrder` | Order of the sections. A section left out of the list is left off the page. | `["education", "projects", "experience", "skills"]` |
+| `sectionOrder` | Order of the sections. A section left out of the list is left off the page. Leave `sectionOrder` out, or leave it empty (`[]`), for the default order: education, projects, experience, skills. | `["education", "projects", "experience", "skills"]` |
 | `font` | `libertinus`, `times` or `arial`. Leave it out to use `libertinus`. | `"libertinus"` |
 | `dateStyle` | The date style for each section: `semester` (Fall 2025), `month` (Sep 2025, Sept 2025 or September 2025; pick one spelling and keep it) or `year` (2025), which suits a CV's honors, scholarships and certifications. Every date in a section must use that section's style. The build stops if one doesn't. A section left out uses `semester`. | `{"education": "month", "projects": "semester", "experience": "month"}` |
 
