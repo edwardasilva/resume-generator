@@ -78,7 +78,7 @@ jobs:
         run: for f in examples/*.json; do ./run --yes "$f"; done
         env:
           RESUME_TEXT_CHECK: strict
-      - name: Check that every PDF is one page and uses the bundled fonts
+      - name: Check each PDF's page count and bundled fonts
         run: .github/check-pdfs.sh *-Resume.pdf examples/*.pdf
       # tests/check.sh covers what the examples don't: LaTeX special characters
       # in every font, exact link targets, the message for each kind of bad
@@ -137,7 +137,7 @@ jobs:
           echo "$texdir/bin/x86_64-linux" >> "$GITHUB_PATH"
       - name: Build each example
         run: for f in examples/*.json; do ./run --yes "$f"; done
-      - name: Check that every PDF is one page and uses the bundled fonts
+      - name: Check each PDF's page count and bundled fonts
         run: |
           sudo apt-get install -y --no-install-recommends poppler-utils
           .github/check-pdfs.sh examples/*.pdf
@@ -156,7 +156,7 @@ jobs:
           sudo /Library/TeX/texbin/tlmgr update --self
       - name: Build each example
         run: for f in examples/*.json; do ./run --yes "$f"; done
-      - name: Check that every PDF is one page and uses the bundled fonts
+      - name: Check each PDF's page count and bundled fonts
         run: |
           brew install poppler
           .github/check-pdfs.sh examples/*.pdf
