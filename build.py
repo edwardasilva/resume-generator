@@ -1218,8 +1218,8 @@ def report_layout(pdf, margin, free):
         return
     for start in short_bullets(pdf, margin):
         print(
-            f'Note: the bullet "{start}..." ends with a short second line. Cut '
-            "it to one line, or add a detail that fills most of the second.",
+            f'Note: the bullet "{start}..." ends with a short last line. Cut it '
+            "by a line, or add a detail that fills most of the last one.",
             file=sys.stderr,
         )
 
