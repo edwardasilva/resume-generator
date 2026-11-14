@@ -15,13 +15,15 @@ Get the latest zip from the [releases page](https://github.com/edwardasilva/resu
 
 To work from the repository instead, clone it and run `./run`. The first run copies `examples/alex.json` to `resume.json`. Git ignores `resume.json` and the `*-Resume.pdf` file in the top folder, so your personal details stay out of the repository.
 
-To build any other file, pass it as an argument: `./run examples/new-grad.json` writes `examples/Alex-Doe-Resume-new-grad.pdf` next to it. The PDF is named `[Name]-Resume.pdf` after the header name, or `Resume.pdf` if there is none. Any file other than `resume.json` and `alex.json` adds its own name, as in `[Name]-Resume-[file].pdf` (a leading `resume-` is dropped, so `resume-firmware.json` writes `[Name]-Resume-firmware.pdf`), so two files for one person don't overwrite each other.
+To build any other file, pass it as an argument: `./run examples/new-grad.json` writes `examples/Alex-Doe-Resume-new-grad.pdf` next to it. The PDF is named `[Name]-Resume.pdf` after the header name, or `Resume.pdf` if there is none. Any file other than `resume.json` and `alex.json` adds its own name, as in `[Name]-Resume-[file].pdf` (a leading `resume-` is dropped, so `resume-firmware.json` writes `[Name]-Resume-firmware.pdf`), so two files for one person don't overwrite each other. The match ignores case, so `Resume.json` and `Alex.json` add nothing either.
 
 Build only JSON files you trust. The LaTeX build runs with shell escape off, and the JSON has no field that names a file, so text such as `\input{/etc/passwd}` prints as plain text and nothing on your machine is read or run because of it. Two things to know before you build a file from someone else: `./run` may ask for `sudo` to install missing packages, and the PDF overwrites any file with the same name beside the input.
 
 ## Examples
 
 Each example in `examples/` is a made-up resume and the PDF built from it, from nearly empty to completely full.
+
+[![The one-page resume built from examples/alex.json](examples/alex-doe-resume.png)](examples/Alex-Doe-Resume.pdf)
 
 | File | Who it describes | PDF |
 | --- | --- | --- |
@@ -46,7 +48,7 @@ The phone, email, LinkedIn, GitHub and website in the header are links, except t
 
 | Field | What to put | Example |
 | --- | --- | --- |
-| `sectionOrder` | Order of the sections. A section left out of the list is left off the page. | `["education", "projects", "experience", "skills"]` |
+| `sectionOrder` | Order of the sections. A section left out of the list is left off the page. Leave `sectionOrder` out, or leave it empty (`[]`), for the default order: education, projects, experience, skills. | `["education", "projects", "experience", "skills"]` |
 | `font` | `libertinus`, `times` or `arial`. Leave it out to use `libertinus`. | `"libertinus"` |
 | `dateStyle` | The date style for each section: `semester` (Fall 2025), `month` (Sep 2025, Sept 2025 or September 2025; pick one spelling and keep it) or `year` (2025), which suits a CV's honors, scholarships and certifications. Every date in a section must use that section's style. The build stops if one doesn't. A section left out uses `semester`. | `{"education": "month", "projects": "semester", "experience": "month"}` |
 
