@@ -23,6 +23,8 @@ Build only JSON files you trust. The LaTeX build runs with shell escape off, and
 
 Each example in `examples/` is a made-up resume and the PDF built from it, from nearly empty to completely full.
 
+[![The one-page resume built from examples/alex.json](examples/alex-doe-resume.png)](examples/Alex-Doe-Resume.pdf)
+
 | File | Who it describes | PDF |
 | --- | --- | --- |
 | `alex.json` | The starting point. It follows the finished example on eeprep's resume page. The student graduates in 2027 and has two projects, a sales job with two bullets and two skill lines. Every tool in the skill lines appears in a bullet. `[X]` marks a number you measure. | [Alex-Doe-Resume.pdf](examples/Alex-Doe-Resume.pdf) |

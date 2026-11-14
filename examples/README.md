@@ -1,6 +1,6 @@
 # Examples
 
-This folder holds five made-up example resumes and one made-up two-page CV, each as a JSON source and the PDF built from it.
+This folder holds five made-up example resumes and one made-up two-page CV, each as a JSON source and the PDF built from it. `alex-doe-resume.png` is a picture of `Alex-Doe-Resume.pdf`, shown in the main README.
 
 | Example    | Source                             | PDF                                                              | Description                                                                                                                                                                                                                  |
 | ---------- | ---------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
