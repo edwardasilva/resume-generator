@@ -67,7 +67,8 @@ EMPTY_LINES_NOTE = 3
 # note. eeprep's page says a bullet fills one line or most of two.
 SHORT_LAST_LINE = 0.5
 
-# Input file names (without .json) that add nothing to the PDF name.
+# Input file names (without .json, in any case) that add nothing to the PDF
+# name.
 PLAIN_STEMS = ("resume", "alex")
 
 # Fonts allowed in settings.font: font files in fonts/, loaded by path so the
@@ -1253,7 +1254,8 @@ def pdf_name(data, source):
 
     The input's file name is added ([Name]-Resume-[file].pdf) so two files for
     one person don't overwrite each other. resume.json and alex.json add
-    nothing, because they are the main file and the starting example.
+    nothing, because they are the main file and the starting example. The
+    match ignores case, so Resume.json and Alex.json add nothing too.
     """
     name = str((data.get("header") or {}).get("name") or "")
     words = re.sub(r"[^\w]+", " ", name).split()
@@ -1263,11 +1265,11 @@ def pdf_name(data, source):
         words.append("CV")
         stem = re.sub(r"[^\w]+", " ", source.stem).split()
         stem = [w for w in stem if w.lower() not in ("cv", "resume")]
-        if stem != ["alex"]:
+        if [w.lower() for w in stem] != ["alex"]:
             words += stem
         return "-".join(words) + ".pdf"
     words.append("Resume")
-    if source.stem not in PLAIN_STEMS:
+    if source.stem.lower() not in PLAIN_STEMS:
         stem = re.sub(r"^resume[-_ ]+", "", source.stem, flags=re.I)
         words += re.sub(r"[^\w]+", " ", stem).split()
     return "-".join(words) + ".pdf"
