@@ -24,9 +24,9 @@ bash tests/check.sh
 
 If you change a file in `examples/`, commit its rebuilt PDF. Otherwise discard the rebuilt PDFs with `git restore examples/`. If `examples/Alex-Doe-Resume.pdf` changes, rebuild `examples/alex-doe-resume.png` with `pdftoppm -png -r 80 -singlefile examples/Alex-Doe-Resume.pdf examples/alex-doe-resume`.
 
-Every resume PDF in `examples/` must stay exactly one page. A CV PDF (`*-CV.pdf`) may take one or two, and `examples/Alex-Doe-CV.pdf` must stay exactly two. If you skip the checks, maintainers run them before merging.
+Every resume PDF in `examples/` must stay exactly one page. A CV PDF (`*-CV.pdf`) may take one or two, and `examples/Alex-Doe-CV.pdf` must stay exactly two. If you skip the checks, I run them before I merge.
 
-4. Open a pull request into `main` with a short description of what changed and why. That is all a pull request needs. An issue link is optional. Maintainers review the change.
+4. Open a pull request into `main` with a short description of what changed and why. That is all a pull request needs. An issue link is optional. I review the change.
 
 ## Coding agents
 
@@ -38,7 +38,7 @@ Only the repository owner can start the workflow. It works on a branch and opens
 
 Only the repository owner cuts releases.
 
-Release notes are the notes GitHub generates from pull requests, plus a Breaking changes line written by hand when there is one. There is no CHANGELOG file. Put the Breaking changes text in `.github/breaking-changes.md` before cutting the tag; the release workflow prepends it to the generated notes. After the release, clear that file or replace it with the next breaking change.
+Release notes are the notes GitHub generates from pull requests, plus a Breaking changes line written by hand when there is one. There is no CHANGELOG file. Put the Breaking changes text in `.github/breaking-changes.md` before cutting the tag. The release workflow prepends it to the generated notes. After the release, clear that file or replace it with the next breaking change.
 
 ## Conduct
 
