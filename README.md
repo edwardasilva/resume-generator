@@ -9,9 +9,17 @@ This project is a companion to [eeprep.com](https://eeprep.com). It was built fo
 
 ## Download
 
-Get the latest zip from the [releases page](https://github.com/edwardasilva/resume-generator/releases/latest), unzip it, edit `resume.json` (see the field guide below) and run `./run`. It writes the PDF named after the `name` in `header`, such as `Alex-Doe-Resume.pdf`.
+1. Get the latest zip from the [releases page](https://github.com/edwardasilva/resume-generator/releases/latest) and unzip it.
+2. Edit `resume.json`. The field guide below explains each field.
+3. Run `./run`. It writes the PDF named after the `name` in `header`, such as `Alex-Doe-Resume.pdf`.
 
-`./run` needs Python 3.9 or newer and LuaLaTeX. If either is missing, it says what it will install and asks before it uses `sudo`. On Linux the install command starts with `sudo`, so `sudo` has to be installed. It supports Fedora (dnf), Debian, Ubuntu and WSL (apt), and macOS (Homebrew). Run `./run --yes` to skip the question. It is also skipped when `CI=true` is set. The fonts come with the project in `fonts/`, so no font packages are needed, and the PDF looks the same on every system. The fonts cover accented Latin letters, basic Greek letters and common math symbols such as Ω, ±, ≤ and ×. Chinese, Japanese and Korean text is not covered. `times` and `arial` also lack Cyrillic and accented Greek letters. If the text holds a character the chosen font has no glyph for, the build stops and names it, instead of leaving it blank in the PDF.
+`./run` needs Python 3.9 or newer and LuaLaTeX. If either is missing, `./run` can install what is missing on Fedora (dnf), Debian, Ubuntu and WSL (apt), and macOS (Homebrew). On other systems, install both yourself. To let `./run` install them:
+
+1. If you use Linux, check that `sudo` is installed. The install command starts with `sudo`.
+2. Run `./run`. It says what it will install and asks before it uses `sudo`.
+3. To skip the question, run `./run --yes` instead. The question is also skipped when `CI=true` is set.
+
+The fonts come with the project in `fonts/`, so no font packages are needed, and the PDF looks the same on every system. [Limits](#limits) lists the characters they cover.
 
 To work from the repository instead, clone it and run `./run`. The first run copies `examples/alex.json` to `resume.json`. Git ignores `resume.json` and the `*-Resume.pdf` file in the top folder, so your personal details stay out of the repository.
 
@@ -50,7 +58,7 @@ The phone, email, LinkedIn, GitHub and website in the header are links, except t
 | --- | --- | --- |
 | `sectionOrder` | Order of the sections. A section left out of the list is left off the page. Leave `sectionOrder` out, or leave it empty (`[]`), for the default order: education, projects, experience, skills. | `["education", "projects", "experience", "skills"]` |
 | `font` | `libertinus`, `times` or `arial`. Leave it out to use `libertinus`. | `"libertinus"` |
-| `dateStyle` | The date style for each section: `semester` (Fall 2025), `month` (Sep 2025, Sept 2025 or September 2025; pick one spelling and keep it) or `year` (2025), which suits a CV's honors, scholarships and certifications. Every date in a section must use that section's style. The build stops if one doesn't. A section left out uses `semester`. | `{"education": "month", "projects": "semester", "experience": "month"}` |
+| `dateStyle` | The date style for each section: `semester` (Fall 2025), `month` (Sep 2025, Sept 2025 or September 2025, in one spelling you keep throughout) or `year` (2025), which suits a CV's honors, scholarships and certifications. Every date in a section must use that section's style. The build stops if one doesn't. A section left out uses `semester`. | `{"education": "month", "projects": "semester", "experience": "month"}` |
 
 Common orders, from the [r/EngineeringResumes wiki](https://www.reddit.com/r/EngineeringResumes/wiki/index/): a student or new graduate with no technical work experience goes education, projects, experience, skills. One with an internship or other technical work goes education, experience, projects, skills. Once you start a full-time job, go experience, skills, education. Inside each section, put the most relevant or impressive entry first. Use one date style inside each section. Date jobs by month. Projects can use semesters, but use months if a project runs longer than a year.
 
@@ -170,6 +178,8 @@ The layout follows the rules on [eeprep's resume page](https://eeprep.com/advice
 
 `build.py` finds the largest text that fits. It starts at 11 pt text with 0.5 in margins, steps the text down to 10 pt while the margins stay at 0.5 in, and keeps the first layout that fits on one page. It then fills the page. Line spacing, section gaps and entry gaps grow together, in proportion, until the page is full. They go from compact (1.07 line spacing, 7 pt section gaps) up to roomy (1.15 and 10 pt). Spacing never shrinks below compact to fit more.
 
+Each try is a full LuaLaTeX build. The template writes how much of the last page the content uses into the build log, and `build.py` reads it from there. Line breaks don't depend on vertical spacing, so the used height grows in a straight line as the spacing goes from compact to roomy. One build at roomy spacing gives the slope of that line, and one more build lands on a full page. The fill leaves 0.5 lines of room at the bottom, so rounding can't push the last line onto a second page. A page break can still move when the spacing grows, so a try that adds a page is retried with less fill.
+
 If the page still has more than 3 empty lines at roomy spacing, the build notes it. eeprep's page counts empty space as wasted, so add a class project, lab work or a bullet instead. The build also notes any wrapped bullet whose last line fills less than half the line. Cut the bullet by a line, or add a detail that fills most of the last one.
 
 If the resume doesn't fit at 10 pt, the build stops and says about how many lines to cut. Drop a coursework item first, then the weakest bullet, or add `"hide": true` to an older project.
@@ -180,7 +190,11 @@ To look at the result, run `pdftoppm -png -r 80 Alex-Doe-Resume.pdf page` (it co
 
 ## Checking the text
 
-Applicant tracking systems read the PDF's text, not its look. The build checks its text with `pdftotext`, the way many applicant tracking systems read text. No applicant tracking system was tested. When `pdftotext` is installed, each build extracts the text. Install poppler to get it, with `brew install poppler`, `sudo apt-get install poppler-utils` or `sudo dnf install poppler-utils`. The build checks that the name, contact items, section titles, entries, bullets and dates all come out whole and in reading order, with no broken ligatures or unreadable glyphs. Problems print as a warning. Set `RESUME_TEXT_CHECK=strict` to make them an error. Words never break with a hyphen across lines, because a split word can't be found by a keyword search.
+The build extracts the PDF's text with `pdftotext`, as a stand-in for an applicant tracking system (ATS). No ATS was tested, so a clean check doesn't show how any one ATS reads the file. When `pdftotext` is installed, each build extracts the text. Install poppler to get it, with `brew install poppler`, `sudo apt-get install poppler-utils` or `sudo dnf install poppler-utils`.
+
+The build checks that the name, contact items, section titles, entries, bullets and dates all come out whole and in reading order, with no broken ligatures or unreadable glyphs. Problems print as a warning. Set `RESUME_TEXT_CHECK=strict` to make them an error. Words never break with a hyphen across lines, because a split word can't be found by a keyword search.
+
+`tests/check.sh` runs this check in strict mode on a test file of LaTeX special characters, symbols and accents, in every font. It also checks the exact link targets and the message for each kind of bad input. It needs LuaLaTeX and poppler-utils.
 
 ## Writing the content with an AI tool
 
@@ -188,7 +202,7 @@ If you draft `resume.json` with Claude Code, Cursor, or another coding agent, gi
 
 ## Before applying
 
-A referral helps more than a good resume. Before you apply, ask someone who knows your work for one. For more on resumes, referrals and applying for engineering jobs, see [eeprep.com](https://eeprep.com) and its [resume page](https://eeprep.com/advice/resume/).
+Before you apply, ask someone who knows your work for a referral. For more on resumes, referrals and applying for engineering jobs, see [eeprep.com](https://eeprep.com) and its [resume page](https://eeprep.com/advice/resume/).
 
 ## Limits
 
@@ -196,7 +210,7 @@ A referral helps more than a good resume. Before you apply, ask someone who know
 - The resume is one page. If the content does not fit, the build stops. There is no second page. A CV is the exception: it may take two, and no more.
 - The resume's sections are `education`, `projects`, `experience` and `skills`, with those titles. You can reorder them in `settings.sectionOrder`, but you cannot add or rename one. Any other name stops the build with `unknown section`. A CV has the five more sections above, and can rename them.
 - In a resume that has an engineering job, a job with `"engineering": false` prints as one line when the rest of the resume fills the page, and its bullets are left out. A CV always prints them. The build keeps or drops the bullets of every such job together, never some of them.
-- The `libertinus` font covers Latin, Greek and Cyrillic. No font covers Chinese, Japanese or Korean. `times` and `arial` also lack Cyrillic and accented Greek letters. The build stops and names any character the font cannot draw.
+- The `libertinus` font covers Latin, Greek and Cyrillic. All three fonts cover accented Latin letters, basic Greek letters and common math symbols such as Ω, ±, ≤ and ×. No font covers Chinese, Japanese or Korean. `times` and `arial` also lack Cyrillic and accented Greek letters. The build stops and names any character the font cannot draw, instead of leaving it blank in the PDF.
 - `./run` installs missing tools only on Fedora, Debian, Ubuntu (including WSL) and macOS. On other systems, install Python and LuaLaTeX yourself.
 
 ## Contributing

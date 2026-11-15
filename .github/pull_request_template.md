@@ -1,7 +1,7 @@
 ## Description
 
 <!--
-A short description is all a pull request needs. Maintainers review the change.
+A short description is all a pull request needs. I review the change.
 
 Optional, if they help:
 - What changed and why.
