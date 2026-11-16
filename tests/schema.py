@@ -20,19 +20,28 @@ import build  # noqa: E402
 SCHEMA = ROOT / "schema" / "resume.schema.json"
 RAW = "https://raw.githubusercontent.com/edwardasilva/resume-generator/main/"
 
+# The kinds of field in build.py, each defined once under $defs. null counts as
+# blank for any field.
 TEXT = {"type": ["string", "null"]}
-FLAG = {"type": ["boolean", "null"]}
-LINK = {
-    "type": "object",
-    "properties": {"name": TEXT, "url": TEXT},
-    "additionalProperties": False,
-}
-KINDS = {
+DEFS = {
     "text": TEXT,
-    "flag": FLAG,
+    "flag": {"type": ["boolean", "null"]},
     "lines": {"type": ["array", "null"], "items": TEXT},
-    "items": {"type": ["array", "null"], "items": {"anyOf": [TEXT, LINK]}},
+    "items": {
+        "type": ["array", "null"],
+        "items": {
+            "anyOf": [
+                TEXT,
+                {
+                    "type": "object",
+                    "properties": {"name": TEXT, "url": TEXT},
+                    "additionalProperties": False,
+                },
+            ]
+        },
+    },
 }
+KINDS = {kind: {"$ref": f"#/$defs/{kind}"} for kind in DEFS}
 
 
 def fields(table):
@@ -109,6 +118,7 @@ def schema():
         "type": "object",
         "properties": properties,
         "additionalProperties": False,
+        "$defs": DEFS,
     }
 
 

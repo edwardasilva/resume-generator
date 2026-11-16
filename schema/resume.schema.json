@@ -281,52 +281,28 @@
       ],
       "properties": {
         "name": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "$ref": "#/$defs/text"
         },
         "phone": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "$ref": "#/$defs/text"
         },
         "email": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "$ref": "#/$defs/text"
         },
         "linkedin": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "$ref": "#/$defs/text"
         },
         "github": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "$ref": "#/$defs/text"
         },
         "website": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "$ref": "#/$defs/text"
         },
         "location": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "$ref": "#/$defs/text"
         },
         "relocate": {
-          "type": [
-            "boolean",
-            "null"
-          ]
+          "$ref": "#/$defs/flag"
         }
       },
       "additionalProperties": false
@@ -338,106 +314,13 @@
       ],
       "properties": {
         "software": {
-          "type": [
-            "array",
-            "null"
-          ],
-          "items": {
-            "anyOf": [
-              {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  "url": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  }
-                },
-                "additionalProperties": false
-              }
-            ]
-          }
+          "$ref": "#/$defs/items"
         },
         "hardwareLab": {
-          "type": [
-            "array",
-            "null"
-          ],
-          "items": {
-            "anyOf": [
-              {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  "url": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  }
-                },
-                "additionalProperties": false
-              }
-            ]
-          }
+          "$ref": "#/$defs/items"
         },
         "certifications": {
-          "type": [
-            "array",
-            "null"
-          ],
-          "items": {
-            "anyOf": [
-              {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  "url": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  }
-                },
-                "additionalProperties": false
-              }
-            ]
-          }
+          "$ref": "#/$defs/items"
         }
       },
       "additionalProperties": false
@@ -454,166 +337,43 @@
         ],
         "properties": {
           "degree": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "gpa": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "school": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "gradDate": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "url": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "start": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "end": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "coursework": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "anyOf": [
-                {
-                  "type": [
-                    "string",
-                    "null"
-                  ]
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
-                    },
-                    "url": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
-                    }
-                  },
-                  "additionalProperties": false
-                }
-              ]
-            }
+            "$ref": "#/$defs/items"
           },
           "activities": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "anyOf": [
-                {
-                  "type": [
-                    "string",
-                    "null"
-                  ]
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
-                    },
-                    "url": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
-                    }
-                  },
-                  "additionalProperties": false
-                }
-              ]
-            }
+            "$ref": "#/$defs/items"
           },
           "hide": {
-            "type": [
-              "boolean",
-              "null"
-            ]
+            "$ref": "#/$defs/flag"
           },
           "location": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "thesis": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "honors": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "anyOf": [
-                {
-                  "type": [
-                    "string",
-                    "null"
-                  ]
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
-                    },
-                    "url": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
-                    }
-                  },
-                  "additionalProperties": false
-                }
-              ]
-            }
+            "$ref": "#/$defs/items"
           }
         },
         "additionalProperties": false
@@ -631,80 +391,25 @@
         ],
         "properties": {
           "title": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "url": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "start": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "end": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "tools": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "anyOf": [
-                {
-                  "type": [
-                    "string",
-                    "null"
-                  ]
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
-                    },
-                    "url": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
-                    }
-                  },
-                  "additionalProperties": false
-                }
-              ]
-            }
+            "$ref": "#/$defs/items"
           },
           "bullets": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "type": [
-                "string",
-                "null"
-              ]
-            }
+            "$ref": "#/$defs/lines"
           },
           "hide": {
-            "type": [
-              "boolean",
-              "null"
-            ]
+            "$ref": "#/$defs/flag"
           }
         },
         "additionalProperties": false
@@ -722,64 +427,31 @@
         ],
         "properties": {
           "title": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "company": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "location": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "url": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "start": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "end": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "engineering": {
-            "type": [
-              "boolean",
-              "null"
-            ]
+            "$ref": "#/$defs/flag"
           },
           "bullets": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "type": [
-                "string",
-                "null"
-              ]
-            }
+            "$ref": "#/$defs/lines"
           },
           "hide": {
-            "type": [
-              "boolean",
-              "null"
-            ]
+            "$ref": "#/$defs/flag"
           }
         },
         "additionalProperties": false
@@ -797,64 +469,31 @@
         ],
         "properties": {
           "title": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "organization": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "location": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "url": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "date": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "start": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "end": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "bullets": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "type": [
-                "string",
-                "null"
-              ]
-            }
+            "$ref": "#/$defs/lines"
           },
           "hide": {
-            "type": [
-              "boolean",
-              "null"
-            ]
+            "$ref": "#/$defs/flag"
           }
         },
         "additionalProperties": false
@@ -872,64 +511,31 @@
         ],
         "properties": {
           "title": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "organization": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "location": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "url": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "date": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "start": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "end": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "bullets": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "type": [
-                "string",
-                "null"
-              ]
-            }
+            "$ref": "#/$defs/lines"
           },
           "hide": {
-            "type": [
-              "boolean",
-              "null"
-            ]
+            "$ref": "#/$defs/flag"
           }
         },
         "additionalProperties": false
@@ -947,64 +553,31 @@
         ],
         "properties": {
           "title": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "organization": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "location": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "url": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "date": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "start": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "end": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "bullets": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "type": [
-                "string",
-                "null"
-              ]
-            }
+            "$ref": "#/$defs/lines"
           },
           "hide": {
-            "type": [
-              "boolean",
-              "null"
-            ]
+            "$ref": "#/$defs/flag"
           }
         },
         "additionalProperties": false
@@ -1022,64 +595,31 @@
         ],
         "properties": {
           "title": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "organization": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "location": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "url": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "date": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "start": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "end": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "bullets": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "type": [
-                "string",
-                "null"
-              ]
-            }
+            "$ref": "#/$defs/lines"
           },
           "hide": {
-            "type": [
-              "boolean",
-              "null"
-            ]
+            "$ref": "#/$defs/flag"
           }
         },
         "additionalProperties": false
@@ -1097,69 +637,96 @@
         ],
         "properties": {
           "title": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "organization": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "location": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "url": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "date": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "start": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "end": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "$ref": "#/$defs/text"
           },
           "bullets": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "type": [
-                "string",
-                "null"
-              ]
-            }
+            "$ref": "#/$defs/lines"
           },
           "hide": {
-            "type": [
-              "boolean",
-              "null"
-            ]
+            "$ref": "#/$defs/flag"
           }
         },
         "additionalProperties": false
       }
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "$defs": {
+    "text": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "flag": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "lines": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "items": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "anyOf": [
+          {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      }
+    }
+  }
 }

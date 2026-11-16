@@ -92,7 +92,7 @@ A list. Most students have one entry. Add a second for a master's degree.
 | Field | What to put | Example |
 | --- | --- | --- |
 | `degree` | Degree and major. | `B.S. Electrical Engineering` |
-| `gpa` | `N.NN/4.00`, with two decimals on both sides. eeprep's resume page lists a GPA of 3.50 or higher, leaves off one below 3.0, and lists one from 3.0 to 3.49 only when a posting sets a minimum you meet. The build notes a GPA written another way. | `3.62/4.00` |
+| `gpa` | `N.NN/4.00`, with two decimals on both sides. eeprep's resume page lists a GPA of 3.50 or higher and leaves off one below 3.0. It lists one from 3.0 to 3.49 only when a posting sets a minimum you meet. The build notes a GPA written another way. | `3.62/4.00` |
 | `school` | Your university. | `Example State University` |
 | `gradDate` | Your graduation date, in the education date style. Use a month, with `education` set to `month` in `dateStyle`, and add "Expected" if you haven't graduated. It goes at the right margin of the school line, under the degree line. | `Expected May 2027` |
 | `start`, `end` | CV only. A range of dates for study with no graduation, in the education date style. A CV prints it when `gradDate` is blank. A resume shows only `gradDate`, so the build notes a `start` or `end` it leaves out. | `Sep 2023`, `May 2025` |
@@ -124,7 +124,7 @@ A list, most recent first.
 | `bullets` | Same rules as project bullets. | |
 | `hide` | `true` leaves the entry out. | |
 
-A non-engineering job still shows you can hold a job. Give it one or two bullets with a number in them. Once your engineering work fills the page, one line is enough. The build checks this for you: it first fits the page without that job's bullets, and keeps them if the page still fits with them at the same text size.
+A non-engineering job still shows you can hold a job. Give it one or two bullets with a number in them. Once your engineering work fills the page, one line is enough. The build checks this for you. It first fits the page without that job's bullets, then keeps them if the page still fits with them at the same text size.
 
 ### `skills`
 
@@ -144,7 +144,7 @@ A CV is a second kind of document built from the same kind of JSON file. Add `"d
 
 What differs from the resume:
 
-- A CV takes two pages at most. The build steps the text down from 11 pt to 10.5 pt, the smallest size eeprep's resume page allows for a CV, and stops there. If the CV still doesn't fit at 10.5 pt, the build stops and says about how many lines to cut. If it fits with room left, the spacing grows until the used pages are full, and a CV that fits on one page stays on one.
+- A CV takes two pages at most. The build steps the text down from 11 pt to 10.5 pt, the smallest size eeprep's resume page allows for a CV. If the CV still doesn't fit at 10.5 pt, the build stops and says about how many lines to cut. If it fits with room left, the spacing grows until the used pages are full. A CV that fits on one page stays on one.
 - Everything in the file prints, and nothing is dropped to make it fit. An entry with `"hide": true`, and a section that `sectionOrder` leaves out, are the only things left off. A job prints its bullets whether or not `engineering` is `true`.
 - A CV has more sections. It reads `education`, `experience`, `projects` and `skills` as the resume does, plus `honors`, `scholarships`, `certifications`, `activities` and `organizations`. An education entry also takes `location`, `thesis` and `honors` (a list). Without `sectionOrder`, the sections come in this order, with Skills last as on eeprep's resume page: education, honors, scholarships, experience, projects, certifications, activities, organizations, skills.
 - Titles and labels come from the file. `settings.sectionTitles` renames a section, such as `{"honors": "Honors and Awards"}`. `settings.labels` changes the words before a list or a value: `gpa`, `coursework`, `activities`, `honors`, `thesis`, `software`, `hardwareLab`, `skillsCertifications` and `relocate`. A name left out keeps its default.
@@ -166,7 +166,7 @@ The text check, the notes about short bullets, the fonts and the link rules work
 
 ## Writing good bullets
 
-Build each bullet with one of the three formulas on [eeprep's resume page](https://eeprep.com/advice/resume/#bullets): XYZ (accomplished X, as measured by Y, by doing Z), CAR (challenge, action, result) or STAR (situation, task, action, result). Start with a past-tense verb. If you measured the result, put the number near the start of the bullet:
+Build each bullet with one of the three formulas on [eeprep's resume page](https://eeprep.com/advice/resume/#bullets). XYZ is accomplished X, as measured by Y, by doing Z. CAR is challenge, action, result, and STAR is situation, task, action, result. Start with a past-tense verb. If you measured the result, put the number near the start of the bullet:
 
 > Cut output ripple from 80 mV to 25 mV peak to peak, measured on an oscilloscope, by redesigning the 4-layer PCB in KiCad with a solid ground plane and a tighter switching loop
 
@@ -180,7 +180,7 @@ Build each bullet with one of the three formulas on [eeprep's resume page](https
 
 The layout follows the rules on [eeprep's resume page](https://eeprep.com/advice/resume/): text from 10 to 11 pt, margins of 0.5 in, line spacing of at least 1.07, the same gap between every pair of sections, and a page that is full but not crammed.
 
-`build.py` finds the largest text that fits. It starts at 11 pt text with 0.5 in margins, steps the text down to 10 pt while the margins stay at 0.5 in, and keeps the first layout that fits on one page. It then fills the page. Line spacing, section gaps and entry gaps grow together, in proportion, until the page is full. They go from compact (1.07 line spacing, 7 pt section gaps) up to roomy (1.15 and 10 pt). Spacing never shrinks below compact to fit more.
+`build.py` finds the largest text that fits. It starts at 11 pt text with 0.5 in margins and steps the text down to 10 pt, with the margins kept at 0.5 in. It keeps the first layout that fits on one page. It then fills the page. Line spacing, section gaps and entry gaps grow together, in proportion, until the page is full. They go from compact (1.07 line spacing, 7 pt section gaps) up to roomy (1.15 and 10 pt). Spacing never shrinks below compact to fit more.
 
 Each try is a full LuaLaTeX build. The template writes how much of the last page the content uses into the build log, and `build.py` reads it from there. Line breaks don't depend on vertical spacing, so the used height grows in a straight line as the spacing goes from compact to roomy. One build at roomy spacing gives the slope of that line, and one more build lands on a full page. The fill leaves 0.5 lines of room at the bottom, so rounding can't push the last line onto a second page. A page break can still move when the spacing grows, so a try that adds a page is retried with less fill.
 
@@ -196,7 +196,7 @@ To look at the result, run `pdftoppm -png -r 80 Alex-Doe-Resume.pdf page` (it co
 
 The build extracts the PDF's text with `pdftotext`, as a stand-in for an applicant tracking system (ATS). No ATS was tested, so a clean check doesn't show how any one ATS reads the file. When `pdftotext` is installed, each build extracts the text. Install poppler to get it, with `brew install poppler`, `sudo apt-get install poppler-utils` or `sudo dnf install poppler-utils`.
 
-The build checks that the name, contact items, section titles, entries and bullets all come out whole and in reading order, with no broken ligatures or unreadable glyphs. Dates and job locations sit at the right margin, where text extraction can move them, so the build checks only that each one comes out whole. Problems print as a warning. Set `RESUME_TEXT_CHECK=strict` to make them an error. Words never break with a hyphen across lines, because a split word can't be found by a keyword search.
+The build checks that the name, contact items, section titles, entries and bullets all come out whole and in reading order, with no broken ligatures or unreadable glyphs. Dates and job locations sit at the right margin, where text extraction can move them. For those, the build checks only that each one comes out whole. Problems print as a warning. Set `RESUME_TEXT_CHECK=strict` to make them an error. Words never break with a hyphen across lines, because a split word can't be found by a keyword search.
 
 `tests/check.sh` runs this check in strict mode on a test file of LaTeX special characters, symbols and accents, in every font. It also checks the exact link targets and the message for each kind of bad input. It needs LuaLaTeX and poppler-utils.
 
@@ -213,7 +213,7 @@ Before you apply, ask someone who knows your work for a referral. For more on re
 - The paper is US Letter. There is no A4 setting.
 - The resume is one page. If the content does not fit, the build stops. There is no second page. A CV is the exception: it may take two, and no more.
 - The resume's sections are `education`, `projects`, `experience` and `skills`, with those titles. You can reorder them in `settings.sectionOrder`, but you cannot add or rename one. Any other name stops the build with `unknown section`. A CV has the five more sections above, and can rename them.
-- In a resume that has an engineering job, a job with `"engineering": false` prints as one line when the rest of the resume fills the page, and its bullets are left out. A CV always prints them. The build keeps or drops the bullets of every such job together, never some of them.
+- In a resume that has an engineering job, a job with `"engineering": false` prints as one line when the rest of the resume fills the page. Its bullets are left out. A CV always prints them. The build keeps or drops the bullets of every such job together, never some of them.
 - The `libertinus` font covers Latin, Greek and Cyrillic. All three fonts cover accented Latin letters, basic Greek letters and common math symbols such as Ω, ±, ≤ and ×. No font covers Chinese, Japanese or Korean. `times` and `arial` also lack Cyrillic and accented Greek letters. The build stops and names any character the font cannot draw, instead of leaving it blank in the PDF.
 - `./run` installs missing tools only on Fedora, Debian, Ubuntu (including WSL) and macOS. On other systems, install Python and LuaLaTeX yourself.
 
@@ -233,6 +233,6 @@ Content is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.
 
 A resume you build with this tool, including one started from an example, is yours and needs no credit.
 
-Code is licensed under the [MIT License](LICENSE). Code means everything else, including `build.py`, `resume.tex`, `cv.tex`, `run`, `pyproject.toml`, `tests/`, and the scripts and workflows in `.github/`.
+Code is licensed under the [MIT License](LICENSE). Code means everything else, including `build.py`, `resume.tex`, `cv.tex`, `run`, `pyproject.toml`, `schema/`, `tests/`, and the scripts and workflows in `.github/`.
 
-The fonts in `fonts/` keep their own licenses: Libertinus Serif is under the SIL Open Font License 1.1 ([fonts/OFL.txt](fonts/OFL.txt)), and TeX Gyre Termes and TeX Gyre Heros are under the GUST Font License ([fonts/GUST-FONT-LICENSE.txt](fonts/GUST-FONT-LICENSE.txt)), which is the LaTeX Project Public License 1.3c or later ([fonts/lppl.txt](fonts/lppl.txt)). The license texts and upstream notices in `fonts/` are their authors' own and fall under neither license above. See [fonts/README.md](fonts/README.md) for where each file comes from and who holds its copyright.
+The fonts in `fonts/` keep their own licenses. Libertinus Serif is under the SIL Open Font License 1.1 ([fonts/OFL.txt](fonts/OFL.txt)). TeX Gyre Termes and TeX Gyre Heros are under the GUST Font License ([fonts/GUST-FONT-LICENSE.txt](fonts/GUST-FONT-LICENSE.txt)), which is the LaTeX Project Public License 1.3c or later ([fonts/lppl.txt](fonts/lppl.txt)). The license texts and upstream notices in `fonts/` are their authors' own and fall under neither license above. See [fonts/README.md](fonts/README.md) for where each file comes from and who holds its copyright.
