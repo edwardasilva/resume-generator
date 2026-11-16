@@ -26,7 +26,7 @@ If you change a file in `examples/`, commit its rebuilt PDF. Otherwise discard t
 
 Every resume PDF in `examples/` must stay exactly one page. A CV PDF (`*-CV.pdf`) may take one or two, and `examples/Alex-Doe-CV.pdf` must stay exactly two. If you skip the checks, I run them before I merge.
 
-4. Open a pull request into `main` with a short description of what changed and why. That is all a pull request needs. An issue link is optional. I review the change.
+4. Open a pull request into `main` with a short description of what changed and why. That is all a pull request needs. An issue link is optional. I review the change, and each accepted change goes in as one squashed commit. The squashed commit names the repository owner as its only author, so leave `Co-authored-by` lines and other trailers out of your commit messages and the pull request description.
 
 ## Coding agents
 

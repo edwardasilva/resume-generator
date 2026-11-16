@@ -21,6 +21,7 @@ Only the repository owner can start the workflow. It works on a branch and opens
 
 - No emoji anywhere: files, commits, pull requests, comments, or output.
 - Do not put bot or tool names in repo text or commit messages.
+- The repository owner is the sole author of every commit. Do not add a `Co-authored-by` line, a session link, or any other trailer to a commit message or a pull request body, and write the squash-merge message without one.
 - Keep examples neutral, such as Alex Doe with they and them.
 - Never invent resume content. The examples use made-up people.
 - Write every example bullet with XYZ, CAR or STAR from eeprep's resume page, starting with a past-tense verb. Put a measured number near the start of the bullet.
