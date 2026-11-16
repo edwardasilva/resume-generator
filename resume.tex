@@ -1,0 +1,24 @@
+% One-page resume. Run ./run to build [Name]-Resume.pdf.
+% shared.tex holds the packages, the page layout and the entry macros, the
+% same as in cv.tex. This file adds the resume's section titles and lists.
+\documentclass[letterpaper]{article}
+\input{shared}
+
+% ---------- Section style ----------
+% Title, a full-width rule, then a clear gap before the first entry.
+\newcommand{\resumesection}[1]{%
+  \par\vspace{\sectiongap}%
+  {\normalsize\bfseries #1}\par
+  \vspace{2pt}%
+  \hrule height 0.6pt
+  \vspace{0.45\baselineskip}}
+
+% ---------- Lists ----------
+\setlist[itemize]{leftmargin=12pt, label=\textbullet,
+  topsep=2.5pt, partopsep=0pt, itemsep=1.7pt, parsep=0pt}
+
+\begin{document}
+\resumefont
+\input{build/body}
+\par\measure{END}
+\end{document}

@@ -1,0 +1,179 @@
+{
+  "settings": {
+    "font": "arial",
+    "dateStyle": {
+      "education": "month",
+      "projects": "semester",
+      "experience": "month"
+    },
+    "sectionOrder": [
+      "education",
+      "experience",
+      "projects",
+      "skills"
+    ]
+  },
+  "header": {
+    "name": "Alex Doe",
+    "phone": "(555) 555-0191",
+    "email": "alex.doe@example.com",
+    "linkedin": "linkedin.com/in/your-name",
+    "github": "github.com/your-username",
+    "location": "Hillcrest, ST",
+    "relocate": true
+  },
+  "education": [
+    {
+      "degree": "B.S. Electrical Engineering, Minor in Computer Science",
+      "gpa": "3.88/4.00",
+      "school": "Example State University",
+      "gradDate": "May 2026",
+      "coursework": [
+        "Embedded Systems",
+        "Digital Signal Processing",
+        "Power Electronics",
+        "Modern Control Design",
+        "Passive RF and Microwave Devices",
+        "Computer Organization",
+        "Introduction to VLSI Design"
+      ],
+      "activities": [
+        "IEEE student branch (treasurer)",
+        "Tau Beta Pi",
+        "Formula SAE electrical team"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "title": "Hardware Engineering Intern",
+      "company": "Example Avionics",
+      "url": "example.com/avionics",
+      "location": "Northgate, ST",
+      "start": "May 2025",
+      "end": "Aug 2025",
+      "engineering": true,
+      "bullets": [
+        "Cut noise on a 16-bit ADC front end from 12 LSB to 3 LSB RMS by redesigning the anti-aliasing filter as a 2nd-order active stage and rerouting its ground return in Altium, checked with an FFT of 1 million samples",
+        "Found 7 layout faults during bring-up of 3 sensor board revisions with an oscilloscope and a thermal camera",
+        "Checked 64 signals over SPI in 90 s with a Python harness that production used on the first 200 units",
+        "Cut switching noise on the 3.3 V rail by 60%, seen on a spectrum analyzer, by sizing an LC filter in LTspice"
+      ]
+    },
+    {
+      "title": "Embedded Software Intern",
+      "company": "Example Robotics",
+      "location": "Hillcrest, ST",
+      "start": "May 2024",
+      "end": "Aug 2024",
+      "engineering": true,
+      "bullets": [
+        "Held 10 kHz control loop jitter under 2 microseconds on a logic analyzer through a port of STM32 motor-control firmware from bare-metal C to FreeRTOS by running the loop from a timer interrupt outside the scheduler",
+        "Flashed new firmware in 40 s with no failures in 100 updates by adding a CAN bootloader",
+        "Cut off-position moves from 1 in 500 to none in a 24-hour run by fixing an encoder counter overflow"
+      ]
+    },
+    {
+      "title": "Undergraduate Research Assistant",
+      "company": "Example State Power Lab",
+      "location": "",
+      "start": "Sept 2023",
+      "end": "May 2024",
+      "engineering": true,
+      "bullets": [
+        "Confirmed switching losses within 5% of the datasheet on 12 GaN transistors with a double-pulse tester",
+        "Shortened test sessions from 2 hours to 30 minutes with an FPGA pulse generator in Verilog and MATLAB"
+      ]
+    },
+    {
+      "title": "Tutor",
+      "company": "Example State Learning Center",
+      "location": "",
+      "start": "Jan 2023",
+      "end": "May 2023",
+      "engineering": false,
+      "bullets": []
+    }
+  ],
+  "projects": [
+    {
+      "title": "Senior Design: Battery Management System for an Electric Kart",
+      "tools": [
+        "Altium",
+        "STM32",
+        "C",
+        "CAN",
+        "LTspice"
+      ],
+      "start": "Fall 2025",
+      "end": "Spring 2026",
+      "bullets": [
+        "Kept a 24-cell Li-ion pack balanced within 10 mV over 30 charge cycles with an STM32 that polls 2 cell-monitor ICs over SPI every 100 ms and switches 24 bleed resistors on a custom 4-layer Altium board",
+        "Estimated cell temperature within 1.5 degrees C of thermocouple readings with a 10 Hz thermal model in C",
+        "Shut the pack down within 5 ms of an overcurrent fault in 25 of 25 short-circuit tests with STM32 fault logic"
+      ]
+    },
+    {
+      "title": "Software-Defined Radio FM Receiver",
+      "url": "github.com/your-username/sdr_fm_receiver#readme",
+      "tools": [
+        "Python",
+        "GNU Radio",
+        "RTL-SDR",
+        "NumPy"
+      ],
+      "start": "Spring 2025",
+      "end": "Spring 2025",
+      "bullets": [
+        "Received 6 local stations in stereo by demodulating FM in real time at 2.4 MS/s in GNU Radio on Linux",
+        "Cut CPU use 40% by decimating earlier and replacing 2 blocks with a NumPy polyphase filter",
+        "Measured stereo separation within [X] dB of a commercial receiver on the same antenna with a test tone"
+      ]
+    },
+    {
+      "title": "Self-Balancing Robot",
+      "tools": [
+        "Arduino",
+        "C++",
+        "MPU-6050",
+        "MATLAB",
+        "KiCad"
+      ],
+      "start": "Fall 2024",
+      "end": "Fall 2024",
+      "bullets": [
+        "Kept a 2-wheel robot upright for over 10 minutes, even after 15-degree pushes, by tuning a PID loop in MATLAB",
+        "Held tilt error under 1 degree against an inclinometer by running a complementary filter on MPU-6050 data",
+        "Eliminated wiring faults over 40 runs by replacing the breadboard with a 2-layer motor driver board in KiCad"
+      ]
+    }
+  ],
+  "skills": {
+    "software": [
+      "C",
+      "C++",
+      "Python",
+      "MATLAB",
+      "Verilog",
+      "Altium",
+      "KiCad",
+      "LTspice",
+      "FreeRTOS",
+      "GNU Radio",
+      "Linux"
+    ],
+    "hardwareLab": [
+      "Oscilloscope",
+      "Spectrum analyzer",
+      "Logic analyzer",
+      "Double-pulse tester",
+      "Thermal camera",
+      "STM32",
+      "FPGA"
+    ],
+    "certifications": [
+      "Engineer in Training (EIT)",
+      "IPC J-STD-001 Soldering"
+    ]
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "settings": {
+    "font": "times",
+    "dateStyle": {
+      "education": "month",
+      "projects": "semester",
+      "experience": "month"
+    },
+    "sectionOrder": [
+      "education",
+      "experience",
+      "projects",
+      "skills"
+    ]
+  },
+  "header": {
+    "name": "Alex Doe",
+    "phone": "(555) 555-0158",
+    "email": "alex.doe@example.com",
+    "linkedin": "linkedin.com/in/your-name",
+    "github": "github.com/your-username",
+    "location": "Brookfield, ST",
+    "relocate": true
+  },
+  "education": [
+    {
+      "degree": "B.S. Electrical Engineering",
+      "gpa": "3.71/4.00",
+      "school": "Example State University",
+      "url": "example.com",
+      "gradDate": "May 2026",
+      "coursework": [
+        "Embedded Systems",
+        "Power Electronics",
+        "Modern Control Design"
+      ],
+      "activities": [
+        "Eta Kappa Nu"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "title": "Embedded Firmware Intern",
+      "company": "Example Motor Controls",
+      "location": "Fairview, ST",
+      "start": "May 2025",
+      "end": "Aug 2025",
+      "engineering": true,
+      "bullets": [
+        "Cut startup current spikes by 35% across 50 starts, measured with a current probe, by adding a 200 ms soft-start ramp to the STM32 PWM firmware that runs a 24 V brushless motor drive",
+        "Cut bring-up from 2 days to 4 hours with a Python script that tests 40 channels over UART",
+        "Cut dropped CAN bus messages from 1 in 200 to none over a 12-hour soak test by measuring the bit timing on an oscilloscope and moving the controller's sample point to 87.5%"
+      ]
+    },
+    {
+      "title": "Test Engineering Intern",
+      "company": "Example Power Systems",
+      "location": "Brookfield, ST",
+      "start": "May 2024",
+      "end": "Aug 2024",
+      "engineering": true,
+      "bullets": [
+        "Cut each efficiency test on the 500 W power supply from 3 hours by hand to 25 minutes by automating a 20-point load sweep in LabVIEW, driving a programmable load and reading a power analyzer",
+        "Found a 15-degree hot spot that the derating curve missed on a 12 V module by logging 8 thermocouples through a 48-hour full-load test, which led to a larger heatsink on the next revision"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "title": "Senior Design: Solar Charge Controller",
+      "tools": [
+        "KiCad",
+        "STM32",
+        "C",
+        "LTspice"
+      ],
+      "start": "Fall 2025",
+      "end": "Spring 2026",
+      "bullets": [
+        "Harvested 18% more energy than a fixed-voltage controller on a solar array simulator by writing perturb-and-observe MPPT firmware in C for an STM32 that updates every 10 ms",
+        "Kept a 100 W buck stage under 70 degrees C at full load by laying it out on a 2-layer KiCad board",
+        "Held output ripple to 42 mV, measured on the oscilloscope, by sizing the output filter in LTspice"
+      ]
+    },
+    {
+      "title": "Digital Audio Filter on an FPGA",
+      "tools": [
+        "Verilog",
+        "Vivado",
+        "MATLAB",
+        "Basys 3"
+      ],
+      "start": "Spring 2025",
+      "end": "Spring 2025",
+      "bullets": [
+        "Matched the MATLAB design within 0.3 dB in Vivado simulation with a 32-tap FIR low-pass filter in Verilog, using 16-bit fixed-point coefficients, on a Basys 3 FPGA board running at 48 kHz"
+      ]
+    }
+  ],
+  "skills": {
+    "software": [
+      "C",
+      "Python",
+      "MATLAB",
+      "Verilog",
+      "KiCad",
+      "LTspice",
+      "LabVIEW"
+    ],
+    "hardwareLab": [
+      "Oscilloscope",
+      "Current probe",
+      "Programmable load",
+      "Power analyzer",
+      "STM32",
+      "FPGA",
+      "CAN bus"
+    ],
+    "certifications": [
+      "Engineer in Training (EIT)",
+      {
+        "name": "IPC-A-610 Certified IPC Specialist",
+        "url": "example.com/verify?id=IPC-610_042&name=Alex%20Doe"
+      }
+    ]
+  }
+}

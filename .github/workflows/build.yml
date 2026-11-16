@@ -1,0 +1,197 @@
+name: Build resume
+
+# This workflow runs only on release tags and by hand. It doesn't run on pull
+# requests or on pushes to main, so a pull request gets no check from it: run
+# the checks in .github/CONTRIBUTING.md before you push. Every run builds
+# and checks everything, and on a release tag the release job waits for all of
+# the others. The two install-path jobs, minimal-tex and macos-basictex, are the
+# slowest (a TeX Live install and a macOS runner) and test Homebrew, CTAN and
+# Ubuntu's archive more than this repo.
+# Run the workflow by hand before a release:
+#   gh workflow run build.yml --ref main
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+
+# Read-only by default. Only the release job can write, to publish a release.
+permissions:
+  contents: read
+
+# A newer run on the same tag or branch cancels the older one. The event is in
+# the group, so a manual run and a tag push don't cancel each other.
+concurrency:
+  group: build-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # One job for lint, the release zip check, then the PDF builds. The release
+  # job waits for it by its id, build.
+  build:
+    # Pinned on purpose. This is the oldest setup this job tests: Ubuntu 24.04 with
+    # TeX Live 2023 and Python 3.12. minimal-tex covers the newest TeX Live. When the
+    # README states a tested version, move this pin and that line together.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Pinned, so a new ruff release can't change formatting or fail CI on
+      # its own. Update it on purpose.
+      - name: Install ruff
+        run: pip install ruff==0.16.9
+      - name: Check formatting
+        run: ruff format --check
+      - name: Lint
+        run: ruff check
+      # run ships in the release zip, so it gets the same treatment as build.py.
+      # shellcheck comes with the Ubuntu runner.
+      - name: Lint the shell scripts
+        run: shellcheck run .github/check-pdfs.sh .github/package.sh tests/check.sh
+      # A zip that is missing a file ships broken, and nobody notices until a
+      # user runs it. Build the release zip the same way the release job does
+      # and check that it runs from an empty folder.
+      - name: Check the release zip runs on its own
+        run: |
+          set -euo pipefail
+          .github/package.sh resume-generator-check
+          unzip -q resume-generator-check.zip -d /tmp/zipcheck
+          cd /tmp/zipcheck/resume-generator-check
+          ./run --help
+          python3 -c "import ast, sys; ast.parse(open('build.py').read())"
+          test -f shared.tex
+          test -f fonts/LibertinusSerif-Regular.otf
+          test -f docs/brand/resume-generator-lockup-outlined.svg
+          test -f examples/alex.json
+          test -f schema/resume.schema.json
+          test -f resume.json
+      # pdftotext comes with poppler-utils. With it installed, each build
+      # checks that the PDF text extracts cleanly, and strict mode fails on
+      # any problem.
+      - name: Install poppler-utils
+        run: sudo apt-get install -y --no-install-recommends poppler-utils
+      - name: Build the default resume PDF
+        run: ./run --yes
+        env:
+          CI: "true"
+          RESUME_TEXT_CHECK: strict
+      - name: Build each example
+        run: for f in examples/*.json; do ./run --yes "$f"; done
+        env:
+          RESUME_TEXT_CHECK: strict
+      - name: Check each PDF's page count and bundled fonts
+        run: .github/check-pdfs.sh *-Resume.pdf examples/*.pdf
+      # tests/check.sh covers what the examples don't: that
+      # schema/resume.schema.json matches build.py, LaTeX special characters
+      # in every font, exact link targets, the message for each kind of bad
+      # input, the CV page cap and the rule for a non-engineering job's bullets.
+      # It needs the poppler-utils installed above.
+      - name: Run tests/check.sh
+        run: bash tests/check.sh
+      - name: Package the release zip
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: .github/package.sh "resume-generator-${GITHUB_REF_NAME}"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: resumes
+          path: |
+            *-Resume.pdf
+            examples/*.pdf
+            resume-generator-*.zip
+
+  # A bare TeX Live with only the LaTeX packages run installs and no font
+  # packages, like a fresh BasicTeX. The bundled fonts must be enough.
+  minimal-tex:
+    runs-on: ubuntu-latest
+    # A CTAN mirror once hung the TeX Live install for 14 minutes. Without a
+    # limit, a job can run for 6 hours.
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install TeX Live with scheme-basic
+        # mirror.ctan.org redirects to a random mirror. A bad one has failed this
+        # step three ways: a broken TLS certificate, a refused connection, and an
+        # install that hung. Each try gets a new mirror and gives up on a slow
+        # one, and the installer, and tlmgr after it, use the mirror that worked.
+        run: |
+          set -euo pipefail
+          base=https://mirror.ctan.org/systems/texlive/tlnet
+          texdir="$RUNNER_TEMP/texlive"
+          for try in 1 2 3 4 5; do
+            rm -rf install-tl install-tl.tar.gz "$texdir"
+            mkdir install-tl
+            url=""
+            if url="$(curl -fsSL --connect-timeout 20 --max-time 120 -o install-tl.tar.gz \
+                -w '%{url_effective}' "$base/install-tl-unx.tar.gz")" &&
+              tar -xzf install-tl.tar.gz -C install-tl --strip-components=1 &&
+              timeout 300 install-tl/install-tl --no-interaction --scheme scheme-basic \
+                --repository "${url%/install-tl-unx.tar.gz}" \
+                --texdir "$texdir" --no-doc-install --no-src-install > /dev/null; then
+              break
+            fi
+            [ "$try" -lt 5 ] || { echo "::error::TeX Live install failed on 5 mirrors."; exit 1; }
+            echo "Try $try failed (mirror: ${url:-none}). Trying another mirror."
+            sleep $((try * 5))
+          done
+          echo "Using $url"
+          echo "$texdir/bin/x86_64-linux" >> "$GITHUB_PATH"
+      - name: Build each example
+        run: for f in examples/*.json; do ./run --yes "$f"; done
+      - name: Check each PDF's page count and bundled fonts
+        run: |
+          sudo apt-get install -y --no-install-recommends poppler-utils
+          .github/check-pdfs.sh examples/*.pdf
+
+  macos-basictex:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install BasicTeX
+        run: |
+          brew install --cask basictex
+          echo "/Library/TeX/texbin" >> "$GITHUB_PATH"
+          sudo /Library/TeX/texbin/tlmgr update --self
+      - name: Build each example
+        run: for f in examples/*.json; do ./run --yes "$f"; done
+      - name: Check each PDF's page count and bundled fonts
+        run: |
+          brew install poppler
+          .github/check-pdfs.sh examples/*.pdf
+
+  # The release ships run, so it waits for every install path to pass, not
+  # only the Ubuntu build.
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build, minimal-tex, macos-basictex]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: resumes
+      - name: Create or update the GitHub release
+        run: |
+          assets=("resume-generator-${GITHUB_REF_NAME}.zip" "examples/Alex-Doe-Resume.pdf#Sample resume (Alex-Doe-Resume.pdf)")
+          notes=()
+          if [ -s .github/breaking-changes.md ]; then
+            notes=(--notes "$(cat .github/breaking-changes.md)")
+          fi
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --clobber "${assets[@]}"
+          else
+            gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" \
+              --title "$GITHUB_REF_NAME" --generate-notes "${notes[@]}" "${assets[@]}"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}

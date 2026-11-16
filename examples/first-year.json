@@ -1,0 +1,83 @@
+{
+  "settings": {
+    "dateStyle": {
+      "education": "month",
+      "projects": "semester",
+      "experience": "month"
+    },
+    "sectionOrder": [
+      "education",
+      "projects",
+      "experience",
+      "skills"
+    ]
+  },
+  "header": {
+    "name": "Alex Doe",
+    "phone": "(555) 555-0107",
+    "email": "alex.doe@example.com",
+    "linkedin": "linkedin.com/in/your-name",
+    "github": "",
+    "location": "Lakeside, ST",
+    "relocate": false
+  },
+  "education": [
+    {
+      "degree": "B.S. Electrical Engineering",
+      "gpa": "",
+      "school": "Example State University",
+      "gradDate": "Expected May 2030",
+      "coursework": [
+        "Cornerstone Design I",
+        "Physics I: Mechanics",
+        "Computer Science for STEM"
+      ],
+      "activities": [
+        "IEEE student branch"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "title": "Line-Following Robot",
+      "url": "github.com/your-username/line-follower",
+      "tools": [
+        "Arduino",
+        "C++",
+        "IR sensors"
+      ],
+      "start": "Fall 2026",
+      "end": "Fall 2026",
+      "bullets": [
+        "Placed 2nd of 12 teams in the class line-following race by building an Arduino robot with IR sensors",
+        "Cut lap time from 52 s to 41 s by tuning the steering gain in C++ over 15 test runs",
+        "Stopped motor dropouts by tracing them to 2 cold solder joints with a multimeter and resoldering them"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "title": "Cashier",
+      "company": "Example Grocery",
+      "location": "",
+      "start": "May 2025",
+      "end": "Present",
+      "engineering": false,
+      "bullets": [
+        "Checked out about [X] customers a shift at the register",
+        "Gave [X] cashiers one closing routine by writing the checklist they follow at the end of each shift"
+      ]
+    }
+  ],
+  "skills": {
+    "software": [
+      "Arduino",
+      "C++"
+    ],
+    "hardwareLab": [
+      "Multimeter",
+      "Soldering"
+    ],
+    "certifications": []
+  }
+}

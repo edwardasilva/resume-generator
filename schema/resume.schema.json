@@ -1,0 +1,732 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/edwardasilva/resume-generator/main/schema/resume.schema.json",
+  "title": "resume-generator input",
+  "description": "One resume or CV for build.py. A blank field or an empty list is left out of the PDF. A resume reads the education, projects, experience and skills sections. A CV, with settings.document set to cv, also reads the record sections, an education entry's location, thesis and honors, and settings.sectionTitles and settings.labels. The build checks each date against its section's date style. It notes a field it doesn't read and doesn't stop for it. The README field guide explains each field.",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "settings": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "document": {
+          "enum": [
+            "resume",
+            "cv",
+            null
+          ],
+          "default": "resume"
+        },
+        "sectionOrder": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "A resume reads only education, projects, experience, skills. A section left out is left off the page.",
+          "items": {
+            "enum": [
+              "education",
+              "honors",
+              "scholarships",
+              "experience",
+              "projects",
+              "certifications",
+              "activities",
+              "organizations",
+              "skills"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "font": {
+          "enum": [
+            "libertinus",
+            "times",
+            "arial",
+            null
+          ],
+          "default": "libertinus"
+        },
+        "dateStyle": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "education": {
+              "enum": [
+                "semester",
+                "month",
+                "year"
+              ],
+              "default": "semester"
+            },
+            "projects": {
+              "enum": [
+                "semester",
+                "month",
+                "year"
+              ],
+              "default": "semester"
+            },
+            "experience": {
+              "enum": [
+                "semester",
+                "month",
+                "year"
+              ],
+              "default": "semester"
+            },
+            "honors": {
+              "enum": [
+                "semester",
+                "month",
+                "year"
+              ],
+              "default": "semester"
+            },
+            "scholarships": {
+              "enum": [
+                "semester",
+                "month",
+                "year"
+              ],
+              "default": "semester"
+            },
+            "certifications": {
+              "enum": [
+                "semester",
+                "month",
+                "year"
+              ],
+              "default": "semester"
+            },
+            "activities": {
+              "enum": [
+                "semester",
+                "month",
+                "year"
+              ],
+              "default": "semester"
+            },
+            "organizations": {
+              "enum": [
+                "semester",
+                "month",
+                "year"
+              ],
+              "default": "semester"
+            }
+          },
+          "additionalProperties": false
+        },
+        "sectionTitles": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "CV only. A name left out keeps its default.",
+          "properties": {
+            "education": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": "Education"
+            },
+            "projects": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": "Projects"
+            },
+            "experience": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": "Experience"
+            },
+            "skills": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": "Skills"
+            },
+            "honors": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": "Honors and Awards"
+            },
+            "scholarships": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": "Scholarships"
+            },
+            "certifications": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": "Certifications"
+            },
+            "activities": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": "Activities"
+            },
+            "organizations": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": "Organizations"
+            }
+          },
+          "additionalProperties": false
+        },
+        "labels": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "CV only. A name left out keeps its default.",
+          "properties": {
+            "gpa": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": "GPA"
+            },
+            "coursework": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": "Relevant coursework"
+            },
+            "activities": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": "Activities"
+            },
+            "honors": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": "Honors"
+            },
+            "thesis": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": "Thesis"
+            },
+            "software": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": "Software"
+            },
+            "hardwareLab": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": "Hardware/Lab"
+            },
+            "skillsCertifications": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": "Certifications"
+            },
+            "relocate": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": "Willing to relocate"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "header": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/text"
+        },
+        "phone": {
+          "$ref": "#/$defs/text"
+        },
+        "email": {
+          "$ref": "#/$defs/text"
+        },
+        "linkedin": {
+          "$ref": "#/$defs/text"
+        },
+        "github": {
+          "$ref": "#/$defs/text"
+        },
+        "website": {
+          "$ref": "#/$defs/text"
+        },
+        "location": {
+          "$ref": "#/$defs/text"
+        },
+        "relocate": {
+          "$ref": "#/$defs/flag"
+        }
+      },
+      "additionalProperties": false
+    },
+    "skills": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "software": {
+          "$ref": "#/$defs/items"
+        },
+        "hardwareLab": {
+          "$ref": "#/$defs/items"
+        },
+        "certifications": {
+          "$ref": "#/$defs/items"
+        }
+      },
+      "additionalProperties": false
+    },
+    "education": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "degree": {
+            "$ref": "#/$defs/text"
+          },
+          "gpa": {
+            "$ref": "#/$defs/text"
+          },
+          "school": {
+            "$ref": "#/$defs/text"
+          },
+          "gradDate": {
+            "$ref": "#/$defs/text"
+          },
+          "url": {
+            "$ref": "#/$defs/text"
+          },
+          "start": {
+            "$ref": "#/$defs/text"
+          },
+          "end": {
+            "$ref": "#/$defs/text"
+          },
+          "coursework": {
+            "$ref": "#/$defs/items"
+          },
+          "activities": {
+            "$ref": "#/$defs/items"
+          },
+          "hide": {
+            "$ref": "#/$defs/flag"
+          },
+          "location": {
+            "$ref": "#/$defs/text"
+          },
+          "thesis": {
+            "$ref": "#/$defs/text"
+          },
+          "honors": {
+            "$ref": "#/$defs/items"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "projects": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "title": {
+            "$ref": "#/$defs/text"
+          },
+          "url": {
+            "$ref": "#/$defs/text"
+          },
+          "start": {
+            "$ref": "#/$defs/text"
+          },
+          "end": {
+            "$ref": "#/$defs/text"
+          },
+          "tools": {
+            "$ref": "#/$defs/items"
+          },
+          "bullets": {
+            "$ref": "#/$defs/lines"
+          },
+          "hide": {
+            "$ref": "#/$defs/flag"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "experience": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "title": {
+            "$ref": "#/$defs/text"
+          },
+          "company": {
+            "$ref": "#/$defs/text"
+          },
+          "location": {
+            "$ref": "#/$defs/text"
+          },
+          "url": {
+            "$ref": "#/$defs/text"
+          },
+          "start": {
+            "$ref": "#/$defs/text"
+          },
+          "end": {
+            "$ref": "#/$defs/text"
+          },
+          "engineering": {
+            "$ref": "#/$defs/flag"
+          },
+          "bullets": {
+            "$ref": "#/$defs/lines"
+          },
+          "hide": {
+            "$ref": "#/$defs/flag"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "honors": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "title": {
+            "$ref": "#/$defs/text"
+          },
+          "organization": {
+            "$ref": "#/$defs/text"
+          },
+          "location": {
+            "$ref": "#/$defs/text"
+          },
+          "url": {
+            "$ref": "#/$defs/text"
+          },
+          "date": {
+            "$ref": "#/$defs/text"
+          },
+          "start": {
+            "$ref": "#/$defs/text"
+          },
+          "end": {
+            "$ref": "#/$defs/text"
+          },
+          "bullets": {
+            "$ref": "#/$defs/lines"
+          },
+          "hide": {
+            "$ref": "#/$defs/flag"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "scholarships": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "title": {
+            "$ref": "#/$defs/text"
+          },
+          "organization": {
+            "$ref": "#/$defs/text"
+          },
+          "location": {
+            "$ref": "#/$defs/text"
+          },
+          "url": {
+            "$ref": "#/$defs/text"
+          },
+          "date": {
+            "$ref": "#/$defs/text"
+          },
+          "start": {
+            "$ref": "#/$defs/text"
+          },
+          "end": {
+            "$ref": "#/$defs/text"
+          },
+          "bullets": {
+            "$ref": "#/$defs/lines"
+          },
+          "hide": {
+            "$ref": "#/$defs/flag"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "certifications": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "title": {
+            "$ref": "#/$defs/text"
+          },
+          "organization": {
+            "$ref": "#/$defs/text"
+          },
+          "location": {
+            "$ref": "#/$defs/text"
+          },
+          "url": {
+            "$ref": "#/$defs/text"
+          },
+          "date": {
+            "$ref": "#/$defs/text"
+          },
+          "start": {
+            "$ref": "#/$defs/text"
+          },
+          "end": {
+            "$ref": "#/$defs/text"
+          },
+          "bullets": {
+            "$ref": "#/$defs/lines"
+          },
+          "hide": {
+            "$ref": "#/$defs/flag"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "activities": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "title": {
+            "$ref": "#/$defs/text"
+          },
+          "organization": {
+            "$ref": "#/$defs/text"
+          },
+          "location": {
+            "$ref": "#/$defs/text"
+          },
+          "url": {
+            "$ref": "#/$defs/text"
+          },
+          "date": {
+            "$ref": "#/$defs/text"
+          },
+          "start": {
+            "$ref": "#/$defs/text"
+          },
+          "end": {
+            "$ref": "#/$defs/text"
+          },
+          "bullets": {
+            "$ref": "#/$defs/lines"
+          },
+          "hide": {
+            "$ref": "#/$defs/flag"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "organizations": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "title": {
+            "$ref": "#/$defs/text"
+          },
+          "organization": {
+            "$ref": "#/$defs/text"
+          },
+          "location": {
+            "$ref": "#/$defs/text"
+          },
+          "url": {
+            "$ref": "#/$defs/text"
+          },
+          "date": {
+            "$ref": "#/$defs/text"
+          },
+          "start": {
+            "$ref": "#/$defs/text"
+          },
+          "end": {
+            "$ref": "#/$defs/text"
+          },
+          "bullets": {
+            "$ref": "#/$defs/lines"
+          },
+          "hide": {
+            "$ref": "#/$defs/flag"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "text": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "flag": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "lines": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "items": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "anyOf": [
+          {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      }
+    }
+  }
+}

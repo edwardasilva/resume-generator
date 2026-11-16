@@ -1,0 +1,46 @@
+# Rules for the coding agent
+
+This repo builds a one-page PDF resume, or a two-page CV, from a JSON file. Read `README.md` and `.github/CONTRIBUTING.md` before you change anything, and follow them. The rules below are the same ones that apply to every coding agent in this repo.
+
+## Routing
+
+Use the `claude` label, or comment `@claude`, to hand an issue or pull request to the coding agent.
+
+Only the repository owner can start the workflow. It works on a branch and opens a pull request. It never pushes to `main`, merges, tags, or cuts a release.
+
+## Git
+
+- Work on a branch. Never push to `main`.
+- Every change reaches `main` through a pull request, and every merge is a squash merge. Only the repository owner merges.
+- When you work from an issue, name it in the pull request body on its own line, as `Part of #N`, and add `Closes #N` when the pull request finishes the issue. Outside contributors do not need an issue link. A short description is enough.
+- Keep each pull request to one change.
+- Do not create tags. Do not force-push or rewrite pushed history.
+- A release is cut only when the repository owner says so.
+
+## Writing and data
+
+- No emoji anywhere: files, commits, pull requests, comments, or output.
+- Do not put bot or tool names in repo text or commit messages.
+- The repository owner is the sole author of every commit. Do not add a `Co-authored-by` line, a session link, or any other trailer to a commit message or a pull request body, and write the squash-merge message without one.
+- Keep examples neutral, such as Alex Doe with they and them.
+- Never invent resume content. The examples use made-up people.
+- Write every example bullet with XYZ, CAR or STAR from eeprep's resume page, starting with a past-tense verb. Put a measured number near the start of the bullet.
+
+## Checks
+
+Before you push:
+
+```bash
+pip install ruff==0.16.9
+ruff format
+ruff check
+python3 tests/schema.py
+```
+
+`schema/resume.schema.json` is the JSON Schema for the input file, made from the field tables in `build.py`. If you change a field, run `python3 tests/schema.py --write`. Never edit the schema by hand.
+
+Run `shellcheck` on `run`, `.github/check-pdfs.sh`, `.github/package.sh` and `tests/check.sh` if you touch any of them. CI runs only on release tags and when started by hand, not on pull requests, so run these checks yourself. On those runs it builds every file in `examples/` and fails if any resume PDF is not exactly one page. A CV PDF (`*-CV.pdf`) may be one or two pages.
+
+## Secrets
+
+Never print or commit secrets, tokens, or environment variables.

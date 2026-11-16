@@ -1,0 +1,28 @@
+% Up to two pages. Run ./run on a JSON file with "document": "cv" in its
+% settings to build [Name]-CV.pdf. It shares its layout with resume.tex
+% through shared.tex, but it breaks across pages, and it holds only layout:
+% every word printed comes from the JSON file through build/body.tex.
+\documentclass[letterpaper]{article}
+\input{shared}
+
+% ---------- Section style ----------
+% Title, a full-width rule, then a clear gap before the first entry. The
+% \nobreak commands keep the title with the entry under it, so a page never
+% ends on a lone title.
+\newcommand{\resumesection}[1]{%
+  \par\vspace{\sectiongap}%
+  {\normalsize\bfseries #1}\par\nobreak
+  \vspace{2pt}\nobreak
+  \hrule height 0.6pt
+  \nobreak\vspace{0.45\baselineskip}\nobreak}
+
+% ---------- Lists ----------
+% beginpenalty keeps an entry's first line with its first bullet.
+\setlist[itemize]{leftmargin=12pt, label=\textbullet, beginpenalty=10000,
+  topsep=2.5pt, partopsep=0pt, itemsep=1.7pt, parsep=0pt}
+
+\begin{document}
+\resumefont
+\input{build/body}
+\par\measure{END}
+\end{document}

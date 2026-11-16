@@ -1,0 +1,297 @@
+{
+  "settings": {
+    "document": "cv",
+    "dateStyle": {
+      "education": "month",
+      "honors": "year",
+      "scholarships": "year",
+      "experience": "month",
+      "projects": "semester",
+      "certifications": "year",
+      "activities": "semester",
+      "organizations": "semester"
+    },
+    "sectionOrder": [
+      "education",
+      "honors",
+      "scholarships",
+      "experience",
+      "projects",
+      "certifications",
+      "activities",
+      "organizations",
+      "skills"
+    ],
+    "sectionTitles": {
+      "honors": "Honors and Awards",
+      "activities": "Activities and Service",
+      "organizations": "Professional Organizations"
+    },
+    "labels": {
+      "coursework": "Selected coursework",
+      "relocate": "Open to relocation"
+    }
+  },
+  "header": {
+    "name": "Alex Doe",
+    "phone": "(555) 555-0142",
+    "email": "alex.doe@example.com",
+    "linkedin": "linkedin.com/in/your-name",
+    "github": "github.com/your-username",
+    "location": "Springfield, ST",
+    "relocate": true
+  },
+  "education": [
+    {
+      "degree": "B.S. Electrical Engineering, minor in Mathematics",
+      "gpa": "[X.XX]/4.00",
+      "school": "[University]",
+      "location": "Springfield, ST",
+      "gradDate": "Expected May 2027",
+      "thesis": "Efficiency Limits of a Small Buck Converter at High Switching Frequency",
+      "honors": [
+        "Dean's List, six semesters",
+        "Departmental Honors Program"
+      ],
+      "coursework": [
+        "Embedded Systems",
+        "Power Electronics",
+        "Digital Design",
+        "Control Systems",
+        "Signals and Systems",
+        "Electromagnetics",
+        "Linear Algebra",
+        "Probability and Statistics"
+      ],
+      "activities": [
+        "IEEE student branch",
+        "Tau Beta Pi"
+      ]
+    },
+    {
+      "degree": "Associate of Science, Pre-Engineering",
+      "school": "[Community college]",
+      "location": "Springfield, ST",
+      "gradDate": "May 2024",
+      "coursework": [
+        "Calculus I to III",
+        "Physics with Calculus",
+        "Programming in C"
+      ]
+    }
+  ],
+  "honors": [
+    {
+      "title": "Example Engineering Honors Award",
+      "organization": "[University] College of Engineering",
+      "date": "2026",
+      "bullets": [
+        "Given to the top [X]% of the electrical engineering class by cumulative GPA"
+      ]
+    },
+    {
+      "title": "Sample Design Showcase, First Place",
+      "organization": "[University] Senior Design Day",
+      "date": "2025",
+      "bullets": [
+        "Chosen by a panel of [X] faculty and industry judges from [X] teams in the electrical track"
+      ]
+    },
+    {
+      "title": "Dean's List",
+      "organization": "[University]",
+      "start": "2023",
+      "end": "2025",
+      "bullets": [
+        "Earned for a term GPA of [X.XX] or higher in six of six semesters",
+        "Kept the standing while working [X] hours a week and holding a research position"
+      ]
+    }
+  ],
+  "scholarships": [
+    {
+      "title": "Example Foundation Engineering Scholarship",
+      "organization": "Example Foundation",
+      "start": "2024",
+      "end": "2027",
+      "bullets": [
+        "Renewed each year for a GPA above [X.XX] and ten hours of campus service"
+      ]
+    },
+    {
+      "title": "Sample State Merit Scholarship",
+      "organization": "[State] Education Agency",
+      "date": "2023"
+    }
+  ],
+  "experience": [
+    {
+      "title": "Power Electronics Research Assistant",
+      "company": "[University] Power Lab",
+      "location": "Springfield, ST",
+      "start": "May 2025",
+      "end": "Present",
+      "engineering": true,
+      "bullets": [
+        "Traced where the switching loss came from at [X] kHz on a [X] W half-bridge test board in KiCad by comparing current probe and oscilloscope measurements with an LTspice model",
+        "Cut the time to process one run from [X] minutes to [X] by writing a Python script that turned oscilloscope captures into efficiency curves, with no numbers copied into a spreadsheet by hand",
+        "Wrote the methods section of a draft paper from the switching loss results, after presenting them to the lab group",
+        "Trained two new students on the lab's oscilloscope, electronic load and probe safety rules"
+      ]
+    },
+    {
+      "title": "Teaching Assistant, Digital Design",
+      "company": "[University] Department of Electrical Engineering",
+      "location": "Springfield, ST",
+      "start": "Sept 2025",
+      "end": "May 2026",
+      "engineering": false,
+      "bullets": [
+        "Taught two lab sections of [X] students each, with weekly office hours",
+        "Raised the average lab score by [X] points by writing three Verilog lab handouts",
+        "Returned [X] graded lab reports a week, each with written comments within [X] days"
+      ]
+    },
+    {
+      "title": "Embedded Firmware Intern",
+      "company": "[Engineering company]",
+      "location": "Springfield, ST",
+      "start": "May 2024",
+      "end": "Aug 2024",
+      "engineering": true,
+      "bullets": [
+        "Saved [X] KB of flash by porting a sensor driver from a vendor library to bare-metal C on an ARM Cortex-M4",
+        "Closed a dropped-sample bug open for [X] weeks, missed by two engineers in earlier reviews, by finding a missed interrupt with a logic analyzer and moving its handler to a higher priority",
+        "Added unit tests for the driver and ran them on every commit"
+      ]
+    },
+    {
+      "title": "Sales Associate",
+      "company": "[Retail store]",
+      "start": "May 2022",
+      "end": "Aug 2023",
+      "engineering": false,
+      "bullets": [
+        "Handled about [X] customers a shift and closed the register to within [X] dollars each night"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "title": "CubeSat Power Board",
+      "tools": [
+        "KiCad",
+        "LTspice"
+      ],
+      "start": "Fall 2025",
+      "end": "Spring 2026",
+      "bullets": [
+        "Reached [X]% efficiency on an electronic load with a [X] W CubeSat buck converter designed in KiCad and LTspice",
+        "Cut output ripple from [X] mV to [X] mV by shrinking the switching loop, verified on an oscilloscope",
+        "Wrote the board bring-up plan and test report that the team used for its design review",
+        "Presented the design to [X] judges at the university design showcase"
+      ]
+    },
+    {
+      "title": "Bench Data Logger",
+      "tools": [
+        "STM32",
+        "C",
+        "Python"
+      ],
+      "start": "Spring 2025",
+      "end": "Spring 2025",
+      "bullets": [
+        "Wrote STM32 firmware in C to sample a 4-channel SPI ADC at [X] kHz and stream it to a Python logger",
+        "Cut dropped samples to [X]% by moving UART writes to DMA, after a logic analyzer showed the losses"
+      ]
+    },
+    {
+      "title": "FPGA Audio Equalizer",
+      "tools": [
+        "Verilog",
+        "Vivado"
+      ],
+      "start": "Fall 2024",
+      "end": "Fall 2024",
+      "bullets": [
+        "Matched a MATLAB model's frequency response within [X] dB with a [X]-band equalizer in Verilog on an FPGA board"
+      ]
+    },
+    {
+      "title": "Line-Following Robot",
+      "tools": [
+        "C",
+        "STM32"
+      ],
+      "start": "Spring 2024",
+      "end": "Spring 2024",
+      "bullets": [
+        "Held the line at [X] m/s on a test track with a two-wheel robot by tuning its PID loop",
+        "Picked the loop gains from sensor readings logged over UART and plotted in Python",
+        "Removed crosstalk between two traces, found with a logic analyzer, by rebuilding the sensor board"
+      ]
+    }
+  ],
+  "skills": {
+    "software": [
+      "KiCad",
+      "LTspice",
+      "C",
+      "Python",
+      "Verilog",
+      "MATLAB"
+    ],
+    "hardwareLab": [
+      "STM32",
+      "Oscilloscope",
+      "Electronic load",
+      "Logic analyzer",
+      "Current probe"
+    ],
+    "certifications": []
+  },
+  "certifications": [
+    {
+      "title": "Fundamentals of Engineering (EIT) exam, passed",
+      "organization": "[State] Board of Engineering",
+      "date": "2026"
+    },
+    {
+      "title": "Soldering Certification, Example Standard",
+      "organization": "Example Training Institute",
+      "date": "2025"
+    }
+  ],
+  "activities": [
+    {
+      "title": "Volunteer Tutor, Calculus",
+      "organization": "[University] Learning Center",
+      "start": "Fall 2024",
+      "end": "Present",
+      "bullets": [
+        "Tutored [X] students a week and wrote practice sets for the exam review sessions",
+        "Trained [X] new tutors on how to explain a limit problem without giving the answer"
+      ]
+    },
+    {
+      "title": "Outreach Leader, Robotics Day",
+      "organization": "[University] IEEE student branch",
+      "date": "Spring 2025"
+    }
+  ],
+  "organizations": [
+    {
+      "title": "Member",
+      "organization": "IEEE",
+      "start": "Fall 2023",
+      "end": "Present"
+    },
+    {
+      "title": "Officer, Treasurer",
+      "organization": "Tau Beta Pi, Example Chapter",
+      "start": "Spring 2025",
+      "end": "Present"
+    }
+  ]
+}

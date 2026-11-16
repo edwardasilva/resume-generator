@@ -1,0 +1,12 @@
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+# .claude/ is a local, git-ignored folder. Keep ruff out of it.
+exclude = [".claude"]
+
+[tool.ruff.lint]
+# pycodestyle (E, W), pyflakes (F), isort (I) and pydocstyle (D).
+select = ["E", "W", "F", "I", "D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
