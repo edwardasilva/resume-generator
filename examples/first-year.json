@@ -49,9 +49,9 @@
       "start": "Fall 2026",
       "end": "Fall 2026",
       "bullets": [
-        "Finished 2nd of 12 teams in the class line-following race, 41 s on a 10 m track",
+        "Placed 2nd of 12 teams in the class line-following race by building an Arduino robot with IR sensors",
         "Cut lap time from 52 s to 41 s by tuning the steering gain in C++ over 15 test runs",
-        "Traced motor dropouts to 2 cold solder joints with a multimeter and resoldered them"
+        "Stopped motor dropouts by tracing them to 2 cold solder joints with a multimeter and resoldering them"
       ]
     }
   ],
@@ -65,7 +65,7 @@
       "engineering": false,
       "bullets": [
         "Checked out about [X] customers a shift at the register",
-        "Wrote a closing checklist that [X] cashiers now follow at the end of each shift"
+        "Gave [X] cashiers one closing routine by writing the checklist they follow at the end of each shift"
       ]
     }
   ],

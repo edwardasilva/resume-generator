@@ -23,9 +23,9 @@ The fonts come with the project in `fonts/`, so no font packages are needed, and
 
 To work from the repository instead, clone it and run `./run`. The first run copies `examples/alex.json` to `resume.json`. Git ignores `resume.json` and the `*-Resume.pdf` file in the top folder, so your personal details stay out of the repository.
 
-To build any other file, pass it as an argument: `./run examples/new-grad.json` writes `examples/Alex-Doe-Resume-new-grad.pdf` next to it. The PDF is named `[Name]-Resume.pdf` after the header name, or `Resume.pdf` if there is none. Any file other than `resume.json` and `alex.json` adds its own name, as in `[Name]-Resume-[file].pdf` (a leading `resume-` is dropped, so `resume-firmware.json` writes `[Name]-Resume-firmware.pdf`), so two files for one person don't overwrite each other. The match ignores case, so `Resume.json` and `Alex.json` add nothing either.
+To build any other file, pass it as an argument: `./run examples/new-grad.json` writes `examples/Alex-Doe-Resume-new-grad.pdf` next to it. The PDF is named `[Name]-Resume.pdf` after the header name, or `Resume.pdf` if there is none. Any file other than `resume.json` and `alex.json` adds its own name, as in `[Name]-Resume-[file].pdf`, so two files for one person don't overwrite each other. A leading `resume-` is dropped, so `resume-firmware.json` writes `[Name]-Resume-firmware.pdf`. The match ignores case, so `Resume.json` and `Alex.json` add nothing either.
 
-Build only JSON files you trust. The LaTeX build runs with shell escape off, and the JSON has no field that names a file, so text such as `\input{/etc/passwd}` prints as plain text and nothing on your machine is read or run because of it. Two things to know before you build a file from someone else: `./run` may ask for `sudo` to install missing packages, and the PDF overwrites any file with the same name beside the input.
+Build only JSON files you trust. The LaTeX build runs with shell escape off, and the JSON has no field that names a file. So text such as `\input{/etc/passwd}` prints as plain text, and nothing on your machine is read or run because of it. Before you build a file from someone else, know that `./run` may ask for `sudo` to install missing packages. The PDF also overwrites any file with the same name beside the input.
 
 ## Examples
 
@@ -35,7 +35,7 @@ Each example in `examples/` is a made-up resume and the PDF built from it, from 
 
 | File | Who it describes | PDF |
 | --- | --- | --- |
-| `alex.json` | The starting point. It follows the finished example on eeprep's resume page. The student graduates in 2027 and has two projects, a sales job with two bullets and two skill lines. Every tool in the skill lines appears in a bullet. `[X]` marks a number you measure. | [Alex-Doe-Resume.pdf](examples/Alex-Doe-Resume.pdf) |
+| `alex.json` | The starting point. It follows the finished example on eeprep's resume page. The student graduates in 2027 and has two projects, a sales job with two bullets and two skill lines. Every tool in the skill lines appears in a bullet or a project's tools. `[X]` marks a number you measure. | [Alex-Doe-Resume.pdf](examples/Alex-Doe-Resume.pdf) |
 | `first-year.json` | A first-year student with one class project, a grocery job with two bullets and a few skills. The page has room left at the bottom. | [Alex-Doe-Resume-first-year.pdf](examples/Alex-Doe-Resume-first-year.pdf) |
 | `sophomore.json` | A second-year student with two projects, an electrical lead role in a robotics club and a barista job with two bullets, because the page has room. | [Alex-Doe-Resume-sophomore.pdf](examples/Alex-Doe-Resume-sophomore.pdf) |
 | `new-grad.json` | A new graduate with two internships, two projects and certifications. Experience comes right after Education, and the resume uses the `times` font. | [Alex-Doe-Resume-new-grad.pdf](examples/Alex-Doe-Resume-new-grad.pdf) |
@@ -46,7 +46,9 @@ Each example in `examples/` is a made-up resume and the PDF built from it, from 
 
 JSON doesn't allow comments, so this section explains each field. A blank field (`""`) or an empty list (`[]`) is left out of the PDF. Text goes in quotes, `true` and `false` go without them, and lists such as `bullets` go in brackets, even with one item. The build stops and names any field with the wrong kind of value. It prints a note for any field name it doesn't read, such as a misspelled one, and for any section with content that `sectionOrder` leaves out.
 
-The phone, email, LinkedIn, GitHub and website in the header are links, except the example values `linkedin.com/in/your-name` and `github.com/your-username` (and any address under them), which print as plain text so they never point at a real account. Replace them with your own. The email opens a new message and the phone number dials. Any entry can also have a link:
+[`schema/resume.schema.json`](schema/resume.schema.json) describes the same fields as a JSON Schema, for an editor or a coding agent that checks the file as you type. To use it, add `"$schema": "schema/resume.schema.json"` at the top of your file. The build skips that line. Its stable address is `https://raw.githubusercontent.com/edwardasilva/resume-generator/main/schema/resume.schema.json`. `tests/schema.py` checks that the schema matches the fields `build.py` reads.
+
+The phone, email, LinkedIn, GitHub and website in the header are links. The example values `linkedin.com/in/your-name` and `github.com/your-username`, and any address under them, are the exception. They print as plain text, so they never point at a real account. Replace them with your own. The email opens a new message and the phone number dials. Any entry can also have a link:
 
 | Field | What to put | Example |
 | --- | --- | --- |
@@ -90,9 +92,9 @@ A list. Most students have one entry. Add a second for a master's degree.
 | Field | What to put | Example |
 | --- | --- | --- |
 | `degree` | Degree and major. | `B.S. Electrical Engineering` |
-| `gpa` | `N.NN/4.00`. List it when a posting sets a minimum you meet. | `3.62/4.00` |
+| `gpa` | `N.NN/4.00`, with two decimals on both sides. eeprep's resume page lists a GPA of 3.50 or higher, leaves off one below 3.0, and lists one from 3.0 to 3.49 only when a posting sets a minimum you meet. The build notes a GPA written another way. | `3.62/4.00` |
 | `school` | Your university. | `Example State University` |
-| `gradDate` | Your graduation date, in the education date style. Use a month, with `education` set to `month` in `dateStyle`, and add "Expected" if you haven't graduated. It goes at the right of the degree line. If the degree line is too long to share it, the build moves the date to the school line. | `Expected May 2027` |
+| `gradDate` | Your graduation date, in the education date style. Use a month, with `education` set to `month` in `dateStyle`, and add "Expected" if you haven't graduated. It goes at the right margin of the school line, under the degree line. | `Expected May 2027` |
 | `start`, `end` | CV only. A range of dates for study with no graduation, in the education date style. A CV prints it when `gradDate` is blank. A resume shows only `gradDate`, so the build notes a `start` or `end` it leaves out. | `Sep 2023`, `May 2025` |
 | `coursework` | Upper-level courses that match the jobs you want. | `["Power Electronics", "Embedded Systems"]` |
 | `activities` | Clubs and honor societies. Put real build work in `projects`. | `["IEEE student branch"]` |
@@ -116,7 +118,7 @@ A list, most recent first.
 | Field | What to put | Example |
 | --- | --- | --- |
 | `title`, `company` | Your role and where you worked. | `Power Subsystem Lead`, `Example State CubeSat Team` |
-| `location` | City and state, or blank. | `Springfield, ST` |
+| `location` | City and state, or blank. It prints on its own line, at the right margin under the dates. | `Springfield, ST` |
 | `start`, `end` | Dates in the experience date style. A blank `end` or `Present` means ongoing. | `Sep 2024`, `Present` |
 | `engineering` | `true` for engineering work. `false` marks another job: its bullets print unless the resume has an engineering job and the rest of the resume fills the page. Then it drops to one line, and the build notes the bullets it leaves out. | `false` |
 | `bullets` | Same rules as project bullets. | |
@@ -142,10 +144,10 @@ A CV is a second kind of document built from the same kind of JSON file. Add `"d
 
 What differs from the resume:
 
-- **Two pages at most.** The build uses the same steps as the resume, 11 pt text down to 10 pt, but allows two pages. If the CV still doesn't fit at 10 pt, the build stops and says about how many lines to cut. If it fits with room left, the spacing grows until the used pages are full, and a CV that fits on one page stays on one.
-- **Everything in the file prints.** Nothing is dropped to make it fit. An entry with `"hide": true`, and a section that `sectionOrder` leaves out, are the only things left off. A job prints its bullets whether or not `engineering` is `true`.
-- **More sections.** The CV reads `education`, `experience`, `projects` and `skills` as the resume does, plus `honors`, `scholarships`, `certifications`, `activities` and `organizations`. An education entry also takes `location`, `thesis` and `honors` (a list). Without `sectionOrder`, the sections come in this order: education, honors, scholarships, experience, projects, skills, certifications, activities, organizations.
-- **Titles and labels come from the file.** `settings.sectionTitles` renames a section, such as `{"honors": "Honors and Awards"}`, and `settings.labels` changes the words before a list or a value: `gpa`, `coursework`, `activities`, `honors`, `thesis`, `software`, `hardwareLab`, `skillsCertifications` and `relocate`. A name left out keeps its default.
+- A CV takes two pages at most. The build steps the text down from 11 pt to 10.5 pt, the smallest size eeprep's resume page allows for a CV, and stops there. If the CV still doesn't fit at 10.5 pt, the build stops and says about how many lines to cut. If it fits with room left, the spacing grows until the used pages are full, and a CV that fits on one page stays on one.
+- Everything in the file prints, and nothing is dropped to make it fit. An entry with `"hide": true`, and a section that `sectionOrder` leaves out, are the only things left off. A job prints its bullets whether or not `engineering` is `true`.
+- A CV has more sections. It reads `education`, `experience`, `projects` and `skills` as the resume does, plus `honors`, `scholarships`, `certifications`, `activities` and `organizations`. An education entry also takes `location`, `thesis` and `honors` (a list). Without `sectionOrder`, the sections come in this order, with Skills last as on eeprep's resume page: education, honors, scholarships, experience, projects, certifications, activities, organizations, skills.
+- Titles and labels come from the file. `settings.sectionTitles` renames a section, such as `{"honors": "Honors and Awards"}`. `settings.labels` changes the words before a list or a value: `gpa`, `coursework`, `activities`, `honors`, `thesis`, `software`, `hardwareLab`, `skillsCertifications` and `relocate`. A name left out keeps its default.
 
 The new sections are lists of records with the same fields:
 
@@ -164,11 +166,13 @@ The text check, the notes about short bullets, the fonts and the link rules work
 
 ## Writing good bullets
 
-Start with a past-tense verb, say what you built or changed, and end with a result you measured:
+Build each bullet with one of the three formulas on [eeprep's resume page](https://eeprep.com/advice/resume/#bullets): XYZ (accomplished X, as measured by Y, by doing Z), CAR (challenge, action, result) or STAR (situation, task, action, result). Start with a past-tense verb. If you measured the result, put the number near the start of the bullet:
 
 > Cut output ripple from 80 mV to 25 mV peak to peak, measured on an oscilloscope, by redesigning the 4-layer PCB in KiCad with a solid ground plane and a tighter switching loop
 
 - Use a real number you measured or can defend in an interview. Don't make one up.
+- Give each bullet one result. A second result gets its own bullet.
+- Write symbols as words, such as 70 degrees C, not the degree sign.
 - Don't start with "Helped", "Assisted", "Worked on" or "Utilized".
 - Don't bold words inside a bullet.
 
@@ -192,13 +196,13 @@ To look at the result, run `pdftoppm -png -r 80 Alex-Doe-Resume.pdf page` (it co
 
 The build extracts the PDF's text with `pdftotext`, as a stand-in for an applicant tracking system (ATS). No ATS was tested, so a clean check doesn't show how any one ATS reads the file. When `pdftotext` is installed, each build extracts the text. Install poppler to get it, with `brew install poppler`, `sudo apt-get install poppler-utils` or `sudo dnf install poppler-utils`.
 
-The build checks that the name, contact items, section titles, entries, bullets and dates all come out whole and in reading order, with no broken ligatures or unreadable glyphs. Problems print as a warning. Set `RESUME_TEXT_CHECK=strict` to make them an error. Words never break with a hyphen across lines, because a split word can't be found by a keyword search.
+The build checks that the name, contact items, section titles, entries and bullets all come out whole and in reading order, with no broken ligatures or unreadable glyphs. Dates and job locations sit at the right margin, where text extraction can move them, so the build checks only that each one comes out whole. Problems print as a warning. Set `RESUME_TEXT_CHECK=strict` to make them an error. Words never break with a hyphen across lines, because a split word can't be found by a keyword search.
 
 `tests/check.sh` runs this check in strict mode on a test file of LaTeX special characters, symbols and accents, in every font. It also checks the exact link targets and the message for each kind of bad input. It needs LuaLaTeX and poppler-utils.
 
 ## Writing the content with an AI tool
 
-If you draft `resume.json` with Claude Code, Cursor, or another coding agent, give it [the eeprep resume skill](https://eeprep.com/skills/eeprep-resume/README.md) first. It teaches the agent the layout rules this tool follows, the bullet pattern, and how to tailor a version to one posting. It never invents a number, a tool, or a result you did not give it. It writes `[X]` where a measurement belongs and tells you to go measure it.
+If you draft `resume.json` with a coding agent, give it [the eeprep resume skill](https://eeprep.com/skills/eeprep-resume/README.md) first. The skill teaches the agent the layout rules this tool follows, the bullet formulas, and how to tailor a version to one posting. It never invents a number, a tool, or a result you did not give it. It writes `[X]` where a measurement belongs and tells you to go measure it. The agent can check the file against `schema/resume.schema.json` before you build.
 
 ## Before applying
 

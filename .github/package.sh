@@ -6,7 +6,7 @@ set -euo pipefail
 name="$1"
 rm -rf "$name" "$name.zip"
 mkdir "$name"
-cp -r run build.py resume.tex cv.tex README.md LICENSE LICENSE-CONTENT examples fonts "$name/"
+cp -r run build.py resume.tex cv.tex README.md LICENSE LICENSE-CONTENT examples fonts schema "$name/"
 # README.md shows the logo from docs/brand/, so the zip carries that folder too.
 mkdir "$name/docs"
 cp -r docs/brand "$name/docs/"

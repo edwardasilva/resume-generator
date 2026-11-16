@@ -48,20 +48,14 @@
   \settowidth{\datewidth}{#2}%
   \parbox[t]{\dimexpr\linewidth-\datewidth-1em\relax}{\raggedright #1}%
   \hfill #2\par}
-% Education: the date goes on the degree row when degree and date fit on one
-% line. If the degree row would wrap, the date moves to the school row so the
-% header takes the fewest lines.
-\newlength{\titlewidth}
+% Education: the degree line, then the school with the date at the right
+% margin, as eeprep's resume page lays it out.
 \newcommand{\eduentry}[3]{%
-  \settowidth{\datewidth}{#2}%
-  \settowidth{\titlewidth}{#1}%
-  \ifdim\dimexpr\titlewidth+\datewidth+1em\relax>\linewidth
-    {\raggedright #1\par}%
-    \entry{#3}{#2}%
-  \else
-    \entry{#1}{#2}%
-    #3\par
-  \fi}
+  {\raggedright #1\par}%
+  \entry{#3}{#2}}
+% A job's location, on its own line at the right margin under the dates,
+% kept with the line above it.
+\newcommand{\entrylocation}[1]{\nobreak{\raggedleft #1\par}}
 % Space between entries in a section.
 \newcommand{\entrygap}{\par\vspace{\entryspace}}
 \setlist[itemize]{leftmargin=12pt, label=\textbullet,

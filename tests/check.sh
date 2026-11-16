@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
-# Checks the build beyond the examples: LaTeX special characters, symbols and accents in
-# every font, exact link targets, and the message for each kind of bad input.
+# Checks the build beyond the examples: the input schema, LaTeX special characters, symbols
+# and accents in every font, exact link targets, and the message for each kind of bad input.
 # Needs LuaLaTeX and poppler-utils (pdfinfo, pdftotext).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
+
+# The published input schema must match the fields build.py reads.
+python3 tests/schema.py
 
 for font in libertinus times arial; do
   sed "s/\"font\": \"[a-z]*\"/\"font\": \"$font\"/" tests/special.json > "$tmp/special.json"

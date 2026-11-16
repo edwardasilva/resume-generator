@@ -24,7 +24,7 @@
   "education": [
     {
       "degree": "B.S. Electrical Engineering",
-      "gpa": "3.45/4.00",
+      "gpa": "",
       "school": "Example State University",
       "gradDate": "Expected May 2029",
       "coursework": [
@@ -50,9 +50,9 @@
       "start": "Spring 2026",
       "end": "Spring 2026",
       "bullets": [
-        "Logged BME280 data every minute for 30 days over Wi-Fi and lost under 1% of samples",
-        "Wrote a C calibration routine checked against a reference thermometer at 20 points, to within 0.5 °C",
-        "Wrote a Python plotting script that flagged gaps over 5 minutes and found 3 Wi-Fi outages"
+        "Kept sample loss under 1% over 30 days by logging BME280 data every minute over Wi-Fi from an ESP32",
+        "Calibrated the sensor to within 0.5 degrees C of a reference thermometer at 20 points with a routine in C",
+        "Found 3 Wi-Fi outages with a Python plotting script that flagged gaps in the data over 5 minutes"
       ]
     },
     {
@@ -64,7 +64,7 @@
       "start": "Fall 2026",
       "end": "Fall 2026",
       "bullets": [
-        "Built a 4-bit ALU out of 14 74HC-series chips that can add, subtract, AND, OR and XOR, and checked it against a Logisim model for all 256 input pairs of each operation with DIP switches and LEDs",
+        "Matched a Logisim model on all 256 input pairs of each operation with a 4-bit ALU built from 14 74HC-series chips that can add, subtract, AND, OR and XOR, tested with DIP switches and LEDs",
         "Found 2 wiring faults in the carry chain by probing each stage with a logic analyzer"
       ]
     }
@@ -78,8 +78,8 @@
       "end": "Present",
       "engineering": true,
       "bullets": [
-        "Designed and soldered a 2-layer power distribution board in KiCad with 6 fused outputs to replace the old hand-wired harness, so wiring before a match takes 45 minutes instead of 3 hours",
-        "Traced controller resets on hard turns to a 1.2 V dip on the 5 V rail with an oscilloscope and gave the controller its own 5 V regulator, with no resets in the 12 matches since the change"
+        "Cut wiring time before a match from 3 hours to 45 minutes by designing and soldering a 2-layer power distribution board in KiCad, with 6 fused outputs, to replace the old hand-wired harness",
+        "Ended controller resets, with none in the 12 matches since, by tracing them on an oscilloscope to a 1.2 V dip on the 5 V rail during hard turns and giving the controller its own 5 V regulator"
       ]
     },
     {

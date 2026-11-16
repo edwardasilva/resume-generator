@@ -91,25 +91,39 @@ RECORD_SECTIONS = (
     "activities",
     "organizations",
 )
+# eeprep's page puts Skills last on a CV too.
 CV_SECTIONS = (
     "education",
     "honors",
     "scholarships",
     "experience",
     "projects",
-    "skills",
     "certifications",
     "activities",
     "organizations",
+    "skills",
 )
 
 # The two kinds of document. template is the TeX file, and its name is also
 # the LaTeX job name, so a resume and a CV never share build files. cap is the
-# most pages the document may take. A CV also prints every entry, bullets on
-# any job included.
+# most pages the document may take, and smallest is the smallest text size in
+# pt: eeprep's page sets 10 pt for a resume and 10.5 pt for a two-page CV. A CV
+# also prints every entry, bullets on any job included.
 DOCUMENTS = {
-    "resume": {"template": "resume.tex", "job": "resume", "cap": 1, "noun": "resume"},
-    "cv": {"template": "cv.tex", "job": "cv", "cap": 2, "noun": "CV"},
+    "resume": {
+        "template": "resume.tex",
+        "job": "resume",
+        "cap": 1,
+        "smallest": 10.0,
+        "noun": "resume",
+    },
+    "cv": {
+        "template": "cv.tex",
+        "job": "cv",
+        "cap": 2,
+        "smallest": 10.5,
+        "noun": "CV",
+    },
 }
 PAGE_WORDS = {1: "one page", 2: "two pages"}
 SEMESTER = re.compile(r"^(Expected )?(Spring|Summer|Fall|Winter) \d{4}$")
@@ -528,7 +542,8 @@ def check_types(data):
         )
     cv = is_cv(data)
     fields = entry_fields(data)
-    note_unknown(data, ("settings", "header", *sections_of(data)))
+    # "$schema" points an editor at schema/resume.schema.json. The build skips it.
+    note_unknown(data, ("$schema", "settings", "header", *sections_of(data)))
     own = ("document", "sectionOrder", "font", "dateStyle")
     note_unknown(
         settings, own + (("sectionTitles", "labels") if cv else ()), "settings."
@@ -611,11 +626,29 @@ def note_education_range(data):
             )
 
 
+# A GPA with two decimals on both sides, as in 3.62/4.00, or the [X.XX]
+# placeholder the examples use.
+GPA = re.compile(r"^(\d\.\d\d|\[X\.XX\])/\d\.\d\d$")
+
+
+def note_gpa(data):
+    """Print a note for each GPA that isn't written like 3.62/4.00."""
+    for i, entry in enumerate(data.get("education") or []):
+        gpa = (entry or {}).get("gpa")
+        if gpa and not entry.get("hide") and not GPA.match(gpa):
+            print(
+                f'Note: education[{i}].gpa is "{gpa}". eeprep\'s resume page '
+                "writes a GPA with two decimals and its scale, like 3.62/4.00.",
+                file=sys.stderr,
+            )
+
+
 def validate(data):
     """Check field types, the font, and each visible date against its style."""
     check_types(data)
     note_left_out(data)
     note_education_range(data)
+    note_gpa(data)
     font_name(data)
     styles = date_styles(data)
     cv = is_cv(data)
@@ -730,7 +763,7 @@ def projects(data):
 
 
 def experience(data):
-    """Return LaTeX lines for experience, with each job's bullets.
+    """Return LaTeX lines for experience: title and company, location, bullets.
 
     fit_resume passes a copy without the bullets a full page drops.
     """
@@ -742,9 +775,11 @@ def experience(data):
             name = ", ".join(p for p in (title, company) if p)
         else:
             name = link(x.get("url"), title)
-        place = f", {esc(x['location'])}" if x.get("location") else ""
         dates = date_range(x.get("start"), x.get("end"))
-        out.append(rf"\entry{{\textbf{{{name}}}{place}}}{{{dates}}}")
+        out.append(rf"\entry{{\textbf{{{name}}}}}{{{dates}}}")
+        if x.get("location"):
+            # On its own line, at the right margin under the dates.
+            out.append(rf"\entrylocation{{{esc(x['location'])}}}")
         out += bullets(x.get("bullets"))
         out.append(r"\entrygap")
     return out
@@ -887,7 +922,7 @@ def expected_text(data):
                 out += lines(p.get("bullets"))
         elif name == "experience":
             for x in shown(data.get("experience")):
-                out += [x.get("title"), x.get("company"), x.get("location")]
+                out += [x.get("title"), x.get("company")]
                 out += lines(x.get("bullets"))
         elif name == "skills":
             for key in ("software", "hardwareLab", "certifications"):
@@ -901,8 +936,11 @@ def expected_text(data):
     return [plain(x) for x in out if plain(x)]
 
 
-def expected_dates(data):
-    """Return every date and date range the PDF must contain."""
+def expected_margin_text(data):
+    """Return the text at the right margin the PDF must contain.
+
+    That is every date and date range, and each job's location under its dates.
+    """
     cv = is_cv(data)
     out = []
     for e in shown(data.get("education")):
@@ -916,6 +954,8 @@ def expected_dates(data):
                 out.append(x["date"])
             else:
                 out.append(" - ".join(date_parts(x.get("start"), x.get("end"))))
+            if section == "experience":
+                out.append(x.get("location"))
     return [plain(x) for x in out if plain(x)]
 
 
@@ -924,8 +964,8 @@ def check_text(pdf, data):
 
     It extracts the text with pdftotext, as a stand-in for an applicant
     tracking system, and checks that every heading, header item, entry and
-    bullet is there in reading order, that every date is there, and that
-    there are no broken ligatures or unmapped glyphs.
+    bullet is there in reading order, that every date and job location is
+    there, and that there are no broken ligatures or unmapped glyphs.
     """
     result = subprocess.run(
         ["pdftotext", "-enc", "UTF-8", str(pdf), "-"],
@@ -948,11 +988,11 @@ def check_text(pdf, data):
             problems.append(f'out of reading order: "{want}"')
         else:
             problems.append(f'missing or garbled: "{want}"')
-    # Dates sit at the right margin, so their place in the text varies. Check
-    # only that each one is there.
-    for want in expected_dates(data):
+    # Dates and job locations sit at the right margin, so their place in the
+    # text varies. Check only that each one is there.
+    for want in expected_margin_text(data):
         if want not in text:
-            problems.append(f'missing or garbled date: "{want}"')
+            problems.append(f'missing or garbled at the right margin: "{want}"')
     return problems
 
 
@@ -1078,13 +1118,18 @@ def overflow(end, cap=1):
     return used + (page - cap - 1) * goal
 
 
+def layouts(doc):
+    """Return the layouts to try for this kind of document, roomiest first."""
+    return [(font, margin) for font, margin in LAYOUTS if font >= doc["smallest"]]
+
+
 def fit(doc, typeface):
     """Find the roomiest layout that fits the page cap, then fill the pages.
 
     Returns (font, margin, fill, free lines, pages), or None and the log of
     the tightest try when nothing fits.
     """
-    for font, margin in LAYOUTS:
+    for font, margin in layouts(doc):
         pages, log = compile_once(doc, typeface, font, margin)
         if pages <= doc["cap"]:
             fill, free = fill_page(doc, typeface, font, margin, log, pages)
@@ -1336,7 +1381,7 @@ def main():
     lines = 1
     if end:
         lines = max(1, round(overflow(end, doc["cap"]) / end[3] + 0.5))
-    font, margin = LAYOUTS[-1]
+    font, margin = layouts(doc)[-1]
     advice = "Try dropping a coursework item first, then a bullet."
     if doc["cap"] > 1:
         advice = (

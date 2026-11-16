@@ -67,7 +67,7 @@
       "end": "Spring 2025",
       "bullets": [
         "Wrote STM32 firmware in C to sample a 4-channel SPI ADC at [X] kHz and stream it to a Python logger",
-        "Moved UART writes to DMA after a logic analyzer showed dropped samples, cutting losses to [X]%"
+        "Cut dropped samples to [X]% by moving UART writes to DMA, after a logic analyzer showed the losses"
       ]
     }
   ],

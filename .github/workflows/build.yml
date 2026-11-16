@@ -45,6 +45,9 @@ jobs:
         run: ruff format --check
       - name: Lint
         run: ruff check
+      # schema/resume.schema.json is made from the field tables in build.py.
+      - name: Check the input schema matches build.py
+        run: python3 tests/schema.py
       # run ships in the release zip, so it gets the same treatment as build.py.
       # shellcheck comes with the Ubuntu runner.
       - name: Lint the shell scripts
@@ -63,6 +66,7 @@ jobs:
           test -f fonts/LibertinusSerif-Regular.otf
           test -f docs/brand/resume-generator-lockup-outlined.svg
           test -f examples/alex.json
+          test -f schema/resume.schema.json
           test -f resume.json
       # pdftotext comes with poppler-utils. With it installed, each build
       # checks that the PDF text extracts cleanly, and strict mode fails on

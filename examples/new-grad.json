@@ -48,9 +48,9 @@
       "end": "Aug 2025",
       "engineering": true,
       "bullets": [
-        "Added a 200 ms soft-start ramp to the STM32 PWM firmware for a 24 V brushless drive, which lowered startup current spikes by 35% across 50 starts measured with a current probe",
+        "Cut startup current spikes by 35% across 50 starts, measured with a current probe, by adding a 200 ms soft-start ramp to the STM32 PWM firmware that runs a 24 V brushless motor drive",
         "Cut bring-up from 2 days to 4 hours with a Python script that tests 40 channels over UART",
-        "Fixed a CAN bus bug that dropped 1 message in 200 by measuring bit timing on an oscilloscope and moving the sample point to 87.5%, then ran a 12-hour soak test with no dropped messages"
+        "Cut dropped CAN bus messages from 1 in 200 to none over a 12-hour soak test by measuring the bit timing on an oscilloscope and moving the controller's sample point to 87.5%"
       ]
     },
     {
@@ -61,8 +61,8 @@
       "end": "Aug 2024",
       "engineering": true,
       "bullets": [
-        "Automated a 20-point load sweep in LabVIEW with a programmable load and a power analyzer, so an efficiency test on the 500 W supply took 25 minutes instead of the 3 hours it took by hand",
-        "Found a 15 °C hot spot that the derating curve missed on a 12 V module by logging 8 thermocouples through a 48-hour full-load test, and the design team enlarged the heatsink on the next revision"
+        "Cut each efficiency test on the 500 W power supply from 3 hours by hand to 25 minutes by automating a 20-point load sweep in LabVIEW, driving a programmable load and reading a power analyzer",
+        "Found a 15-degree hot spot that the derating curve missed on a 12 V module by logging 8 thermocouples through a 48-hour full-load test, which led to a larger heatsink on the next revision"
       ]
     }
   ],
@@ -78,9 +78,9 @@
       "start": "Fall 2025",
       "end": "Spring 2026",
       "bullets": [
-        "Wrote perturb-and-observe MPPT firmware in C for an STM32 that updates every 10 ms and harvested 18% more energy than a fixed-voltage controller in tests on a solar array simulator",
-        "Laid out a 100 W buck stage on a 2-layer KiCad board that stays under 70 °C at full load",
-        "Sized the output filter in LTspice and measured 42 mV of ripple on the oscilloscope"
+        "Harvested 18% more energy than a fixed-voltage controller on a solar array simulator by writing perturb-and-observe MPPT firmware in C for an STM32 that updates every 10 ms",
+        "Kept a 100 W buck stage under 70 degrees C at full load by laying it out on a 2-layer KiCad board",
+        "Held output ripple to 42 mV, measured on the oscilloscope, by sizing the output filter in LTspice"
       ]
     },
     {
@@ -94,7 +94,7 @@
       "start": "Spring 2025",
       "end": "Spring 2025",
       "bullets": [
-        "Built a 32-tap FIR low-pass filter in Verilog on a Basys 3 FPGA board running at 48 kHz, with 16-bit fixed-point coefficients that matched the MATLAB design within 0.3 dB in Vivado simulation"
+        "Matched the MATLAB design within 0.3 dB in Vivado simulation with a 32-tap FIR low-pass filter in Verilog, using 16-bit fixed-point coefficients, on a Basys 3 FPGA board running at 48 kHz"
       ]
     }
   ],

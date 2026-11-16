@@ -17,10 +17,10 @@
       "scholarships",
       "experience",
       "projects",
-      "skills",
       "certifications",
       "activities",
-      "organizations"
+      "organizations",
+      "skills"
     ],
     "sectionTitles": {
       "honors": "Honors and Awards",
@@ -133,9 +133,9 @@
       "end": "Present",
       "engineering": true,
       "bullets": [
-        "Built a [X] W half-bridge test board in KiCad and measured switching loss at [X] kHz with a current probe and an oscilloscope, then compared the result with an LTspice model to find where the loss came from",
-        "Wrote a Python script that turned oscilloscope captures into efficiency curves, cutting the time to process one run from [X] minutes to [X] and removing hand copying of numbers into a spreadsheet",
-        "Presented the results to the lab group and wrote the methods section of a draft paper",
+        "Traced where the switching loss came from at [X] kHz on a [X] W half-bridge test board in KiCad by comparing current probe and oscilloscope measurements with an LTspice model",
+        "Cut the time to process one run from [X] minutes to [X] by writing a Python script that turned oscilloscope captures into efficiency curves, with no numbers copied into a spreadsheet by hand",
+        "Wrote the methods section of a draft paper from the switching loss results, after presenting them to the lab group",
         "Trained two new students on the lab's oscilloscope, electronic load and probe safety rules"
       ]
     },
@@ -147,9 +147,9 @@
       "end": "May 2026",
       "engineering": false,
       "bullets": [
-        "Led two lab sections of [X] students each and held weekly office hours",
-        "Wrote three Verilog lab handouts, and students raised the average lab score by [X] points",
-        "Graded [X] lab reports a week and returned each one with written comments within [X] days"
+        "Taught two lab sections of [X] students each, with weekly office hours",
+        "Raised the average lab score by [X] points by writing three Verilog lab handouts",
+        "Returned [X] graded lab reports a week, each with written comments within [X] days"
       ]
     },
     {
@@ -160,8 +160,8 @@
       "end": "Aug 2024",
       "engineering": true,
       "bullets": [
-        "Ported a sensor driver from a vendor library to bare-metal C on an ARM Cortex-M4, saving [X] KB of flash",
-        "Found a missed interrupt with a logic analyzer and fixed it by moving the handler to a higher priority, removing a dropped-sample bug that had stayed open for [X] weeks and that two engineers had missed in earlier reviews",
+        "Saved [X] KB of flash by porting a sensor driver from a vendor library to bare-metal C on an ARM Cortex-M4",
+        "Closed a dropped-sample bug open for [X] weeks, missed by two engineers in earlier reviews, by finding a missed interrupt with a logic analyzer and moving its handler to a higher priority",
         "Added unit tests for the driver and ran them on every commit"
       ]
     },
@@ -186,7 +186,7 @@
       "start": "Fall 2025",
       "end": "Spring 2026",
       "bullets": [
-        "Designed a [X] W CubeSat buck converter in KiCad and LTspice, measured at [X]% efficiency on an electronic load",
+        "Reached [X]% efficiency on an electronic load with a [X] W CubeSat buck converter designed in KiCad and LTspice",
         "Cut output ripple from [X] mV to [X] mV by shrinking the switching loop, verified on an oscilloscope",
         "Wrote the board bring-up plan and test report that the team used for its design review",
         "Presented the design to [X] judges at the university design showcase"
@@ -203,7 +203,7 @@
       "end": "Spring 2025",
       "bullets": [
         "Wrote STM32 firmware in C to sample a 4-channel SPI ADC at [X] kHz and stream it to a Python logger",
-        "Moved UART writes to DMA after a logic analyzer showed dropped samples, cutting losses to [X]%"
+        "Cut dropped samples to [X]% by moving UART writes to DMA, after a logic analyzer showed the losses"
       ]
     },
     {
@@ -215,7 +215,7 @@
       "start": "Fall 2024",
       "end": "Fall 2024",
       "bullets": [
-        "Built a [X]-band equalizer in Verilog on an FPGA board and checked the frequency response against a MATLAB model"
+        "Matched a MATLAB model's frequency response within [X] dB with a [X]-band equalizer in Verilog on an FPGA board"
       ]
     },
     {
@@ -227,9 +227,9 @@
       "start": "Spring 2024",
       "end": "Spring 2024",
       "bullets": [
-        "Tuned a PID loop for a two-wheel robot until it held the line at [X] m/s on a test track",
-        "Logged sensor readings over UART and plotted them in Python to pick the loop gains",
-        "Rebuilt the sensor board after a logic analyzer showed crosstalk between two traces"
+        "Held the line at [X] m/s on a test track with a two-wheel robot by tuning its PID loop",
+        "Picked the loop gains from sensor readings logged over UART and plotted in Python",
+        "Removed crosstalk between two traces, found with a logic analyzer, by rebuilding the sensor board"
       ]
     }
   ],
