@@ -140,7 +140,7 @@ Put every listed skill in a bullet or a project's `tools`. Leave out soft skills
 
 ## Building a CV
 
-A CV is a second kind of document built from the same kind of JSON file. Add `"document": "cv"` to `settings` and run `./run` on the file, as in `./run examples/alex-cv.json`. It writes `[Name]-CV.pdf` next to the file (a `cv` or `resume` in the file name adds nothing, so `alex-cv.json` writes `Alex-Doe-CV.pdf`, and `firmware-cv.json` writes `Alex-Doe-CV-firmware.pdf`). `settings.document` is `"resume"` when left out, and the one-page resume works as before. The CV has its own template, `cv.tex`.
+A CV is a second kind of document built from the same kind of JSON file. Add `"document": "cv"` to `settings` and run `./run` on the file, as in `./run examples/alex-cv.json`. It writes `[Name]-CV.pdf` next to the file (a `cv` or `resume` in the file name adds nothing, so `alex-cv.json` writes `Alex-Doe-CV.pdf`, and `firmware-cv.json` writes `Alex-Doe-CV-firmware.pdf`). `settings.document` is `"resume"` when left out, and the one-page resume works as before. The CV has its own template, `cv.tex`, which shares its layout with `resume.tex` through `shared.tex`.
 
 What differs from the resume:
 
@@ -233,6 +233,6 @@ Content is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.
 
 A resume you build with this tool, including one started from an example, is yours and needs no credit.
 
-Code is licensed under the [MIT License](LICENSE). Code means everything else, including `build.py`, `resume.tex`, `cv.tex`, `run`, `pyproject.toml`, `schema/`, `tests/`, and the scripts and workflows in `.github/`.
+Code is licensed under the [MIT License](LICENSE). Code means everything else, including `build.py`, `resume.tex`, `cv.tex`, `shared.tex`, `run`, `pyproject.toml`, `schema/`, `tests/`, and the scripts and workflows in `.github/`.
 
 The fonts in `fonts/` keep their own licenses. Libertinus Serif is under the SIL Open Font License 1.1 ([fonts/OFL.txt](fonts/OFL.txt)). TeX Gyre Termes and TeX Gyre Heros are under the GUST Font License ([fonts/GUST-FONT-LICENSE.txt](fonts/GUST-FONT-LICENSE.txt)), which is the LaTeX Project Public License 1.3c or later ([fonts/lppl.txt](fonts/lppl.txt)). The license texts and upstream notices in `fonts/` are their authors' own and fall under neither license above. See [fonts/README.md](fonts/README.md) for where each file comes from and who holds its copyright.

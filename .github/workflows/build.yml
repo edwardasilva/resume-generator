@@ -45,9 +45,6 @@ jobs:
         run: ruff format --check
       - name: Lint
         run: ruff check
-      # schema/resume.schema.json is made from the field tables in build.py.
-      - name: Check the input schema matches build.py
-        run: python3 tests/schema.py
       # run ships in the release zip, so it gets the same treatment as build.py.
       # shellcheck comes with the Ubuntu runner.
       - name: Lint the shell scripts
@@ -63,6 +60,7 @@ jobs:
           cd /tmp/zipcheck/resume-generator-check
           ./run --help
           python3 -c "import ast, sys; ast.parse(open('build.py').read())"
+          test -f shared.tex
           test -f fonts/LibertinusSerif-Regular.otf
           test -f docs/brand/resume-generator-lockup-outlined.svg
           test -f examples/alex.json
@@ -84,7 +82,8 @@ jobs:
           RESUME_TEXT_CHECK: strict
       - name: Check each PDF's page count and bundled fonts
         run: .github/check-pdfs.sh *-Resume.pdf examples/*.pdf
-      # tests/check.sh covers what the examples don't: LaTeX special characters
+      # tests/check.sh covers what the examples don't: that
+      # schema/resume.schema.json matches build.py, LaTeX special characters
       # in every font, exact link targets, the message for each kind of bad
       # input, the CV page cap and the rule for a non-engineering job's bullets.
       # It needs the poppler-utils installed above.

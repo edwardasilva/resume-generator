@@ -80,8 +80,17 @@ FONTS = {
     "arial": ("texgyreheros", "*-regular", "*-bold"),
 }
 
-# Sections in their default order, and the date patterns for each style.
+# Keys of the input file other than its sections. "$schema" points an editor
+# at schema/resume.schema.json. The build skips it.
+TOP_KEYS = ("$schema", "settings", "header")
+# Keys of settings in any document. A CV also reads CV_SETTINGS_KEYS, below.
+SETTINGS_KEYS = ("document", "sectionOrder", "font", "dateStyle")
+
+# Sections in their default order.
 SECTIONS = ("education", "projects", "experience", "skills")
+# Sections whose entries carry dates checked against settings.dateStyle. A CV
+# adds RECORD_SECTIONS.
+DATED_SECTIONS = ("education", "projects", "experience")
 # A CV adds sections of plain records: a title, who gave it or where, a date
 # and optional bullets.
 RECORD_SECTIONS = (
@@ -104,11 +113,12 @@ CV_SECTIONS = (
     "skills",
 )
 
-# The two kinds of document. template is the TeX file, and its name is also
-# the LaTeX job name, so a resume and a CV never share build files. cap is the
-# most pages the document may take, and smallest is the smallest text size in
-# pt: eeprep's page sets 10 pt for a resume and 10.5 pt for a two-page CV. A CV
-# also prints every entry, bullets on any job included.
+# The two kinds of document, the values of settings.document. The first one is
+# the default. template is the TeX file, and its name is also the LaTeX job
+# name, so a resume and a CV never share build files. cap is the most pages the
+# document may take, and smallest is the smallest text size in pt: eeprep's
+# page sets 10 pt for a resume and 10.5 pt for a two-page CV. A CV also prints
+# every entry, bullets on any job included.
 DOCUMENTS = {
     "resume": {
         "template": "resume.tex",
@@ -133,6 +143,13 @@ MONTH = re.compile(
     r"January|February|March|April|June|July|August|September|October|November|"
     r"December) \d{4}$"
 )
+# Styles allowed in settings.dateStyle: the pattern each one matches and an
+# example date. The first one is the default.
+DATE_STYLES = {
+    "semester": (SEMESTER, "Fall 2025"),
+    "month": (MONTH, "Sep 2025"),
+    "year": (YEAR, "2025"),
+}
 
 # Characters that LaTeX treats specially, and what to print for each one.
 TEX_SPECIAL = {
@@ -267,9 +284,8 @@ def check_date(value, style, where):
     """Raise ResumeError if a date doesn't match its section's date style."""
     if not value or value == "Present":
         return
-    pattern = {"semester": SEMESTER, "month": MONTH, "year": YEAR}[style]
+    pattern, example = DATE_STYLES[style]
     if not pattern.match(value):
-        example = {"semester": "Fall 2025", "month": "Sep 2025", "year": "2025"}[style]
         raise ResumeError(
             f'{where}: "{value}" doesn\'t match the {style} date style '
             f'(like "{example}")'
@@ -298,10 +314,11 @@ def date_styles(data):
         raise ResumeError(
             'settings.dateStyle must be an object, like {"projects": "semester"}'
         )
+    *rest, last = (f'"{name}"' for name in DATE_STYLES)
     for section, style in styles.items():
-        if style not in ("semester", "month", "year"):
+        if style not in DATE_STYLES:
             raise ResumeError(
-                f'settings.dateStyle.{section} must be "semester", "month" or "year"'
+                f"settings.dateStyle.{section} must be {', '.join(rest)} or {last}"
             )
     return styles
 
@@ -385,6 +402,8 @@ LABELS = {
     "skillsCertifications": "Certifications",
     "relocate": "Willing to relocate",
 }
+# Keys of settings that only a CV reads, and the default words of each.
+CV_SETTINGS_KEYS = {"sectionTitles": TITLES, "labels": LABELS}
 
 
 def settings_text(data, key, defaults):
@@ -536,21 +555,20 @@ def check_types(data):
     check_object(settings, "settings")
     settings = settings or {}
     check_field(settings.get("document"), "text", "settings.document")
-    if settings.get("document") not in (None, "resume", "cv"):
+    if settings.get("document") not in (None, *DOCUMENTS):
+        kinds = " or ".join(f'"{kind}"' for kind in DOCUMENTS)
         raise ResumeError(
-            f'settings.document must be "resume" or "cv", not "{settings["document"]}"'
+            f'settings.document must be {kinds}, not "{settings["document"]}"'
         )
     cv = is_cv(data)
     fields = entry_fields(data)
-    # "$schema" points an editor at schema/resume.schema.json. The build skips it.
-    note_unknown(data, ("$schema", "settings", "header", *sections_of(data)))
-    own = ("document", "sectionOrder", "font", "dateStyle")
+    note_unknown(data, TOP_KEYS + sections_of(data))
     note_unknown(
-        settings, own + (("sectionTitles", "labels") if cv else ()), "settings."
+        settings, SETTINGS_KEYS + (tuple(CV_SETTINGS_KEYS) if cv else ()), "settings."
     )
     note_unknown(settings.get("dateStyle"), fields, "settings.dateStyle.")
     if cv:
-        for key, known in (("sectionTitles", TITLES), ("labels", LABELS)):
+        for key, known in CV_SETTINGS_KEYS.items():
             check_object(settings.get(key), f"settings.{key}")
             note_unknown(settings.get(key), known, f"settings.{key}.")
             for name, value in (settings.get(key) or {}).items():
@@ -652,9 +670,8 @@ def validate(data):
     font_name(data)
     styles = date_styles(data)
     cv = is_cv(data)
-    dated = ("education", "projects", "experience") + (RECORD_SECTIONS if cv else ())
-    for section in dated:
-        style = styles.get(section, "semester")
+    for section in DATED_SECTIONS + (RECORD_SECTIONS if cv else ()):
+        style = styles.get(section, next(iter(DATE_STYLES)))
         for i, entry in enumerate(data.get(section) or []):
             if not entry or entry.get("hide"):
                 continue
@@ -762,6 +779,11 @@ def projects(data):
     return out
 
 
+# Fields printed at the right margin under an entry's dates, by section. The
+# text check reads this table to find them (see expected_margin_text).
+MARGIN_FIELDS = {"experience": ("location",)}
+
+
 def experience(data):
     """Return LaTeX lines for experience: title and company, location, bullets.
 
@@ -778,7 +800,8 @@ def experience(data):
         dates = date_range(x.get("start"), x.get("end"))
         out.append(rf"\entry{{\textbf{{{name}}}}}{{{dates}}}")
         if x.get("location"):
-            # On its own line, at the right margin under the dates.
+            # On its own line, at the right margin under the dates. Listed in
+            # MARGIN_FIELDS.
             out.append(rf"\entrylocation{{{esc(x['location'])}}}")
         out += bullets(x.get("bullets"))
         out.append(r"\entrygap")
@@ -954,8 +977,7 @@ def expected_margin_text(data):
                 out.append(x["date"])
             else:
                 out.append(" - ".join(date_parts(x.get("start"), x.get("end"))))
-            if section == "experience":
-                out.append(x.get("location"))
+            out += [x.get(key) for key in MARGIN_FIELDS.get(section, ())]
     return [plain(x) for x in out if plain(x)]
 
 

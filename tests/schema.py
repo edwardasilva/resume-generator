@@ -67,38 +67,45 @@ def words(defaults):
 
 def schema():
     """Return the JSON Schema for the input file, from build.py's tables."""
-    dated = ("education", "projects", "experience") + build.RECORD_SECTIONS
-    style = {"enum": ["semester", "month", "year"], "default": "semester"}
+    styles = list(build.DATE_STYLES)
+    style = {"enum": styles, "default": styles[0]}
+    dated = build.DATED_SECTIONS + build.RECORD_SECTIONS
+    kinds = list(build.DOCUMENTS)
     settings = {
-        "type": ["object", "null"],
-        "properties": {
-            "document": {"enum": ["resume", "cv", None], "default": "resume"},
-            "sectionOrder": {
-                "type": ["array", "null"],
-                "description": (
-                    "A resume reads only " + ", ".join(build.SECTIONS) + ". "
-                    "A section left out is left off the page."
-                ),
-                "items": {"enum": list(build.CV_SECTIONS)},
-                "uniqueItems": True,
-            },
-            "font": {"enum": [*build.FONTS, None], "default": next(iter(build.FONTS))},
-            "dateStyle": {
-                "type": ["object", "null"],
-                "properties": {name: style for name in dated},
-                "additionalProperties": False,
-            },
-            "sectionTitles": words(build.TITLES),
-            "labels": words(build.LABELS),
+        "document": {"enum": [*kinds, None], "default": kinds[0]},
+        "sectionOrder": {
+            "type": ["array", "null"],
+            "description": (
+                "A resume reads only " + ", ".join(build.SECTIONS) + ". "
+                "A section left out is left off the page."
+            ),
+            "items": {"enum": list(build.CV_SECTIONS)},
+            "uniqueItems": True,
         },
-        "additionalProperties": False,
+        "font": {"enum": [*build.FONTS, None], "default": next(iter(build.FONTS))},
+        "dateStyle": {
+            "type": ["object", "null"],
+            "properties": {name: style for name in dated},
+            "additionalProperties": False,
+        },
+        **{key: words(table) for key, table in build.CV_SETTINGS_KEYS.items()},
     }
-    properties = {
+    # Each key build.py reads, in its order. A key without a schema here fails
+    # with a KeyError, so the two can't drift.
+    top = {
         "$schema": {"type": "string"},
-        "settings": settings,
+        "settings": {
+            "type": ["object", "null"],
+            "properties": {
+                key: settings[key]
+                for key in build.SETTINGS_KEYS + tuple(build.CV_SETTINGS_KEYS)
+            },
+            "additionalProperties": False,
+        },
         "header": fields(build.HEADER_FIELDS),
-        "skills": fields(build.SKILL_FIELDS),
     }
+    properties = {key: top[key] for key in build.TOP_KEYS}
+    properties["skills"] = fields(build.SKILL_FIELDS)
     for section, table in build.CV_FIELDS.items():
         properties[section] = {"type": ["array", "null"], "items": fields(table)}
     return {
